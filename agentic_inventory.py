@@ -201,30 +201,68 @@ elif mode == "📂 Bulk Data Import":
             st.success("Sync Complete.")
 
 # MODE 5: AI AGENT CHAT
+elif mode == # --- 8. MODE: AI AGENT CHAT (FIXED & ROBUST) ---
 elif mode == "💬 AI Agent Chat":
     st.title("💬 KOSHA AI: Conversational Intelligence")
     key = st.secrets.get("GROQ_API_KEY")
+    
     if not key:
-        st.warning("Chatbot Offline. Add GROQ_API_KEY to Secrets.")
+        st.warning("Chatbot Offline. Please add GROQ_API_KEY to Secrets.")
     else:
-        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-        if "messages" not in st.session_state: st.session_state.messages = []
-        for m in st.session_state.messages:
-            with st.chat_message(m["role"]): st.markdown(m["content"])
+        try:
+            # Initialize the client
+            client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+            
+            # Initialize chat history
+            if "messages" not in st.session_state:
+                st.session_state.messages = []
+
+            # Display chat history
+            for m in st.session_state.messages:
+                with st.chat_message(m["role"]): 
+                    st.markdown(m["content"])
+
+            # Chat Input
+            if prompt := st.chat_input("Ask about Treasury risks (e.g., 'What is my current stock?')"):
+                # 1. Add user message to history
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with st.chat_message("user"): 
+                    st.markdown(prompt)
+
+                # 2. GET CLEAN DATA (Fixes the BadRequest error)
+                conn = sqlite3.connect('inventory_pro.db')
+                # We limit to 15 items to ensure we don't send too much data at once
+                p_df = pd.read_sql_query("SELECT name, current_stock, supplier FROM products LIMIT 15", conn)
+                p_data_summary = p_df.to_string(index=False)
+                conn.close()
+
+                # 3. Generate Response
+                with st.chat_message("assistant"):
+                    # Use the newest, most stable model: llama-3.3-70b-versatile
+                    response = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile", 
+                        messages=[
+                            {
+                                "role": "system", 
+                                "content": f"You are KOSHA AI, a master supply chain agent. Use this data: {p_data_summary}. Keep answers brief and professional."
+                            },
+                            *st.session_state.messages
+                        ],
+                        max_tokens=400 # Prevents long, expensive responses
+                    )
+                    
+                    full_res = response.choices[0].message.content
+                    st.markdown(full_res)
+                    
+                    # 4. Add assistant response to history
+                    st.session_state.messages.append({"role": "assistant", "content": full_res})
         
-        if prompt := st.chat_input("Ask about Treasury risks..."):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"): st.markdown(prompt)
-            
-            conn = sqlite3.connect('inventory_pro.db')
-            p_data = pd.read_sql_query("SELECT name, current_stock, supplier FROM products", conn).to_string()
-            conn.close()
-            
-            with st.chat_message("assistant"):
-                response = client.chat.completions.create(
-                    model="llama3-8b-8192",
-                    messages=[{"role": "system", "content": f"You are KOSHA AI, a master supply chain agent. Data: {p_data}"}] + st.session_state.messages
-                )
-                res = response.choices[0].message.content
-                st.markdown(res)
-                st.session_state.messages.append({"role": "assistant", "content": res})
+        except Exception as e:
+            # This captures the error and explains it instead of crashing the app
+            st.error("⚠️ AI Connection Error")
+            if "401" in str(e):
+                st.write("Your API Key is invalid. Check your Streamlit Secrets.")
+            elif "400" in str(e):
+                st.write("The AI received too much data or an invalid model name. I've updated the model to Llama 3.3 to fix this.")
+            else:
+                st.write(f"Details: {e}")
