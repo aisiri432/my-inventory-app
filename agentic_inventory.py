@@ -8,37 +8,29 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 import io
 
-# --- 1. DATABASE & AGENT SYSTEMS ---
-class EnterpriseSystem:
-    def __init__(self, db_path='inventory_pro.db'):
-        self.db_path = db_path
+# --- 1. BRANDING & STYLE ---
+APP_NAME = "KOSHA.ai"
+TAGLINE = "Treasury of Intelligence. Guardian of Supply."
 
-    def get_conn(self):
-        return sqlite3.connect(self.db_path)
+st.set_page_config(page_title=f"{APP_NAME} | Smart Inventory", layout="wide", page_icon="🪙")
 
-    def run_resilience_test(self, product_id, scenario="Normal"):
-        conn = self.get_conn()
-        p = pd.read_sql_query(f"SELECT * FROM products WHERE id={product_id}", conn).iloc[0]
-        sales = pd.read_sql_query(f"SELECT units_sold FROM sales_history WHERE product_id={product_id}", conn)
-        conn.close()
+# Custom CSS for the High-End "Gold & Obsidian" look
+st.markdown("""
+    <style>
+    .stApp { background-color: #0E1117; color: #FFFFFF; }
+    [data-testid="stSidebar"] { background-color: #161B22; border-right: 1px solid #D4AF37; }
+    .metric-card {
+        background-color: #161B22;
+        padding: 20px;
+        border-radius: 12px;
+        border-top: 4px solid #D4AF37;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-        avg_demand = sales['units_sold'].mean()
-        tts = p['current_stock'] / avg_demand if avg_demand > 0 else 999
-        ttr = p['lead_time']
-        
-        if scenario == "Port Closure": ttr *= 3
-        if scenario == "Factory Fire": ttr += 30
-        
-        status = "🟢 GREEN"
-        if tts < ttr: status = "🔴 RED"
-        elif tts < (ttr * 1.5): status = "🟡 YELLOW"
-        
-        return {"tts": round(tts, 1), "ttr": round(ttr, 1), "status": status}
-
-# --- 2. INITIALIZE ---
-st.set_page_config(page_title="DS-31 Enterprise AI", layout="wide")
-system = EnterpriseSystem()
-
+# --- 2. DATABASE INITIALIZATION ---
 def init_db():
     conn = sqlite3.connect('inventory_pro.db')
     c = conn.cursor()
@@ -52,17 +44,64 @@ def init_db():
 
 init_db()
 
-# --- 3. NAVIGATION ---
-st.sidebar.title("🤖 DS-31 Orchestrator")
-mode = st.sidebar.selectbox("Navigate", [
+# --- 3. THE KOSHA AI BRAIN (ML & Logic) ---
+class KoshaEngine:
+    @staticmethod
+    def predict_demand(product_id):
+        """Feature: Random Forest Demand Prediction"""
+        conn = sqlite3.connect('inventory_pro.db')
+        df = pd.read_sql_query(f"SELECT * FROM sales_history WHERE product_id={product_id}", conn)
+        conn.close()
+        if df.empty or len(df) < 5: return np.array([5, 5, 5, 5, 5, 5, 5]) # Fallback
+        
+        df['date'] = pd.to_datetime(df['date'])
+        df['day_index'] = np.arange(len(df))
+        df['day_of_week'] = df['date'].dt.dayofweek
+        
+        model = RandomForestRegressor(n_estimators=50)
+        model.fit(df[['day_index', 'day_of_week']], df['units_sold'])
+        
+        future = pd.DataFrame({
+            'day_index': [df['day_index'].iloc[-1] + i for i in range(1, 8)],
+            'day_of_week': [(df['date'].iloc[-1] + timedelta(days=i)).dayofweek for i in range(1, 8)]
+        })
+        return model.predict(future).round().astype(int)
+
+    @staticmethod
+    def run_resilience(p_id, scenario="Normal"):
+        """Feature: TTS vs TTR Stress Testing"""
+        conn = sqlite3.connect('inventory_pro.db')
+        p = pd.read_sql_query(f"SELECT * FROM products WHERE id={p_id}", conn).iloc[0]
+        sales = pd.read_sql_query(f"SELECT units_sold FROM sales_history WHERE product_id={p_id}", conn)
+        conn.close()
+        
+        avg_demand = sales['units_sold'].mean() if not sales.empty else 1
+        tts = p['current_stock'] / avg_demand if avg_demand > 0 else 999
+        ttr = p['lead_time']
+        
+        if scenario == "Port Closure": ttr *= 3
+        if scenario == "Factory Fire": ttr += 30
+        
+        status = "🟢 Safe"
+        if tts < ttr: status = "🔴 Critical"
+        elif tts < (ttr * 1.5): status = "🟡 Warning"
+        
+        return {"tts": round(tts, 1), "ttr": round(ttr, 1), "status": status, "avg_demand": avg_demand}
+
+# --- 4. NAVIGATION ---
+st.sidebar.markdown(f"<h1 style='color: #D4AF37;'>{APP_NAME}</h1>", unsafe_allow_html=True)
+st.sidebar.caption(TAGLINE)
+mode = st.sidebar.selectbox("Mission Control", [
     "📈 Strategic Dashboard", 
-    "🧪 Stress-Test Simulator", 
-    "✍️ Manual Data Entry", 
-    "📂 File Upload Center",
+    "🌪️ Resilience Simulator", 
+    "📝 Treasury Ledger", 
+    "📂 Bulk Data Import",
     "💬 AI Agent Chat"
 ])
 
-# --- 4. MODE: DASHBOARD ---
+# --- 5. MODES ---
+
+# MODE 1: STRATEGIC DASHBOARD
 if mode == "📈 Strategic Dashboard":
     st.title("🚀 Strategic Inventory Control")
     conn = sqlite3.connect('inventory_pro.db')
@@ -70,117 +109,122 @@ if mode == "📈 Strategic Dashboard":
     conn.close()
     
     if df.empty:
-        st.warning("Database is empty. Please add data in the 'Manual Entry' or 'File Upload' section.")
+        st.info("The Treasury is empty. Add data in the Ledger or Import section.")
     else:
-        st.dataframe(df, use_container_width=True)
-        fig = px.bar(df, x='name', y='current_stock', color='category', title="Global Stock Levels")
-        st.plotly_chart(fig, use_container_width=True)
+        # Top Metrics
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Assets Managed", len(df))
+        m2.metric("Treasury Value", f"${(df['current_stock'] * df['unit_price']).sum():,.0F}")
+        m3.metric("System Health", "Optimal")
 
-# --- 5. MODE: STRESS-TEST ---
-elif mode == "🧪 Stress-Test Simulator":
-    st.title("🧪 Resilience Stress-Testing")
-    scenario = st.selectbox("Scenario", ["Normal", "Port Closure", "Factory Fire"])
+        # Demand Prediction & Stock Suggestion
+        st.divider()
+        target = st.selectbox("Select Product for AI Analysis", df['name'])
+        p_info = df[df['name'] == target].iloc[0]
+        
+        preds = KoshaEngine.predict_demand(p_info['id'])
+        total_pred = preds.sum()
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader("7-Day Demand Forecast")
+            fig = px.bar(x=[f"Day {i+1}" for i in range(7)], y=preds, template="plotly_dark", color_discrete_sequence=['#D4AF37'])
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with c2:
+            st.subheader("Agentic Recommendation")
+            if p_info['current_stock'] < total_pred:
+                st.error(f"⚠️ LOW STOCK DETECTED\n\nAI Suggests: Order **{int(total_pred - p_info['current_stock'] + 10)} units** immediately to cover forecasted demand.")
+            else:
+                st.success(f"✅ STOCK HEALTHY\n\nCurrent levels cover the predicted {total_pred} units for next week.")
+
+# MODE 2: RESILIENCE SIMULATOR
+elif mode == "🌪️ Resilience Simulator":
+    st.title("🌪️ Supply Chain Stress-Test (TTS vs TTR)")
+    scenario = st.selectbox("Trigger External Disruption", ["Normal", "Port Closure", "Factory Fire"])
     
     conn = sqlite3.connect('inventory_pro.db')
     products = pd.read_sql_query("SELECT * FROM products", conn)
     conn.close()
     
-    results = []
+    res_list = []
     for _, p in products.iterrows():
-        res = system.run_resilience_test(p['id'], scenario)
-        results.append({"Product": p['name'], "TTS": res['tts'], "TTR": res['ttr'], "Risk": res['status']})
+        r = KoshaEngine.run_resilience(p['id'], scenario)
+        res_list.append({"Product": p['name'], "Time-to-Survive (TTS)": r['tts'], "Time-to-Recover (TTR)": r['ttr'], "Risk Status": r['status']})
     
-    st.table(pd.DataFrame(results))
+    st.table(pd.DataFrame(res_list))
 
-# --- 6. MODE: MANUAL DATA ENTRY (Correcting Data) ---
-elif mode == "✍️ Manual Data Entry":
-    st.title("✍️ Ledger Management")
-    
-    tab1, tab2 = st.tabs(["Add New Product", "Edit Existing Stock"])
+# MODE 3: TREASURY LEDGER (Manual Entry & Correction)
+elif mode == "📝 Treasury Ledger":
+    st.title("📝 Ledger Management")
+    tab1, tab2 = st.tabs(["Add New Asset", "Correct/Update Records"])
     
     with tab1:
-        with st.form("add_product"):
-            name = st.text_input("Product Name")
-            cat = st.selectbox("Category", ["Electronics", "Furniture", "Accessories"])
-            stock = st.number_input("Initial Stock", min_value=0)
-            price = st.number_input("Unit Price", min_value=0.0)
-            lt = st.number_input("Lead Time (Days)", min_value=1)
-            sup = st.text_input("Supplier Name")
-            if st.form_submit_button("Save to Ledger"):
+        with st.form("new_p"):
+            n = st.text_input("Product Name")
+            c = st.selectbox("Category", ["Electronics", "Furniture", "Raw Materials"])
+            s = st.number_input("Current Stock", min_value=0)
+            p = st.number_input("Unit Value", min_value=0.0)
+            l = st.number_input("Lead Time (Days)", min_value=1)
+            sup = st.text_input("Supplier")
+            if st.form_submit_button("Authorize Entry"):
                 conn = sqlite3.connect('inventory_pro.db')
-                conn.execute("INSERT INTO products (name, category, current_stock, unit_price, lead_time, supplier) VALUES (?,?,?,?,?,?)", 
-                             (name, cat, stock, price, lt, sup))
-                conn.commit()
-                conn.close()
-                st.success("Product Added!")
+                conn.execute("INSERT INTO products (name, category, current_stock, unit_price, lead_time, supplier) VALUES (?,?,?,?,?,?)", (n,c,s,p,l,sup))
+                conn.commit(); conn.close()
+                st.success("Asset logged.")
 
     with tab2:
         conn = sqlite3.connect('inventory_pro.db')
         df = pd.read_sql_query("SELECT * FROM products", conn)
         conn.close()
-        
-        selected_edit = st.selectbox("Select Product to Edit", df['name'])
-        new_qty = st.number_input("Corrected Stock Quantity", min_value=0)
-        if st.button("Update Stock"):
-            conn = sqlite3.connect('inventory_pro.db')
-            conn.execute("UPDATE products SET current_stock = ? WHERE name = ?", (new_qty, selected_edit))
-            conn.commit()
-            conn.close()
-            st.success("Record Updated!")
+        if not df.empty:
+            target = st.selectbox("Select Asset to Correct", df['name'])
+            new_val = st.number_input("New Quantity", min_value=0)
+            if st.button("Apply Correction"):
+                conn = sqlite3.connect('inventory_pro.db')
+                conn.execute("UPDATE products SET current_stock=? WHERE name=?", (new_val, target))
+                conn.commit(); conn.close()
+                st.rerun()
 
-# --- 7. MODE: FILE UPLOAD (CSV/Excel) ---
-elif mode == "📂 File Upload Center":
-    st.title("📂 Batch Data Import")
-    st.write("Upload a CSV file with columns: `name, category, current_stock, unit_price, lead_time, supplier`")
-    
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file is not None:
-        df_upload = pd.read_csv(uploaded_file)
-        st.write("Preview of Uploaded Data:")
-        st.dataframe(df_upload.head())
-        
-        if st.button("Import to System"):
+# MODE 4: BULK DATA IMPORT
+elif mode == "📂 Bulk Data Import":
+    st.title("📂 External Data Ingestion")
+    file = st.file_uploader("Upload CSV Supply Data", type="csv")
+    if file:
+        df_up = pd.read_csv(file)
+        st.write("Preview:")
+        st.dataframe(df_up.head())
+        if st.button("Sync with Treasury"):
             conn = sqlite3.connect('inventory_pro.db')
-            df_upload.to_sql('products', conn, if_exists='append', index=False)
+            df_up.to_sql('products', conn, if_exists='append', index=False)
             conn.close()
-            st.success("Successfully imported data to database!")
+            st.success("Sync Complete.")
 
-# --- 8. MODE: AI AGENT CHAT (GROQ/LLM) ---
+# MODE 5: AI AGENT CHAT
 elif mode == "💬 AI Agent Chat":
-    st.title("💬 Agentic Reasoning Interface")
-    st.info("Ask me about stock risks, resilience, or optimization.")
-
-    # Get API Key from Secrets
-    api_key = st.secrets.get("GROQ_API_KEY")
-    
-    if not api_key:
-        st.warning("Please add 'GROQ_API_KEY' to Streamlit Secrets to enable the Chat Agent.")
+    st.title("💬 KOSHA AI: Conversational Intelligence")
+    key = st.secrets.get("GROQ_API_KEY")
+    if not key:
+        st.warning("Chatbot Offline. Add GROQ_API_KEY to Secrets.")
     else:
-        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=api_key)
-        
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-
+        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+        if "messages" not in st.session_state: st.session_state.messages = []
         for m in st.session_state.messages:
             with st.chat_message(m["role"]): st.markdown(m["content"])
-
-        if prompt := st.chat_input("Ex: Which product has the highest risk?"):
+        
+        if prompt := st.chat_input("Ask about Treasury risks..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"): st.markdown(prompt)
-
-            # Context: Provide current database state to the AI
+            
             conn = sqlite3.connect('inventory_pro.db')
-            current_data = pd.read_sql_query("SELECT name, current_stock, supplier FROM products", conn).to_string()
+            p_data = pd.read_sql_query("SELECT name, current_stock, supplier FROM products", conn).to_string()
             conn.close()
-
+            
             with st.chat_message("assistant"):
                 response = client.chat.completions.create(
                     model="llama3-8b-8192",
-                    messages=[
-                        {"role": "system", "content": f"You are an Inventory AI. Here is the data: {current_data}"},
-                        *st.session_state.messages
-                    ]
+                    messages=[{"role": "system", "content": f"You are KOSHA AI, a master supply chain agent. Data: {p_data}"}] + st.session_state.messages
                 )
-                full_res = response.choices[0].message.content
-                st.markdown(full_res)
-                st.session_state.messages.append({"role": "assistant", "content": full_res})
+                res = response.choices[0].message.content
+                st.markdown(res)
+                st.session_state.messages.append({"role": "assistant", "content": res})
