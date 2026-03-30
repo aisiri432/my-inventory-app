@@ -57,29 +57,55 @@ def check_for_user():
     conn = get_db(); res = conn.execute("SELECT * FROM users WHERE username='admin'").fetchone(); conn.close()
     return res
 
-# --- 4. LOGIN SCREEN ---
+# --- 4. LOGIN SCREEN (FIXED FOR MULTI-USER DEMO) ---
 if not st.session_state.auth:
-    st.markdown("<div style='text-align:center; margin-top:50px;'><h1 style='color:#D4AF37; font-size:4rem; font-weight:800; letter-spacing:15px; margin-bottom:0;'>AROHA</h1><p style='color:#444; letter-spacing:3px;'>TURN DATA INTO DECISIONS</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; margin-top:60px;'><h1 style='color:#D4AF37; font-size:4.5rem; font-weight:800; letter-spacing:15px; margin-bottom:0;'>AROHA</h1><p style='color:#555; letter-spacing:3px;'>TURN DATA INTO DECISIONS</p></div>", unsafe_allow_html=True)
+    
     existing_user = check_for_user()
-    col1, col2, col3 = st.columns([1, 1.2, 1])
+    col1, col2, col3 = st.columns([1, 1.4, 1])
+    
     with col2:
         if not existing_user:
-            st.markdown("<div class='vault-box'><h3 style='color:white;'>Initialize Treasury</h3>", unsafe_allow_html=True)
-            new_m = st.text_input("Set Mantra", type="password"); hint_ans = st.text_input("Security Hint")
+            # THIS IS WHAT YOU WANT THE JUDGES TO SEE
+            st.markdown("<div class='vault-box'><h2 style='color:white;'>Initialize Treasury</h2><p style='color:#666;'>Set a master mantra for this session</p>", unsafe_allow_html=True)
+            new_m = st.text_input("Set Mantra", type="password", key="reg_pwd")
+            hint_ans = st.text_input("Security Hint (Answer)", key="reg_hint")
             if st.button("AUTHORIZE SYSTEM"):
                 if new_m and hint_ans:
-                    conn = get_db(); conn.execute("INSERT INTO users VALUES ('admin', ?, ?)", (new_m, hint_ans)); conn.commit(); conn.close(); st.rerun()
+                    conn = get_db()
+                    conn.execute("INSERT INTO users VALUES ('admin', ?, ?)", (new_m, hint_ans))
+                    conn.commit()
+                    conn.close()
+                    st.success("System Initialized! Login now.")
+                    st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
         else:
-            st.markdown("<div class='vault-box'><h3 style='color:white;'>Verify Mantra</h3>", unsafe_allow_html=True)
-            input_m = st.text_input("Mantra", type="password")
+            # THIS IS WHAT USERS SEE IF A PASSWORD ALREADY EXISTS
+            st.markdown("<div class='vault-box'><h2 style='color:white;'>Verify Mantra</h2><p style='color:#666;'>Authorized Access Only</p>", unsafe_allow_html=True)
+            input_m = st.text_input("Mantra", type="password", key="login_pwd")
             if st.button("UNLOCK VAULT"):
-                if input_m == existing_user[1]: st.session_state.auth = True; st.rerun()
-                else: st.error("Access Denied")
-            with st.expander("Forgot Mantra?"):
-                ans = st.text_input("Security Hint Answer")
-                if st.button("RECOVER"):
-                    if ans == existing_user[2]: st.info(f"Mantra: {existing_user[1]}")
+                if input_m == existing_user[1]:
+                    st.session_state.auth = True
+                    st.rerun()
+                else:
+                    st.error("Access Denied: Invalid Mantra")
+            
+            with st.expander("System Recovery"):
+                st.write("Forgot mantra? Use hint or reset system for new demo.")
+                ans = st.text_input("Enter Security Hint Answer")
+                if st.button("RECOVER MANTRA"):
+                    if ans == existing_user[2]:
+                        st.info(f"Mantra: {existing_user[1]}")
+                
+                # NEW RESET BUTTON
+                if st.button("🔥 HARD RESET (Wipe All Data)"):
+                    conn = get_db()
+                    conn.execute("DROP TABLE IF EXISTS users")
+                    conn.execute("DROP TABLE IF EXISTS products")
+                    conn.commit()
+                    conn.close()
+                    st.warning("Database Wiped. Refreshing...")
+                    st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
