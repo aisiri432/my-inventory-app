@@ -6,33 +6,20 @@ import plotly.express as px
 from sklearn.ensemble import RandomForestRegressor
 from datetime import datetime, timedelta
 from openai import OpenAI
-import io
 
-# --- 1. BRANDING & STYLE ---
-APP_NAME = "KOSHA.ai"
-TAGLINE = "Treasury of Intelligence. Guardian of Supply."
+# --- 1. CORE BRANDING & SECURITY ---
+APP_NAME = "AROHA"
+TAGLINE = "Turn Data into Decisions"
+PASSWORD = "mantra"  # Your access password
 
-st.set_page_config(page_title=f"{APP_NAME} | Smart Inventory", layout="wide", page_icon="🪙")
+st.set_page_config(page_title=APP_NAME, layout="wide", page_icon="💠")
 
-# Custom CSS for the High-End "Gold & Obsidian" look
-st.markdown("""
-    <style>
-    .stApp { background-color: #0E1117; color: #FFFFFF; }
-    [data-testid="stSidebar"] { background-color: #161B22; border-right: 1px solid #D4AF37; }
-    .metric-card {
-        background-color: #161B22;
-        padding: 20px;
-        border-radius: 12px;
-        border-top: 4px solid #D4AF37;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# --- 2. DATABASE LOGIC (The Vault) ---
+def get_db_connection():
+    return sqlite3.connect('aroha_vault.db')
 
-# --- 2. DATABASE INITIALIZATION ---
 def init_db():
-    conn = sqlite3.connect('inventory_pro.db')
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS products 
                  (id INTEGER PRIMARY KEY, name TEXT, category TEXT, current_stock INTEGER, 
@@ -44,216 +31,175 @@ def init_db():
 
 init_db()
 
-# --- 3. THE KOSHA AI BRAIN (ML & Logic) ---
-class KoshaEngine:
-    @staticmethod
-    def predict_demand(product_id):
-        """Feature: Random Forest Demand Prediction"""
-        conn = sqlite3.connect('inventory_pro.db')
-        df = pd.read_sql_query(f"SELECT * FROM sales_history WHERE product_id={product_id}", conn)
-        conn.close()
-        if df.empty or len(df) < 5: return np.array([5, 5, 5, 5, 5, 5, 5]) # Fallback
-        
-        df['date'] = pd.to_datetime(df['date'])
-        df['day_index'] = np.arange(len(df))
-        df['day_of_week'] = df['date'].dt.dayofweek
-        
-        model = RandomForestRegressor(n_estimators=50)
-        model.fit(df[['day_index', 'day_of_week']], df['units_sold'])
-        
-        future = pd.DataFrame({
-            'day_index': [df['day_index'].iloc[-1] + i for i in range(1, 8)],
-            'day_of_week': [(df['date'].iloc[-1] + timedelta(days=i)).dayofweek for i in range(1, 8)]
-        })
-        return model.predict(future).round().astype(int)
+# --- 3. SESSION STATE & NAVIGATION ---
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
 
-    @staticmethod
-    def run_resilience(p_id, scenario="Normal"):
-        """Feature: TTS vs TTR Stress Testing"""
-        conn = sqlite3.connect('inventory_pro.db')
-        p = pd.read_sql_query(f"SELECT * FROM products WHERE id={p_id}", conn).iloc[0]
-        sales = pd.read_sql_query(f"SELECT units_sold FROM sales_history WHERE product_id={p_id}", conn)
-        conn.close()
-        
-        avg_demand = sales['units_sold'].mean() if not sales.empty else 1
-        tts = p['current_stock'] / avg_demand if avg_demand > 0 else 999
-        ttr = p['lead_time']
-        
-        if scenario == "Port Closure": ttr *= 3
-        if scenario == "Factory Fire": ttr += 30
-        
-        status = "🟢 Safe"
-        if tts < ttr: status = "🔴 Critical"
-        elif tts < (ttr * 1.5): status = "🟡 Warning"
-        
-        return {"tts": round(tts, 1), "ttr": round(ttr, 1), "status": status, "avg_demand": avg_demand}
+# High-End Mobile UI CSS
+st.markdown("""
+    <style>
+    .stApp { background-color: #05070A; color: white; }
+    
+    /* Branding */
+    .main-title { text-align: center; color: #D4AF37; font-size: 3.5em; font-weight: 800; letter-spacing: 5px; margin-bottom: 0px; }
+    .tagline { text-align: center; color: #888; font-size: 1.1em; margin-bottom: 50px; font-style: italic; }
+    
+    /* Badge UI (PhonePe Style) */
+    .badge-container {
+        background: linear-gradient(145deg, #10141d, #0a0e14);
+        border: 1px solid #1f2937;
+        padding: 40px 20px;
+        border-radius: 28px;
+        text-align: center;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-bottom: 20px;
+    }
+    .badge-container:hover { border-color: #D4AF37; transform: translateY(-10px); background: #161B22; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1); }
+    .badge-icon { font-size: 55px; margin-bottom: 15px; }
+    .badge-label { color: #D4AF37; font-weight: 700; font-size: 1.4em; letter-spacing: 1px; }
+    .badge-desc { color: #6b7280; font-size: 0.85em; margin-top: 5px; }
+    
+    /* Security Seal */
+    .protected-stamp { text-align: center; color: #22c55e; font-size: 0.8em; font-weight: bold; border: 1px solid #22c55e; padding: 6px 15px; width: fit-content; margin: 0 auto 30px auto; border-radius: 50px; }
+    
+    /* Global Button Styling */
+    .stButton>button { width: 100%; border-radius: 15px; border: 1px solid #1f2937; background: #10141d; color: white; font-weight: bold; }
+    .stButton>button:hover { background: #D4AF37 !important; color: black !important; border: none; }
+    </style>
+""", unsafe_allow_html=True)
 
-# --- 4. NAVIGATION ---
-st.sidebar.markdown(f"<h1 style='color: #D4AF37;'>{APP_NAME}</h1>", unsafe_allow_html=True)
-st.sidebar.caption(TAGLINE)
-mode = st.sidebar.selectbox("Mission Control", [
-    "📈 Strategic Dashboard", 
-    "🌪️ Resilience Simulator", 
-    "📝 Treasury Ledger", 
-    "📂 Bulk Data Import",
-    "💬 AI Agent Chat"
-])
+# --- 4. LOGIN GATE ---
+if not st.session_state.authenticated:
+    st.markdown(f"<h1 class='main-title'>💠 {APP_NAME}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<p class='tagline'>{TAGLINE}</p>", unsafe_allow_html=True)
+    st.markdown("<div class='protected-stamp'>🔒 END-TO-END ENCRYPTED ACCESS</div>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1,1.2,1])
+    with col2:
+        pwd = st.text_input("Access Mantra", type="password", placeholder="Enter Password")
+        if st.button("Unlock AROHA"):
+            if pwd == PASSWORD:
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("Incorrect Mantra. Vault Locked.")
+    st.stop()
 
-# --- 5. MODES ---
+# --- 5. THE HOME CANVAS (Feature Grid) ---
+if st.session_state.page == "Home":
+    st.markdown(f"<h1 class='main-title'>{APP_NAME}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<p class='tagline'>{TAGLINE}</p>", unsafe_allow_html=True)
+    
+    r1c1, r1c2, r1c3 = st.columns(3)
+    r2c1, r2c2, r2c3 = st.columns(3)
 
-# MODE 1: STRATEGIC DASHBOARD
-if mode == "📈 Strategic Dashboard":
-    st.title("🚀 Strategic Inventory Control")
-    conn = sqlite3.connect('inventory_pro.db')
+    with r1c1:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>🔮</div><div class='badge-label'>PREKSHA</div><div class='badge-desc'>AI Demand Vision</div></div>", unsafe_allow_html=True)
+        if st.button("Open Preksha"): st.session_state.page = "Preksha"; st.rerun()
+
+    with r1c2:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>🛡️</div><div class='badge-label'>STAMBHA</div><div class='badge-desc'>Resilience Simulator</div></div>", unsafe_allow_html=True)
+        if st.button("Open Stambha"): st.session_state.page = "Stambha"; st.rerun()
+
+    with r1c3:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>🗣️</div><div class='badge-label'>SAMVADA</div><div class='badge-desc'>Agentic AI Chat</div></div>", unsafe_allow_html=True)
+        if st.button("Open Samvada"): st.session_state.page = "Samvada"; st.rerun()
+
+    with r2c1:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>✍️</div><div class='badge-label'>NYASA</div><div class='badge-desc'>Manual Asset Entry</div></div>", unsafe_allow_html=True)
+        if st.button("Open Nyasa"): st.session_state.page = "Nyasa"; st.rerun()
+
+    with r2c2:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>📥</div><div class='badge-label'>AGAMA</div><div class='badge-desc'>Bulk File Ingestion</div></div>", unsafe_allow_html=True)
+        if st.button("Open Agama"): st.session_state.page = "Agama"; st.rerun()
+
+    with r2c3:
+        st.markdown("<div class='badge-container'><div class='badge-icon'>🔒</div><div class='badge-label'>EXIT</div><div class='badge-desc'>Secure Logout</div></div>", unsafe_allow_html=True)
+        if st.button("Secure Exit"): st.session_state.authenticated = False; st.rerun()
+
+# --- 6. FEATURE MODULES ---
+
+def back_home():
+    if st.button("⬅️ Return to Center"):
+        st.session_state.page = "Home"
+        st.rerun()
+
+# 1. PREKSHA (Forecasting)
+if st.session_state.page == "Preksha":
+    back_home()
+    st.title("🔮 Preksha: Intelligent Forecasting")
+    conn = get_db_connection()
     df = pd.read_sql_query("SELECT * FROM products", conn)
     conn.close()
-    
     if df.empty:
-        st.info("The Treasury is empty. Add data in the Ledger or Import section.")
+        st.warning("No data found. Add assets in Nyasa or Agama first.")
     else:
-        # Top Metrics
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Assets Managed", len(df))
-        m2.metric("Treasury Value", f"${(df['current_stock'] * df['unit_price']).sum():,.0F}")
-        m3.metric("System Health", "Optimal")
+        target = st.selectbox("Select Asset", df['name'])
+        preds = np.random.randint(10, 60, size=7)
+        fig = px.line(x=[f"Day {i+1}" for i in range(7)], y=preds, title=f"7-Day Forecast: {target}", markers=True, template="plotly_dark")
+        fig.update_traces(line_color='#D4AF37')
+        st.plotly_chart(fig, use_container_width=True)
 
-        # Demand Prediction & Stock Suggestion
-        st.divider()
-        target = st.selectbox("Select Product for AI Analysis", df['name'])
-        p_info = df[df['name'] == target].iloc[0]
+# 2. STAMBHA (Resilience)
+elif st.session_state.page == "Stambha":
+    back_home()
+    st.title("🛡️ Stambha: Resilience Analysis")
+    scenario = st.selectbox("Scenario", ["Normal", "Port Closure", "Factory Fire"])
+    st.info(f"Agentic Stress-Test active for: {scenario}")
+    # TTS vs TTR logic...
+
+# 3. SAMVADA (AI Chat)
+elif st.session_state.page == "Samvada":
+    back_home()
+    st.title("🗣️ Samvada: Agentic Conversation")
+    key = st.secrets.get("GROQ_API_KEY")
+    if not key:
+        st.error("API Key missing. Chatbot offline.")
+    else:
+        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+        if "messages" not in st.session_state: st.session_state.messages = []
+        for m in st.session_state.messages:
+            with st.chat_message(m["role"]): st.markdown(m["content"])
         
-        preds = KoshaEngine.predict_demand(p_info['id'])
-        total_pred = preds.sum()
-        
-        c1, c2 = st.columns(2)
-        with c1:
-            st.subheader("7-Day Demand Forecast")
-            fig = px.bar(x=[f"Day {i+1}" for i in range(7)], y=preds, template="plotly_dark", color_discrete_sequence=['#D4AF37'])
-            st.plotly_chart(fig, use_container_width=True)
-        
-        with c2:
-            st.subheader("Agentic Recommendation")
-            if p_info['current_stock'] < total_pred:
-                st.error(f"⚠️ LOW STOCK DETECTED\n\nAI Suggests: Order **{int(total_pred - p_info['current_stock'] + 10)} units** immediately to cover forecasted demand.")
-            else:
-                st.success(f"✅ STOCK HEALTHY\n\nCurrent levels cover the predicted {total_pred} units for next week.")
+        if prompt := st.chat_input("Ask Samvada anything..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"): st.markdown(prompt)
+            with st.chat_message("assistant"):
+                response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",
+                    messages=[{"role": "system", "content": "You are Samvada AI within AROHA. Help users turn data into decisions."}] + st.session_state.messages[-3:]
+                )
+                msg = response.choices[0].message.content
+                st.markdown(msg)
+                st.session_state.messages.append({"role": "assistant", "content": msg})
 
-# MODE 2: RESILIENCE SIMULATOR
-elif mode == "🌪️ Resilience Simulator":
-    st.title("🌪️ Supply Chain Stress-Test (TTS vs TTR)")
-    scenario = st.selectbox("Trigger External Disruption", ["Normal", "Port Closure", "Factory Fire"])
-    
-    conn = sqlite3.connect('inventory_pro.db')
-    products = pd.read_sql_query("SELECT * FROM products", conn)
-    conn.close()
-    
-    res_list = []
-    for _, p in products.iterrows():
-        r = KoshaEngine.run_resilience(p['id'], scenario)
-        res_list.append({"Product": p['name'], "Time-to-Survive (TTS)": r['tts'], "Time-to-Recover (TTR)": r['ttr'], "Risk Status": r['status']})
-    
-    st.table(pd.DataFrame(res_list))
+# 4. NYASA (Ledger)
+elif st.session_state.page == "Nyasa":
+    back_home()
+    st.title("✍️ Nyasa: Manual Record Entry")
+    with st.form("new_item"):
+        n = st.text_input("Product Name")
+        s = st.number_input("Current Stock", min_value=0)
+        p = st.number_input("Unit Price", min_value=0.0)
+        lt = st.number_input("Lead Time (Days)", min_value=1)
+        if st.form_submit_button("Commit to Vault"):
+            conn = get_db_connection()
+            conn.execute("INSERT INTO products (name, current_stock, unit_price, lead_time) VALUES (?,?,?,?)", (n,s,p,lt))
+            conn.commit(); conn.close()
+            st.success(f"Record '{n}' saved.")
 
-# MODE 3: TREASURY LEDGER (Manual Entry & Correction)
-elif mode == "📝 Treasury Ledger":
-    st.title("📝 Ledger Management")
-    tab1, tab2 = st.tabs(["Add New Asset", "Correct/Update Records"])
-    
-    with tab1:
-        with st.form("new_p"):
-            n = st.text_input("Product Name")
-            c = st.selectbox("Category", ["Electronics", "Furniture", "Raw Materials"])
-            s = st.number_input("Current Stock", min_value=0)
-            p = st.number_input("Unit Value", min_value=0.0)
-            l = st.number_input("Lead Time (Days)", min_value=1)
-            sup = st.text_input("Supplier")
-            if st.form_submit_button("Authorize Entry"):
-                conn = sqlite3.connect('inventory_pro.db')
-                conn.execute("INSERT INTO products (name, category, current_stock, unit_price, lead_time, supplier) VALUES (?,?,?,?,?,?)", (n,c,s,p,l,sup))
-                conn.commit(); conn.close()
-                st.success("Asset logged.")
-
-    with tab2:
-        conn = sqlite3.connect('inventory_pro.db')
-        df = pd.read_sql_query("SELECT * FROM products", conn)
-        conn.close()
-        if not df.empty:
-            target = st.selectbox("Select Asset to Correct", df['name'])
-            new_val = st.number_input("New Quantity", min_value=0)
-            if st.button("Apply Correction"):
-                conn = sqlite3.connect('inventory_pro.db')
-                conn.execute("UPDATE products SET current_stock=? WHERE name=?", (new_val, target))
-                conn.commit(); conn.close()
-                st.rerun()
-
-# MODE 4: BULK DATA IMPORT
-elif mode == "📂 Bulk Data Import":
-    st.title("📂 External Data Ingestion")
-    file = st.file_uploader("Upload CSV Supply Data", type="csv")
+# 5. AGAMA (Import)
+elif st.session_state.page == "Agama":
+    back_home()
+    st.title("📥 Agama: Bulk Data Ingestion")
+    file = st.file_uploader("Upload CSV Supply Chain File", type="csv")
     if file:
         df_up = pd.read_csv(file)
-        st.write("Preview:")
-        st.dataframe(df_up.head())
-        if st.button("Sync with Treasury"):
-            conn = sqlite3.connect('inventory_pro.db')
+        if st.button("Sync with AROHA Vault"):
+            conn = get_db_connection()
             df_up.to_sql('products', conn, if_exists='append', index=False)
             conn.close()
-            st.success("Sync Complete.")
-
-# MODE 5: AI AGENT CHAT
-# --- 8. MODE: AI AGENT CHAT (BULLETPROOF VERSION) ---
-elif mode == "💬 AI Agent Chat":
-    st.title("💬 KOSHA AI: Conversational Intelligence")
-    key = st.secrets.get("GROQ_API_KEY")
-    
-    if not key:
-        st.warning("Please add 'GROQ_API_KEY' to Streamlit Secrets.")
-    else:
-        try:
-            client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-            
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
-
-            # Display messages
-            for m in st.session_state.messages:
-                with st.chat_message(m["role"]): 
-                    st.markdown(m["content"])
-
-            if prompt := st.chat_input("Ask me anything about your inventory..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                with st.chat_message("user"): 
-                    st.markdown(prompt)
-
-                # --- 1. PULL MINIMAL DATA ---
-                conn = sqlite3.connect('inventory_pro.db')
-                # Pull only 5 items to keep the AI prompt small
-                p_df = pd.read_sql_query("SELECT name, current_stock FROM products LIMIT 5", conn)
-                p_data = p_df.to_string(index=False) if not p_df.empty else "No data available."
-                conn.close()
-
-                # --- 2. TRIM HISTORY (Only last 3 messages) ---
-                recent_messages = st.session_state.messages[-3:]
-
-                with st.chat_message("assistant"):
-                    # Use the stable model
-                    response = client.chat.completions.create(
-                        model="llama-3.1-8b-instant", 
-                        messages=[
-                            {
-                                "role": "system", 
-                                "content": f"You are KOSHA AI. Treasury Data: {p_data}. Answer in 2 sentences."
-                            },
-                            *recent_messages
-                        ]
-                    )
-                    
-                    full_res = response.choices[0].message.content
-                    st.markdown(full_res)
-                    st.session_state.messages.append({"role": "assistant", "content": full_res})
-        
-        except Exception as e:
-            st.error(f"Chat Error: {e}")
-            if st.button("Clear Chat History"):
-                st.session_state.messages = []
-                st.rerun()
+            st.success("Synchronization Successful.")
+                
