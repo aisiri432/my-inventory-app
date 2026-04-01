@@ -236,4 +236,16 @@ elif st.session_state.page == "Samvada":
         
         if q:
             st.session_state.chat_history.append({"role":"user", "content":q})
-            with get_db() as conn: ct
+            with get_db() as conn: ctx = pd.read_sql_query("SELECT name, current_stock FROM products WHERE username=?", conn, params=(st.session_state.user,)).to_string()
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
+            ans = res.choices[0].message.content
+            st.session_state.chat_history.append({"role":"assistant", "content":ans})
+            st.rerun()
+
+elif st.session_state.page == "Nyasa":
+    st.title("📝 Nyasa: Asset Registry")
+    with st.form("ledger"):
+        n = st.text_input("Name"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead Time", 1); img = st.text_input("Image URL")
+        if st.form_submit_button("COMMIT TO VAULT"):
+            with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url) VALUES (?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img))
+            st.success("COMMITTED")
