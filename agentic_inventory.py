@@ -18,7 +18,6 @@ def apply_aroha_style():
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
-        /* Global Reset */
         html, body, [class*="css"] {
             font-family: 'Inter', sans-serif;
             background-color: #0B0F14;
@@ -37,7 +36,7 @@ def apply_aroha_style():
         }
         .tagline { font-size: 1.1rem; color: #9AA0A6; margin-top: -5px; display: flex; gap: 6px; }
         .decisions-fade { color: #6C63FF; font-weight: 700; animation: glowPulse 2s infinite alternate; }
-        @keyframes glowPulse { from { text-shadow: 0 0 5px #6C63FF; } to { text-shadow: 0 0 15px #38BDF8; } }
+        @keyframes glowPulse { from { text-shadow: 0 0 2px #6C63FF; } to { text-shadow: 0 0 15px #38BDF8; } }
 
         /* 🧭 SIDEBAR: RADIANT SANSKRIT LABELS */
         [data-testid="stSidebar"] { background-color: #090B0F !important; border-right: 1px solid #1F2229; min-width: 400px !important; }
@@ -49,10 +48,10 @@ def apply_aroha_style():
             text-align: left !important; 
             padding: 15px 18px !important; 
             width: 100%; 
-            font-size: 1.7rem !important; /* RADIANT SIZE */
+            font-size: 1.7rem !important; 
             font-weight: 800 !important; 
             letter-spacing: 2.5px;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.3); /* The Feature Name Glow */
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
             transition: 0.3s;
         }
         
@@ -69,14 +68,15 @@ def apply_aroha_style():
             opacity: 0.9;
         }
 
-        /* Standout Headings for Feature Pages */
+        /* Node Headings */
         .feature-header {
-            font-size: 3rem !important;
+            font-size: 3.2rem !important;
             font-weight: 800 !important;
             color: #D4AF37 !important;
             letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
             margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         /* Saas Cards */
@@ -88,14 +88,7 @@ def apply_aroha_style():
             margin-bottom: 20px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.4); 
         }
-        .node-card-title {
-            font-size: 1.4rem !important;
-            font-weight: 800 !important;
-            color: #FFFFFF !important;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 8px rgba(108, 99, 255, 0.4);
-        }
-
+        
         .ai-decision-box { 
             background: rgba(212, 175, 55, 0.08); 
             border: 2px solid #D4AF37; 
@@ -104,6 +97,9 @@ def apply_aroha_style():
             border-left: 12px solid #D4AF37;
             margin-top: 25px; 
         }
+        
+        .review-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid #222; margin-bottom: 10px; }
+        .financial-stat { background: #111; padding: 20px; border-radius: 10px; border-top: 4px solid #D4AF37; text-align: center; }
 
         header {visibility: hidden;}
         footer {visibility: hidden;}
@@ -129,12 +125,12 @@ init_db()
 
 def hash_p(p): return hashlib.sha256(str.encode(p)).hexdigest()
 
-# --- 3. HELPER FUNCTION (Standardized) ---
+# --- 3. STANDARDIZED DATA FETCHER ---
 def get_user_data():
     with get_db() as conn:
         return pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
 
-# --- 4. SESSION STATE ---
+# --- 4. SESSION & VOICE ENGINE ---
 if "auth" not in st.session_state: st.session_state.auth = False
 if "user" not in st.session_state: st.session_state.user = ""
 if "page" not in st.session_state: st.session_state.page = "Dashboard"
@@ -144,8 +140,8 @@ if "voice_on" not in st.session_state: st.session_state.voice_on = False
 def speak_aloud(text):
     if st.session_state.voice_on:
         clean = text.replace('"', '').replace("'", "")
-        js = f"<script>var m = new SpeechSynthesisUtterance(); m.text='{clean}'; window.speechSynthesis.speak(m);</script>"
-        st.components.v1.html(js, height=0)
+        js_code = f"<script>var m = new SpeechSynthesisUtterance(); m.text='{clean}'; window.speechSynthesis.speak(m);</script>"
+        st.components.v1.html(js_code, height=0)
 
 # --- 5. AUTHENTICATION ---
 if not st.session_state.auth:
@@ -157,20 +153,24 @@ if not st.session_state.auth:
             u_input = st.text_input("Username")
             p_input = st.text_input("Password", type="password")
             if st.button("Unlock Strategic Hub"):
-                with get_db() as conn: res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u_input,))
+                with get_db() as conn: 
+                    res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u_input,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p_input):
-                    st.session_state.auth = True; st.session_state.user = u_input; st.rerun()
+                    st.session_state.auth = True
+                    st.session_state.user = u_input
+                    st.rerun()
                 else: st.error("Access Denied")
         with m[1]:
             nu = st.text_input("New ID"); np = st.text_input("New Password", type="password")
             if st.button("Enroll Session"):
                 try:
                     with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
-                    st.success("Authorized.")
-                except: st.error("ID exists.")
+                    st.success("Authorized! Switch to Login.")
+                except sqlite3.IntegrityError:
+                    st.error("Identity exists.")
     st.stop()
 
-# --- 6. SIDEBAR (RADIANT NAVIGATION) ---
+# --- 6. SIDEBAR (BOLD SANSKRIT FIRST) ---
 with st.sidebar:
     st.markdown(f"<div class='brand-container'><div class='brand-title'>AROHA</div><div class='tagline'>Data into <span class='decisions-fade'>Decisions</span></div></div>", unsafe_allow_html=True)
     if st.button("🏠 DASHBOARD"): st.session_state.page = "Dashboard"; st.rerun()
@@ -194,10 +194,117 @@ with st.sidebar:
 
     if st.button("🔒 Logout"): st.session_state.auth = False; st.rerun()
 
-# --- 7. DASHBOARD NODE ---
+# --- 7. NAVIGATION CONTENT ---
+
+# DASHBOARD
 if st.session_state.page == "Dashboard":
-    st.markdown(f"<h1>Strategic Command Hub: {st.session_state.user.upper()}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1>Strategic Hub: {st.session_state.user.upper()}</h1>", unsafe_allow_html=True)
     df = get_user_data()
     val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
     c1, c2, c3 = st.columns(3)
-    with c1: st.markdown(f"<div class='saas-card'><h3>Assets</h3><h2 style='color:#6C63FF; font-size:2rem;'>{len(df)}</h2></div>", unsafe_allo
+    with c1: st.markdown(f"<div class='saas-card'><h3>Assets</h3><h2 style='color:#6C63FF; font-size:2.5rem;'>{len(df)}</h2></div>", unsafe_allow_html=True)
+    with c2: st.markdown(f"<div class='saas-card'><h3>Value</h3><h2 style='color:#6C63FF; font-size:2.5rem;'>₹{val:,.0f}</h2></div>", unsafe_allow_html=True)
+    with c3: st.markdown(f"<div class='saas-card'><h3>Status</h3><h2 style='color:#34D399; font-size:2.5rem;'>OPTIMAL</h2></div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='ai-decision-box'><h3 style='color:#D4AF37; margin:0;'>✨ AI Strategic Directive</h3><p style='font-size:1.1rem;'>Orchestration logic active. Sensing upcoming demand cycles. System load normal.</p></div>""", unsafe_allow_html=True)
+
+# PREKSHA
+elif st.session_state.page == "Preksha":
+    st.markdown("<div class='feature-header'>📈 PREKSHA</div>", unsafe_allow_html=True)
+    df = get_user_data()
+    if df.empty: st.warning("Treasury empty. Use Agama.")
+    else:
+        target = st.selectbox("Asset Search", df['name']); p_row = df[df['name'] == target].iloc[0]
+        col_m, col_v = st.columns([1, 2])
+        with col_m:
+            if p_row['image_url']: st.image(p_row['image_url'], use_container_width=True)
+            if p_row['reviews']: 
+                st.subheader("Customer Sentiment")
+                for r in p_row['reviews'].split('|'): st.markdown(f"<div class='review-box'>⭐ {r}</div>", unsafe_allow_html=True)
+        with col_v:
+            sent = st.select_slider("Market Sentiment", options=[0.8, 1.0, 1.2, 1.5, 2.0], value=1.0)
+            preds = (np.random.randint(20, 50, 7) * sent).astype(int)
+            st.plotly_chart(px.area(y=preds, title="AI Forecasting Stream", template="plotly_dark").update_traces(line_color='#6C63FF'))
+            st.markdown(f"<div class='ai-decision-box'>🤖 **Decision Directive:** Order **{preds.sum()} units** of {target} recommended.</div>", unsafe_allow_html=True)
+
+# ARTHA (PIE CHART)
+elif st.session_state.page == "Artha":
+    st.markdown("<div class='feature-header'>💰 ARTHA</div>", unsafe_allow_html=True)
+    df = get_user_data()
+    if not df.empty:
+        v = (df['current_stock'] * df['unit_price']).sum()
+        col_stats, col_pie = st.columns([1, 1])
+        with col_stats:
+            st.markdown(f"<div class='financial-stat'>Total Inventory Value<br><h2>₹{v:,.0f}</h2></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk (15%)<br><h2 style='color:red;'>₹{v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
+        with col_pie:
+            st.markdown("<div class='saas-card'><b>Capital Allocation</b>", unsafe_allow_html=True)
+            fig_pie = px.pie(df, values='current_stock', names='name', hole=0.4, template="plotly_dark")
+            fig_pie.update_layout(showlegend=False, margin=dict(l=10,r=10,t=10,b=10))
+            st.plotly_chart(fig_pie, use_container_width=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+# SAMVADA (VOICE)
+elif st.session_state.page == "Samvada":
+    st.markdown("<div class='feature-header'>🎙️ SAMVADA</div>", unsafe_allow_html=True)
+    st.session_state.voice_on = st.toggle("Enable Voice Assistant Feedback")
+    key = st.secrets.get("GROQ_API_KEY")
+    if key:
+        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+        for m in st.session_state.chat_history:
+            with st.chat_message(m["role"]): st.markdown(m["content"])
+        u_in = st.chat_input("Strategic query...")
+        audio = st.audio_input("Speak")
+        if audio:
+            with st.spinner("Processing Voice..."):
+                u_in = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
+        if u_in:
+            st.session_state.chat_history.append({"role":"user","content":u_in})
+            ctx = get_user_data().to_string(index=False)
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are Samvada AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
+            ans = res.choices[0].message.content
+            st.session_state.chat_history.append({"role":"assistant","content":ans}); speak_aloud(ans); st.rerun()
+
+# STAMBHA, MITHRA, KARYA, NYASA, AGAMA
+elif st.session_state.page == "Stambha":
+    st.markdown("<div class='feature-header'>🛡️ STAMBHA</div>", unsafe_allow_html=True)
+    scenario = st.selectbox("Disruption Trigger", ["Normal", "Port Closure (3x Lead Time)", "Factory Fire (+30d)"])
+    df = get_user_data()
+    if not df.empty:
+        res = []
+        for _, p in df.iterrows():
+            ttr = p['lead_time']
+            if "Port" in scenario: ttr *= 3
+            if "Fire" in scenario: ttr += 30
+            tts = round(p['current_stock'] / 12, 1)
+            status = "🟢 Safe" if tts > ttr else "🔴 CRITICAL"
+            res.append({"Asset": p['name'], "Survival(d)": tts, "Recovery(d)": ttr, "Status": status})
+        st.table(pd.DataFrame(res))
+
+elif st.session_state.page == "Mithra":
+    st.markdown("<div class='feature-header'>🤝 MITHRA</div>", unsafe_allow_html=True)
+    st.dataframe(get_user_data()[['supplier', 'lead_time', 'name']], use_container_width=True)
+
+elif st.session_state.page == "Karya":
+    st.markdown("<div class='feature-header'>📄 KARYA</div>", unsafe_allow_html=True)
+    df = get_user_data()
+    if not df.empty:
+        t = st.selectbox("Asset for PO", df['name'])
+        if st.button("Generate PO"): st.code(f"PO-ID: {np.random.randint(1000,9999)}\nITEM: {t}\nAUTH: {st.session_state.user.upper()}")
+
+elif st.session_state.page == "Nyasa":
+    st.markdown("<div class='feature-header'>📝 NYASA</div>", unsafe_allow_html=True)
+    with st.form("add"):
+        n = st.text_input("Name"); c = st.text_input("Cat"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead Time", 1); sup = st.text_input("Supplier"); img = st.text_input("Image URL"); rev = st.text_area("Reviews")
+        if st.form_submit_button("Commit"):
+            with get_db() as conn: conn.execute("INSERT INTO products (username, name, category, current_stock, unit_price, lead_time, supplier, image_url, reviews) VALUES (?,?,?,?,?,?,?,?,?)", (st.session_state.user, n, c, s, p, lt, sup, img, rev))
+            st.success("Committed.")
+
+elif st.session_state.page == "Agama":
+    st.markdown("<div class='feature-header'>📥 AGAMA</div>", unsafe_allow_html=True)
+    file = st.file_uploader("Upload CSV Supply Ledger", type="csv")
+    if file and st.button("Synchronize"):
+        u_df = pd.read_csv(file); u_df['username'] = st.session_state.user
+        for col in ['category','supplier','image_url','reviews']:
+            if col not in u_df.columns: u_df[col] = ""
+        with get_db() as conn: u_df[['username','name','category','current_stock','unit_price','lead_time','supplier','image_url','reviews']].to_sql('products', conn, if_exists='append', index=False)
+        st.success("Sync Successful.")
