@@ -9,92 +9,101 @@ from openai import OpenAI
 import hashlib
 import time
 
-# --- 1. SETTINGS & STEALTH HUD UI ---
-st.set_page_config(page_title="AROHA | Strategic HUD", layout="wide", page_icon="💠")
+# --- 1. SETTINGS & NEURAL NEXUS CSS ---
+st.set_page_config(page_title="AROHA | Neural Nexus", layout="wide", page_icon="💠")
 
-def apply_stealth_css():
+def apply_neural_css():
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Inter:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Michroma&family=JetBrains+Mono:wght@300;500&display=swap');
         
+        /* Base HUD Environment */
         html, body, [class*="css"] {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505;
-            color: #E0E0E0;
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #000810;
+            color: #00f2ff;
         }
 
-        /* Vertical Strategic Stacks */
-        .strategic-tile {
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 4px solid #333;
-            padding: 25px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            transition: 0.3s all ease;
+        /* The Hexagon Strategic Node */
+        .hex-node {
+            background: rgba(0, 242, 255, 0.03);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            padding: 40px 20px;
+            text-align: center;
+            transition: 0.4s all ease;
+            margin-bottom: 10px;
+            height: 220px;
             display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
         }
         
-        .strategic-tile:hover {
-            background: rgba(212, 175, 55, 0.05);
-            border-left: 4px solid #D4AF37;
-            transform: translateX(10px);
+        .hex-node:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #D4AF37;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
         }
 
-        .tile-content { display: flex; align-items: center; gap: 25px; }
-        .tile-icon { font-size: 30px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
-        .tile-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; color: #D4AF37; }
-        .tile-desc { font-size: 0.85rem; color: #666; margin-top: 4px; text-transform: uppercase; }
-
-        /* HUD Status Header */
-        .hud-header {
-            border-bottom: 1px solid #1A1A1A;
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: #444;
+        .node-title { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem; color: #D4AF37; 
+            letter-spacing: 2px; margin-top: 10px;
         }
 
-        /* Buttons Styling */
+        /* Central Neural Brain Animation */
+        .neural-core {
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(0,242,255,0.4) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            margin: 0 auto;
+            animation: pulse 3s infinite;
+            border: 2px solid rgba(0,242,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 50px #00f2ff; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        /* Top HUD Bar */
+        .hud-bar {
+            background: rgba(255,255,255,0.02);
+            border-bottom: 2px solid rgba(0,242,255,0.1);
+            padding: 10px 40px;
+            display: flex; justify-content: space-between;
+            font-size: 0.7rem; letter-spacing: 3px; color: #666;
+        }
+
+        /* Futuristic Buttons */
         .stButton>button {
-            border-radius: 0px;
             background: transparent;
-            border: 1px solid #222;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 400;
-            padding: 10px 20px;
+            border: 1px solid #00f2ff;
+            color: #00f2ff;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 0px;
+            padding: 10px 25px;
             transition: 0.3s;
+            width: 100%;
         }
         .stButton>button:hover {
-            background: #D4AF37;
-            color: black;
-            border: 1px solid #D4AF37;
+            background: #00f2ff; color: black;
+            box-shadow: 0 0 20px #00f2ff;
         }
 
-        /* Decision Box */
-        .decision-highlight {
-            background: #0A0A0A;
-            border: 1px solid #D4AF37;
-            padding: 30px;
-            border-radius: 0px;
-            border-left: 10px solid #D4AF37;
-        }
-        
+        /* Hide Streamlit elements */
         [data-testid="stSidebar"] { display: none; }
         </style>
     """, unsafe_allow_html=True)
 
-apply_stealth_css()
+apply_neural_css()
 
-# --- 2. DATABASE ENGINE (v16) ---
-DB_FILE = 'aroha_v16_stealth.db'
+# --- 2. DATABASE ARCHITECTURE ---
+DB_FILE = 'aroha_nexus_v18.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -103,159 +112,134 @@ def init_db():
         c.execute('CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT)')
         c.execute('''CREATE TABLE IF NOT EXISTS products 
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, name TEXT, 
-                      category TEXT, current_stock INTEGER, unit_price REAL, lead_time INTEGER, 
+                      current_stock INTEGER, unit_price REAL, lead_time INTEGER, 
                       supplier TEXT, image_url TEXT, reviews TEXT)''')
         conn.commit()
 init_db()
 
-def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
+def hash_p(p): return hashlib.sha256(str.encode(p)).hexdigest()
 
 # --- 3. SESSION STATE ---
 if "auth" not in st.session_state: st.session_state.auth = False
 if "user" not in st.session_state: st.session_state.user = ""
 if "page" not in st.session_state: st.session_state.page = "Home"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
-if "voice_enabled" not in st.session_state: st.session_state.voice_enabled = False
+if "voice_active" not in st.session_state: st.session_state.voice_active = False
 
-def speak(text):
-    if st.session_state.voice_enabled:
-        js = f"<script>var m=new SpeechSynthesisUtterance(); m.text='{text.replace("'", "")}'; window.speechSynthesis.speak(m);</script>"
-        st.components.v1.html(js, height=0)
-
-# --- 4. AUTHENTICATION (Elite Gate) ---
+# --- 4. AUTHENTICATION GATE ---
 if not st.session_state.auth:
-    st.markdown("<div style='text-align:center; margin-top:100px;'><h1 style='color:#D4AF37; font-size:3rem; font-weight:800; letter-spacing:20px;'>AROHA</h1><p style='color:#333; letter-spacing:5px;'>TURN DATA INTO DECISIONS</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:10vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center; font-family:Michroma; font-size:4rem; color:#D4AF37; letter-spacing:15px;'>AROHA</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; letter-spacing:5px; color:#00f2ff;'>NEURAL COMMAND INTERFACE</p>", unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        m = st.tabs(["ACCESS", "ENROLL"])
-        with m[0]:
-            u = st.text_input("Identity", key="l_u")
-            p = st.text_input("Mantra", type="password", key="l_p")
-            if st.button("EXECUTE LOGIN"):
+        st.markdown("<div style='background:rgba(0,0,0,0.5); padding:40px; border:1px solid #00f2ff;'>", unsafe_allow_html=True)
+        tab_a, tab_b = st.tabs(["ACCESS", "ENROLL"])
+        with tab_a:
+            u = st.text_input("USER_ID")
+            p = st.text_input("MANTRA_KEY", type="password")
+            if st.button("INITIATE SESSION"):
                 with get_db() as conn:
                     res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
-                if not res.empty and res.iloc[0]['password'] == make_hash(p):
+                if not res.empty and res.iloc[0]['password'] == hash_p(p):
                     st.session_state.auth = True; st.session_state.user = u; st.rerun()
-                else: st.error("Access Denied")
-        with m[1]:
-            nu = st.text_input("New Identity"); np = st.text_input("New Mantra", type="password")
-            if st.button("AUTHORIZE"):
-                if nu and np:
-                    with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, make_hash(np)))
-                    st.success("Authorized.")
+                else: st.error("AUTH_FAILURE")
+        with tab_b:
+            nu = st.text_input("NEW_ID"); np = st.text_input("NEW_KEY", type="password")
+            if st.button("ENROLL SYSTEM"):
+                with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
+                st.success("ENROLLED")
+        st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# --- 5. COMMAND HUD (HOME) ---
+# --- 5. THE NEURAL NEXUS (HOME) ---
 if st.session_state.page == "Home":
     st.markdown(f"""
-        <div class='hud-header'>
-            <span>USER_ID: {st.session_state.user.upper()}</span>
-            <span>OS: AROHA_v16.0</span>
-            <span>SECURITY: ENCRYPTED_AES_256</span>
-            <span>TIME: {datetime.now().strftime('%H:%M:%S')}</span>
+        <div class='hud-bar'>
+            <span>SYS_CORE: v18.0</span>
+            <span>NEURAL_LINK: ACTIVE</span>
+            <span>IDENTITY: {st.session_state.user.upper()}</span>
+            <span>{datetime.now().strftime('%H:%M:%S')}</span>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h2 style='letter-spacing:10px; font-weight:300; color:#666;'>STRATEGIC NODES</h2>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+    
+    # HUD Arrangement: Left Intel, Center Core, Right Actions
+    col_intel, col_core, col_action = st.columns([1.5, 2, 1.5])
 
-    nodes = [
-        {"id": "Preksha", "icon": "🔮", "title": "PREKSHA", "desc": "Intelligence & Forecasting Hub"},
-        {"id": "Stambha", "icon": "🛡️", "title": "STAMBHA", "desc": "Resilience & Disruption Simulator"},
-        {"id": "Artha", "icon": "💰", "title": "ARTHA", "desc": "Financial Value & Capital Optimization"},
-        {"id": "Samvada", "icon": "🎙️", "title": "SAMVADA", "desc": "Voice Assistant & Strategic Chat"},
-        {"id": "Mithra", "icon": "🤝", "title": "MITHRA", "desc": "Supplier Alliance & Vendor Risk"},
-        {"id": "Karya", "icon": "📄", "title": "KARYA", "desc": "Autonomous Document Generator"},
-        {"id": "Nyasa", "icon": "📝", "title": "NYASA", "desc": "Manual Asset Ledger Registry"},
-        {"id": "Agama", "icon": "📥", "title": "AGAMA", "desc": "Bulk Data Cloud Sync"},
-        {"id": "Exit", "icon": "🔒", "title": "TERMINATE", "desc": "Close Session & Lock Vault"}
-    ]
+    with col_intel:
+        st.markdown("<p style='font-family:Orbitron; color:#666;'>[ INTEL NODES ]</p>", unsafe_allow_html=True)
+        
+        # Node: Drishti
+        st.markdown("<div class='hex-node'><div style='font-size:2rem;'>🔮</div><div class='node-title'>DRISHTI</div><div style='font-size:0.6rem;'>Demand Sensing</div></div>", unsafe_allow_html=True)
+        if st.button("ENGAGE_DRISHTI"): st.session_state.page = "Drishti"; st.rerun()
+        
+        # Node: Stambha
+        st.markdown("<div class='hex-node'><div style='font-size:2rem;'>🛡️</div><div class='node-title'>STAMBHA</div><div style='font-size:0.6rem;'>Resilience Engine</div></div>", unsafe_allow_html=True)
+        if st.button("ENGAGE_STAMBHA"): st.session_state.page = "Stambha"; st.rerun()
 
-    for node in nodes:
-        col_t, col_b = st.columns([4, 1])
-        with col_t:
-            st.markdown(f"""
-                <div class='strategic-tile'>
-                    <div class='tile-content'>
-                        <div class='tile-icon'>{node['icon']}</div>
-                        <div>
-                            <div class='tile-title'>{node['title']}</div>
-                            <div class='tile-desc'>{node['desc']}</div>
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        with col_b:
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button(f"GO", key=node['id']):
-                if node['id'] == "Exit": st.session_state.auth = False; st.rerun()
-                else: st.session_state.page = node['id']; st.rerun()
+    with col_core:
+        st.markdown("<div style='height:100px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='neural-core'><h2 style='font-family:Orbitron; color:#00f2ff;'>AI</h2></div>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align:center; font-family:Michroma; color:#D4AF37; margin-top:20px;'>AROHA CORE</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; font-size:0.7rem; color:#00f2ff; opacity:0.5;'>NEURAL DATA ORCHESTRATION IN PROGRESS...</p>", unsafe_allow_html=True)
 
-# --- 6. PAGE LOGIC (Node Implementations) ---
-def go_home():
-    if st.button("⬅️ EXIT TO HUD"): st.session_state.page = "Home"; st.rerun()
+    with col_action:
+        st.markdown("<p style='font-family:Orbitron; color:#666; text-align:right;'>[ COMMAND NODES ]</p>", unsafe_allow_html=True)
+        
+        # Node: Samvada
+        st.markdown("<div class='hex-node'><div style='font-size:2rem;'>🎙️</div><div class='node-title'>SAMVADA</div><div style='font-size:0.6rem;'>Neural Dialogue</div></div>", unsafe_allow_html=True)
+        if st.button("ENGAGE_SAMVADA"): st.session_state.page = "Samvada"; st.rerun()
+        
+        # Node: Lekha
+        st.markdown("<div class='hex-node'><div style='font-size:2rem;'>📝</div><div class='node-title'>LEKHA</div><div style='font-size:0.6rem;'>Registry Entry</div></div>", unsafe_allow_html=True)
+        if st.button("ENGAGE_LEKHA"): st.session_state.page = "Lekha"; st.rerun()
 
-if st.session_state.page == "Preksha":
-    go_home(); st.title("🔮 Preksha: Strategic Forecasting")
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
+    if st.button("TERMINATE_NEURAL_LINK"): st.session_state.auth = False; st.rerun()
+
+# --- 6. CORE MODULE LOGIC ---
+def nav_back():
+    if st.button("<< RETURN_TO_NEXUS"): st.session_state.page = "Home"; st.rerun()
+
+if st.session_state.page == "Drishti":
+    nav_back(); st.markdown("<h1 style='font-family:Orbitron;'>🔮 DRISHTI // DEMAND SENSING</h1>", unsafe_allow_html=True)
     with get_db() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
-    if df.empty: st.warning("Node Empty.")
+    if df.empty: st.info("NO_DATA_FOUND. ACCESS LEKHA_NODE.")
     else:
-        target = st.selectbox("Asset Select", df['name'])
+        target = st.selectbox("SELECT_ASSET_ID", df['name'])
         p = df[df['name'] == target].iloc[0]
-        col1, col2 = st.columns([1, 2])
-        with col1:
+        col_img, col_viz = st.columns([1, 2])
+        with col_img:
             if p['image_url']: st.image(p['image_url'], use_container_width=True)
-            st.info(f"Unit Price: ${p['unit_price']}")
-        with col2:
-            preds = np.random.randint(20, 80, 7)
-            st.plotly_chart(px.line(y=preds, title="7-Day Demand Sensing", template="plotly_dark").update_traces(line_color='#D4AF37'), use_container_width=True)
-            st.markdown(f"<div class='decision-highlight'>🤖 **AGENT DECISION:** Order **{preds.sum()} units** immediately.</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='border:1px solid #00f2ff; padding:10px;'>ASSET: {target}<br>VALUE: ${p['unit_price']}</div>", unsafe_allow_html=True)
+        with col_viz:
+            preds = np.random.randint(10, 60, 7)
+            fig = px.area(y=preds, title="NEURAL_FORECAST_STREAM", template="plotly_dark")
+            fig.update_traces(line_color='#00f2ff', fillcolor='rgba(0, 242, 255, 0.1)')
+            st.plotly_chart(fig, use_container_width=True)
 
 elif st.session_state.page == "Samvada":
-    go_home(); st.title("🎙️ Samvada: Strategic Voice")
-    st.session_state.voice_enabled = st.toggle("Voice Response", value=st.session_state.voice_enabled)
+    nav_back(); st.markdown("<h1 style='font-family:Orbitron;'>🎙️ SAMVADA // NEURAL_DIALOGUE</h1>", unsafe_allow_html=True)
     key = st.secrets.get("GROQ_API_KEY")
     if key:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
         for m in st.session_state.chat_history:
             with st.chat_message(m["role"]): st.markdown(m["content"])
         
-        typed = st.chat_input("Enter command...")
-        audio = st.audio_input("Speak")
-        u_in = typed
-        if audio:
-            with st.spinner("Processing..."): u_in = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
-        
-        if u_in:
-            st.session_state.chat_history.append({"role":"user", "content":u_in})
-            with get_db() as conn: ctx = pd.read_sql_query("SELECT name, current_stock FROM products WHERE username=?", conn, params=(st.session_state.user,)).to_string()
-            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system", "content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
-            ans = res.choices[0].message.content
-            st.session_state.chat_history.append({"role":"assistant", "content":ans})
-            st.subheader(f"🤖 {ans}"); speak(ans); st.rerun()
+        q = st.chat_input("COMMAND_INPUT...")
+        if q:
+            st.session_state.chat_history.append({"role":"user","content":q})
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":"You are AROHA_v18. Be technical and brief."}, *st.session_state.chat_history[-3:]])
+            st.session_state.chat_history.append({"role":"assistant","content":res.choices[0].message.content})
+            st.rerun()
 
-elif st.session_state.page == "Nyasa":
-    go_home(); st.title("📝 Nyasa: Manual Registry")
+elif st.session_state.page == "Lekha":
+    nav_back(); st.markdown("<h1 style='font-family:Orbitron;'>📝 LEKHA // ASSET_REGISTRY</h1>", unsafe_allow_html=True)
     with st.form("entry"):
-        n = st.text_input("Name"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead Time", 1); img = st.text_input("Image URL")
-        if st.form_submit_button("COMMIT"):
+        n = st.text_input("ASSET_NAME"); s = st.number_input("STOCK_QTY", 0); p = st.number_input("UNIT_PRICE", 0.0); lt = st.number_input("LEAD_TIME", 1); img = st.text_input("IMAGE_URL")
+        if st.form_submit_button("COMMIT_TO_NEXUS"):
             with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url) VALUES (?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img))
-            st.success("Committed.")
-
-# (Other nodes Artha, Mithra, Karya, Agama follow the same go_home() and logic structure)
-elif st.session_state.page == "Stambha":
-    go_home(); st.title("🛡️ Stambha Resilience")
-    st.info("Resilience Stress-Testing Engine Active.")
-elif st.session_state.page == "Artha":
-    go_home(); st.title("💰 Artha Financials")
-    st.info("Capital Optimization Engine Active.")
-elif st.session_state.page == "Mithra":
-    go_home(); st.title("🤝 Mithra Suppliers")
-    st.info("Supplier Network Matrix Active.")
-elif st.session_state.page == "Karya":
-    go_home(); st.title("📄 Karya PO Generator")
-    st.info("Digital Purchase Order Generator Active.")
-elif st.session_state.page == "Agama":
-    go_home(); st.title("📥 Agama Bulk Sync")
-    f = st.file_uploader("Upload CSV", type="csv")
-    if f and st.button("SYNCHRONIZE"): st.success("Data Synced.")
+            st.success("COMMITTED")
