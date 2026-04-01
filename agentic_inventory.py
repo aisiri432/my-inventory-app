@@ -9,25 +9,26 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 import hashlib
 
-# --- 1. PREMIUM INTELLIGENCE UI CONFIG ---
-st.set_page_config(page_title="AROHA | Elegant Intelligence", layout="wide", page_icon="💠")
+# --- 1. PREMIUM INTELLIGENCE UI CONFIG (BOLD FONT) ---
+st.set_page_config(page_title="AROHA | Strategic Intelligence", layout="wide", page_icon="💠")
 
 def apply_aroha_style():
     st.markdown("""
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
         
-        /* 1. Global Reset & Theme */
+        /* Global Reset */
         html, body, [class*="css"] {
             font-family: 'Inter', sans-serif;
             background-color: #0B0F14;
             color: #E6E8EB;
+            font-size: 16px; /* Base font increase */
         }
 
-        /* 2. Branding & Motion Tagline */
-        .brand-container { padding: 10px 0 20px 10px; }
-        .brand-title { font-size: 2.2rem; font-weight: 800; color: #FFFFFF; letter-spacing: -1px; margin-bottom: 0; }
-        .tagline { font-size: 0.85rem; color: #9AA0A6; margin-top: -5px; display: flex; gap: 5px; }
+        /* Branding & Pulse Motion Tagline */
+        .brand-container { padding: 10px 0 25px 10px; }
+        .brand-title { font-size: 2.5rem; font-weight: 800; color: #FFFFFF; letter-spacing: -1px; margin-bottom: 0; }
+        .tagline { font-size: 1.1rem; color: #9AA0A6; margin-top: -2px; display: flex; gap: 6px; }
         
         .decisions-fade {
             color: #6C63FF;
@@ -36,66 +37,59 @@ def apply_aroha_style():
         }
         
         @keyframes fadeInSlower { 0% { opacity: 0; } 50% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes glowPulse { from { text-shadow: 0 0 2px #6C63FF; } to { text-shadow: 0 0 8px #38BDF8; } }
+        @keyframes glowPulse { from { text-shadow: 0 0 2px #6C63FF; } to { text-shadow: 0 0 10px #38BDF8; } }
 
-        /* 3. Sidebar: SaaS Minimalist */
+        /* Sidebar Architecture (Larger Text) */
         [data-testid="stSidebar"] { background-color: #090B0F !important; border-right: 1px solid #1F2229; }
-        .sidebar-section-head { font-size: 0.65rem; font-weight: 700; color: #4B5563; text-transform: uppercase; letter-spacing: 1.2px; margin: 25px 0 10px 15px; }
+        .sidebar-section-head { font-size: 0.75rem; font-weight: 700; color: #4B5563; text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px 15px; }
         
         .sidebar-sub {
-            font-size: 0.65rem;
+            font-size: 0.72rem;
             color: #6C63FF;
             font-weight: 600;
             display: block;
-            margin-top: -8px;
-            margin-bottom: 12px;
-            margin-left: 42px; /* Alignment with icons */
+            margin-top: -12px;
+            margin-bottom: 15px;
+            margin-left: 45px; 
             text-transform: uppercase;
-            opacity: 0.8;
+            opacity: 0.9;
+            letter-spacing: 0.8px;
         }
 
         section[data-testid="stSidebar"] .stButton > button {
-            background: transparent !important; border: none !important; color: #9AA0A6 !important;
-            text-align: left !important; padding: 8px 15px !important; width: 100%; transition: 0.2s;
-            font-size: 0.9rem !important;
+            background: transparent !important; border: none !important; color: #E6E8EB !important;
+            text-align: left !important; padding: 10px 15px !important; width: 100%; transition: 0.2s;
+            font-size: 1.1rem !important; /* Increased font */
+            font-weight: 600 !important;
         }
         section[data-testid="stSidebar"] .stButton > button:hover { 
-            background: #171A21 !important; color: #FFFFFF !important; 
+            background: #171A21 !important; color: #6C63FF !important; 
         }
 
-        /* 4. Layered Cards & Dashboard Grid */
+        /* Dashboard Node Cards */
         .saas-card {
             background: #171A21;
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            padding: 24px;
+            padding: 28px;
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             transition: 0.3s ease;
         }
         .saas-card:hover { transform: translateY(-4px); border-color: rgba(108, 99, 255, 0.3); }
         
-        .card-icon { font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.9; }
+        .card-icon { font-size: 2.2rem; margin-bottom: 12px; display: block; opacity: 0.9; }
 
-        /* 5. Recommendation Panel */
+        /* Recommendation Panel (Hero) */
         .recommendation-hero {
             background: linear-gradient(135deg, rgba(108, 99, 255, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
-            border-radius: 12px; padding: 25px; border: 1px solid rgba(108, 99, 255, 0.25);
-            border-left: 6px solid #6C63FF; margin-bottom: 25px;
+            border-radius: 12px; padding: 30px; border: 1px solid rgba(108, 99, 255, 0.25);
+            border-left: 8px solid #6C63FF; margin-bottom: 30px;
         }
 
-        /* 6. Metrics */
-        .m-val { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: #FFFFFF; }
-        .m-sub { color: #9AA0A6; font-size: 0.75rem; text-transform: uppercase; font-weight: 500; }
-
-        /* 7. Floating Voice FAB */
-        .voice-fab {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-            background: linear-gradient(135deg, #6C63FF, #38BDF8);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3); z-index: 999;
-            font-size: 24px;
-        }
+        /* Metrics (Larger Numbers) */
+        .m-val { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 700; color: #FFFFFF; }
+        .m-sub { color: #9AA0A6; font-size: 0.85rem; text-transform: uppercase; font-weight: 500; letter-spacing: 1px; }
 
         header {visibility: hidden;}
         footer {visibility: hidden;}
@@ -104,7 +98,7 @@ def apply_aroha_style():
 
 apply_aroha_style()
 
-# --- 2. CORE ENGINES (DATABASE) ---
+# --- 2. DATABASE ENGINE ---
 DB_FILE = 'aroha_v33.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
@@ -125,12 +119,12 @@ if "auth" not in st.session_state: st.session_state.auth = False
 if "user" not in st.session_state: st.session_state.user = ""
 if "page" not in st.session_state: st.session_state.page = "Dashboard"
 
-# --- 4. AUTHENTICATION ---
+# --- 4. AUTHENTICATION GATE ---
 if not st.session_state.auth:
     st.markdown("""
         <div style='text-align:center; margin-top:100px;'>
-            <h1 style='color:white; font-size:4rem; font-weight:800;'>AROHA</h1>
-            <p style='color:#9AA0A6; font-size:1.2rem;'>Where Data Becomes <span style='color:#6C63FF; font-weight:700;'>Decisions</span></p>
+            <h1 style='color:white; font-size:4.5rem; font-weight:800;'>AROHA</h1>
+            <p style='color:#9AA0A6; font-size:1.4rem;'>Where Data Becomes <span style='color:#6C63FF; font-weight:700;'>Decisions</span></p>
         </div>
     """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 0.7, 1])
@@ -151,7 +145,7 @@ if not st.session_state.auth:
                 st.success("Authorized.")
     st.stop()
 
-# --- 5. SIDEBAR (ICONIZED ORGANIZATION) ---
+# --- 5. SIDEBAR (BOLD SANSKRIT FIRST) ---
 with st.sidebar:
     st.markdown("""
         <div class='brand-container'>
@@ -163,90 +157,86 @@ with st.sidebar:
     if st.button("🏠 Dashboard"): st.session_state.page = "Dashboard"; st.rerun()
     st.markdown("<span class='sidebar-sub'>System Overview</span>", unsafe_allow_html=True)
     
-    st.markdown("<div class='sidebar-section-head'>Operations</div>", unsafe_allow_html=True)
-    if st.button("📈 Demand Forecast"): st.session_state.page = "Preksha"; st.rerun()
-    st.markdown("<span class='sidebar-sub'>Predict Future Sales</span>", unsafe_allow_html=True)
+    st.markdown("<div class='sidebar-section-head'>Intelligence</div>", unsafe_allow_html=True)
+    if st.button("📈 PREKSHA"): st.session_state.page = "Preksha"; st.rerun()
+    st.markdown("<span class='sidebar-sub'>Predict Demand Instantly</span>", unsafe_allow_html=True)
     
-    if st.button("🛡️ Risk Analysis"): st.session_state.page = "Stambha"; st.rerun()
+    if st.button("🛡️ STAMBHA"): st.session_state.page = "Stambha"; st.rerun()
     st.markdown("<span class='sidebar-sub'>Test Supply Risks</span>", unsafe_allow_html=True)
     
-    if st.button("🤝 Supplier Insights"): st.session_state.page = "Mithra"; st.rerun()
+    if st.button("🎙️ SAMVADA"): st.session_state.page = "Samvada"; st.rerun()
+    st.markdown("<span class='sidebar-sub'>Talk To System</span>", unsafe_allow_html=True)
+
+    st.markdown("<div class='sidebar-section-head'>Analysis</div>", unsafe_allow_html=True)
+    if st.button("💰 ARTHA"): st.session_state.page = "Artha"; st.rerun()
+    st.markdown("<span class='sidebar-sub'>Track Money Flow</span>", unsafe_allow_html=True)
+    
+    if st.button("🤝 MITHRA"): st.session_state.page = "Mithra"; st.rerun()
     st.markdown("<span class='sidebar-sub'>Rate Your Suppliers</span>", unsafe_allow_html=True)
 
-    st.markdown("<div class='sidebar-section-head'>Financials</div>", unsafe_allow_html=True)
-    if st.button("💰 Financial Overview"): st.session_state.page = "Artha"; st.rerun()
-    st.markdown("<span class='sidebar-sub'>Track Money Flow</span>", unsafe_allow_html=True)
-
-    st.markdown("<div class='sidebar-section-head'>Automation</div>", unsafe_allow_html=True)
-    if st.button("🎙️ Voice Assistant"): st.session_state.page = "Voice"; st.rerun()
-    st.markdown("<span class='sidebar-sub'>Talk To System</span>", unsafe_allow_html=True)
-    
-    if st.button("📄 Purchase Orders"): st.session_state.page = "Karya"; st.rerun()
+    st.markdown("<div class='sidebar-section-head'>Control</div>", unsafe_allow_html=True)
+    if st.button("📄 KARYA"): st.session_state.page = "Karya"; st.rerun()
     st.markdown("<span class='sidebar-sub'>Auto Create Orders</span>", unsafe_allow_html=True)
     
-    if st.button("📝 Inventory Log"): st.session_state.page = "Nyasa"; st.rerun()
+    if st.button("📝 NYASA"): st.session_state.page = "Nyasa"; st.rerun()
     st.markdown("<span class='sidebar-sub'>Log Assets Securely</span>", unsafe_allow_html=True)
     
-    if st.button("📥 Data Import"): st.session_state.page = "Agama"; st.rerun()
+    if st.button("📥 AGAMA"): st.session_state.page = "Agama"; st.rerun()
     st.markdown("<span class='sidebar-sub'>Import Data Easily</span>", unsafe_allow_html=True)
 
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
     if st.button("🔒 Logout"): st.session_state.auth = False; st.rerun()
-    st.markdown("<span class='sidebar-sub'>Securely Exit System</span>", unsafe_allow_html=True)
 
 # --- 6. TOP BAR HUD ---
 t1, t2 = st.columns([1, 1])
-with t2: st.markdown(f"<p style='text-align:right; color:#9AA0A6; font-size:0.8rem; margin-top:10px;'>👤 {st.session_state.user.upper()} • {datetime.now().strftime('%H:%M')}</p>", unsafe_allow_html=True)
+with t2: st.markdown(f"<p style='text-align:right; color:#9AA0A6; font-size:0.9rem; margin-top:10px;'>👤 <b>{st.session_state.user.upper()}</b> • {datetime.now().strftime('%H:%M')}</p>", unsafe_allow_html=True)
 
 # --- 7. HOME DASHBOARD ---
 if st.session_state.page == "Dashboard":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>Strategic Command Center</h2>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:white; margin-bottom:30px;'>Strategic Command Hub</h1>", unsafe_allow_html=True)
 
-    # Hero Intelligence Directive
+    # Hero Recommendation
     st.markdown("""
         <div class='recommendation-hero'>
-            <p style='color:#6C63FF; font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;'>✨ AI Intelligence Directive</p>
-            <h3 style='color:white; margin: 10px 0;'>Reorder 120 units from Raj Logistics.</h3>
-            <p style='color:#9AA0A6; font-size:0.9rem;'>Sensed a demand spike for next weekend. Predicted stockout risk in 3 days.</p>
+            <p style='color:#6C63FF; font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:1.5px;'>✨ AI Intelligence Directive</p>
+            <h2 style='color:white; margin: 12px 0;'>Reorder 120 units of 'Asset-X' from Global Logistics.</h2>
+            <p style='color:#9AA0A6; font-size:1rem;'>Sensed a demand spike for next weekend. Risk Level: Medium.</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Visual Quick-Node Grid
+    # Node Grid
     st.subheader("Intelligence Nodes")
     q1, q2, q3 = st.columns(3)
     
     with q1:
-        st.markdown("""<div class='saas-card'><span class='card-icon'>📈</span><b>PREKSHA</b><br><span style='color:#6C63FF; font-size:0.7rem;'>PREDICT DEMAND INSTANTLY</span></div>""", unsafe_allow_html=True)
+        st.markdown("""<div class='saas-card'><span class='card-icon'>📈</span><b>PREKSHA</b><br><span style='color:#6C63FF; font-size:0.8rem; font-weight:700;'>PREDICT DEMAND INSTANTLY</span></div>""", unsafe_allow_html=True)
         if st.button("Launch Forecast", key="q_pre"): st.session_state.page = "Preksha"; st.rerun()
         
     with q2:
-        st.markdown("""<div class='saas-card'><span class='card-icon'>🛡️</span><b>STAMBHA</b><br><span style='color:#6C63FF; font-size:0.7rem;'>TEST SUPPLY RISKS</span></div>""", unsafe_allow_html=True)
+        st.markdown("""<div class='saas-card'><span class='card-icon'>🛡️</span><b>STAMBHA</b><br><span style='color:#6C63FF; font-size:0.8rem; font-weight:700;'>TEST SUPPLY RISKS</span></div>""", unsafe_allow_html=True)
         if st.button("Launch Resilience", key="q_sta"): st.session_state.page = "Stambha"; st.rerun()
         
     with q3:
-        st.markdown("""<div class='saas-card'><span class='card-icon'>🎙️</span><b>SAMVADA</b><br><span style='color:#6C63FF; font-size:0.7rem;'>TALK TO SYSTEM</span></div>""", unsafe_allow_html=True)
-        if st.button("Launch Assistant", key="q_sam"): st.session_state.page = "Voice"; st.rerun()
+        st.markdown("""<div class='saas-card'><span class='card-icon'>🎙️</span><b>SAMVADA</b><br><span style='color:#6C63FF; font-size:0.8rem; font-weight:700;'>TALK TO SYSTEM</span></div>""", unsafe_allow_html=True)
+        if st.button("Launch Assistant", key="q_sam"): st.session_state.page = "Samvada"; st.rerun()
 
     # Metrics Section
     st.divider()
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.markdown("<div class='saas-card'><div class='m-sub'>Units</div><div class='m-val'>2,340</div></div>", unsafe_allow_html=True)
     with c2: st.markdown("<div class='saas-card'><div class='m-sub'>Forecast</div><div class='m-val'>+12.4%</div></div>", unsafe_allow_html=True)
-    with c3: st.markdown("<div class='saas-card'><div class='m-sub'>Risk</div><div class='m-val'>Medium</div></div>", unsafe_allow_html=True)
+    with c3: st.markdown("<div class='saas-card'><div class='m-sub'>Risk</div><div class='m-val'>Optimal</div></div>", unsafe_allow_html=True)
     with c4: st.markdown("<div class='saas-card'><div class='m-sub'>Capital</div><div class='m-val'>₹4.2L</div></div>", unsafe_allow_html=True)
 
-# --- 8. FLOATING VOICE ASSISTANT ---
-st.markdown("<div class='voice-fab'>🎙️</div>", unsafe_allow_html=True)
+# --- 8. SUB-MODULE PAGES ---
+elif st.session_state.page == "Preksha":
+    st.markdown("<h1>📈 PREKSHA – Demand Forecast</h1>", unsafe_allow_html=True)
+    st.info("AI Sensing future requirements based on Random Forest analysis.")
 
-# --- 9. SUB-MODULE REDIRECTS ---
-if st.session_state.page == "Preksha":
-    st.markdown("<h2>📈 Preksha – Demand Forecast</h2>", unsafe_allow_html=True)
-    st.info("Predicting future asset requirements via Random Forest Sensing.")
+elif st.session_state.page == "Stambha":
+    st.markdown("<h1>🛡️ STAMBHA – Risk Analysis</h1>", unsafe_allow_html=True)
+    st.warning("Simulating Supply Chain Disruption Scenarios (TTS vs TTR).")
 
-elif st.session_state.page == "Nyasa":
-    st.markdown("<h2>📝 Nyasa – Inventory Log</h2>", unsafe_allow_html=True)
-    with st.form("add_p"):
-        n = st.text_input("Asset Identity")
-        s = st.number_input("Stock Level", 0)
-        if st.form_submit_button("Commit Entry"):
-            st.success("Entry logged successfully.")
+elif st.session_state.page == "Samvada":
+    st.markdown("<h1>🎙️ SAMVADA – Talk To System</h1>", unsafe_allow_html=True)
+    st.write("Neural Voice Interface Ready.")
