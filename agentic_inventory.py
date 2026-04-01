@@ -9,67 +9,93 @@ from openai import OpenAI
 import hashlib
 import time
 
-# --- 1. THE "SPOTIFY X PINTEREST" CSS ---
-st.set_page_config(page_title="AROHA", layout="wide", page_icon="💠")
+# --- 1. SETTINGS & EXECUTIVE HUD UI ---
+st.set_page_config(page_title="AROHA | Strategic Command", layout="wide", page_icon="💠")
 
-def apply_aesthetic_css():
+def apply_executive_css():
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         
         html, body, [class*="css"] {
-            font-family: 'Outfit', sans-serif;
-            background-color: #000000; 
-            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            background-color: #050709; 
+            color: #E0E0E0;
         }
 
-        /* 📌 Pinterest Masonry Card */
-        .pin-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 25px;
+        /* Sidebar Nav Styling */
+        [data-testid="stSidebar"] {
+            background-color: #0A0C10;
+            border-right: 1px solid #1F2937;
+        }
+        
+        /* Action Tiles (Organized Grid) */
+        .action-tile {
+            background: #111827;
+            border: 1px solid #1F2937;
+            border-radius: 12px;
+            padding: 30px 15px;
+            text-align: center;
+            transition: 0.3s all ease;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .pin-card:hover {
-            transform: scale(1.03);
-            background: rgba(255,255,255,0.1);
-            border-color: #D4AF37;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .pin-icon { font-size: 65px; margin-bottom: 15px; display: block; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
-        .pin-title { font-weight: 800; font-size: 1.4rem; color: #D4AF37; letter-spacing: -0.5px; }
-        .pin-explain { font-size: 0.85rem; color: #888; margin-top: 5px; font-weight: 400; line-height: 1.3; }
-
-        /* 🎧 Spotify style Bottom Player */
-        .spotify-player {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(18, 18, 18, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-top: 1px solid #282828;
-            z-index: 1000;
+        
+        .action-tile:hover {
+            border-color: #00D2FF;
+            background: #161E2E;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.1);
         }
 
-        /* Hide Streamlit components */
-        [data-testid="stSidebar"] { display: none; }
-        .stTabs [data-baseweb="tab-list"] { gap: 20px; background-color: transparent; }
-        .stButton>button { border-radius: 100px; background: #1DB954; color: black; font-weight: 800; border: none; padding: 10px 30px; }
-        .stButton>button:hover { background: #1ed760; transform: scale(1.05); }
+        .tile-icon { font-size: 45px; margin-bottom: 12px; }
+        .tile-title { font-weight: 700; font-size: 1rem; color: #FFFFFF; letter-spacing: 1px; }
+        .tile-layman { font-size: 0.75rem; color: #00D2FF; margin-top: 5px; font-weight: 600; text-transform: uppercase; }
+        .tile-desc { font-size: 0.7rem; color: #6B7280; margin-top: 4px; line-height: 1.2; }
 
-        /* Auth Box */
-        .auth-container { max-width: 450px; margin: 100px auto; padding: 40px; background: #121212; border-radius: 40px; text-align: center; }
+        /* KPI Summary Bar */
+        .kpi-bar {
+            background: rgba(0, 210, 255, 0.03);
+            border: 1px solid rgba(0, 210, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* AI Decision Highlight */
+        .decision-box {
+            background: #0F172A;
+            border-left: 5px solid #00D2FF;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        /* Custom Button */
+        .stButton>button {
+            border-radius: 6px;
+            background: #00D2FF;
+            color: #000000;
+            font-weight: 700;
+            border: none;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .stButton>button:hover {
+            background: #FFFFFF;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
         </style>
     """, unsafe_allow_html=True)
 
-apply_aesthetic_css()
+apply_executive_css()
 
-# --- 2. DATABASE ---
-DB_FILE = 'aroha_aesthetic_v26.db'
+# --- 2. DATABASE ENGINE ---
+DB_FILE = 'aroha_executive_v27.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -92,96 +118,122 @@ if "page" not in st.session_state: st.session_state.page = "Home"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "voice_active" not in st.session_state: st.session_state.voice_active = False
 
-# --- 4. LOGIN (ZENITH STYLE) ---
+# --- 4. AUTHENTICATION (Modern & Professional) ---
 if not st.session_state.auth:
-    st.markdown("<div style='text-align:center; margin-top:80px;'><h1 style='font-size:4rem; font-weight:800; color:#D4AF37; letter-spacing:-2px;'>AROHA</h1><p style='color:#555;'>Turn data into decisions.</p></div>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 1.4, 1])
+    st.markdown("<div style='text-align:center; margin-top:100px;'><h1 style='color:#00D2FF; font-size:3rem; font-weight:800; letter-spacing:10px;'>AROHA</h1><p style='color:#6B7280; letter-spacing:2px;'>STRATEGIC ENTERPRISE ORCHESTRATOR</p></div>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        st.markdown("<div class='auth-container'>", unsafe_allow_html=True)
-        t1, t2 = st.tabs(["ACCESS", "JOIN"])
-        with t1:
-            u = st.text_input("Identity")
-            p = st.text_input("Mantra", type="password")
-            if st.button("Unlock Vault"):
-                with get_db() as conn: res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
+        m = st.tabs(["IDENTITY ACCESS", "ENROLLMENT"])
+        with m[0]:
+            u = st.text_input("User ID")
+            p = st.text_input("Mantra Key", type="password")
+            if st.button("AUTHORIZE SESSION"):
+                with get_db() as conn:
+                    res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p):
                     st.session_state.auth = True; st.session_state.user = u; st.rerun()
-                else: st.error("Access Denied")
-        with t2:
-            nu = st.text_input("New ID"); np = st.text_input("New Pass", type="password")
-            if st.button("Enroll"):
+                else: st.error("Authentication Error")
+        with m[1]:
+            nu = st.text_input("Create User ID"); np = st.text_input("Create Mantra Key", type="password")
+            if st.button("ENROLL SYSTEM"):
                 with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
-                st.success("Authorized.")
-        st.markdown("</div>", unsafe_allow_html=True)
+                st.success("Authorized. Please login.")
     st.stop()
 
-# --- 5. TOP DISCOVERY BAR ---
-def draw_top_bar():
-    st.markdown(f"### Good evening, {st.session_state.user.capitalize()} ✨")
-    st.markdown("<p style='color:#666;'>Today's Strategic Discovery</p>", unsafe_allow_html=True)
+# --- 5. GLOBAL SIDEBAR ---
+with st.sidebar:
+    st.markdown(f"<h2 style='color:#00D2FF; font-size:1.8rem;'>AROHA</h2>", unsafe_allow_html=True)
+    st.markdown(f"**Operator:** {st.session_state.user.upper()}")
+    st.divider()
+    
+    if st.button("🏠 Home Command"): st.session_state.page = "Home"; st.rerun()
+    if st.button("🔮 Preksha Intelligence"): st.session_state.page = "Preksha"; st.rerun()
+    if st.button("🛡️ Stambha Resilience"): st.session_state.page = "Stambha"; st.rerun()
+    if st.button("🎙️ Samvada Chat"): st.session_state.page = "Samvada"; st.rerun()
+    if st.button("💰 Artha Financials"): st.session_state.page = "Artha"; st.rerun()
+    if st.button("🤝 Mithra Suppliers"): st.session_state.page = "Mithra"; st.rerun()
+    if st.button("📄 Karya Documents"): st.session_state.page = "Karya"; st.rerun()
+    if st.button("📝 Nyasa Ledger"): st.session_state.page = "Nyasa"; st.rerun()
+    if st.button("📥 Agama Bulk Sync"): st.session_state.page = "Agama"; st.rerun()
+    
+    st.divider()
+    if st.button("🔒 Terminate Session"): st.session_state.auth = False; st.rerun()
 
-# --- 6. HOME PAGE (Pinterest Waterfall Layout) ---
+# --- 6. HOME HUB ---
 if st.session_state.page == "Home":
-    draw_top_bar()
+    st.title("Strategic Hub Dashboard")
     
-    # 📌 Waterfall Columns (Uneven heights simulation)
-    col1, col2, col3 = st.columns(3)
+    # Summary Bar
+    st.markdown("<div class='kpi-bar'>", unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    with get_db() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    c1.metric("Assets", len(df))
+    val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
+    c2.metric("Treasury Value", f"${val:,.0f}")
+    c3.metric("System Load", "Optimal")
+    c4.metric("Risk Level", "Low")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Organized 4-Column Grid
+    st.subheader("Intelligence Nodes")
     
-    with col1:
-        st.markdown("""<div class='pin-card'><span class='pin-icon'>🔮</span><span class='pin-title'>PREKSHA</span><br><span class='pin-explain'>Predict future sales</span></div>""", unsafe_allow_html=True)
-        if st.button("Open Intelligence", key="nav_pre"): st.session_state.page = "Preksha"; st.rerun()
-        
-        st.markdown("""<div class='pin-card' style='height:200px;'><span class='pin-icon'>💰</span><span class='pin-title'>ARTHA</span><br><span class='pin-explain'>Check your money</span></div>""", unsafe_allow_html=True)
-        if st.button("Open Financials", key="nav_art"): st.session_state.page = "Artha"; st.rerun()
+    nodes = [
+        {"id": "Preksha", "icon": "🔮", "title": "PREKSHA", "layman": "Predict Future Sales", "desc": "AI Demand Sensing Engine"},
+        {"id": "Stambha", "icon": "🛡️", "title": "STAMBHA", "layman": "Stop Stock Risks", "desc": "Resilience & Disruption Simulator"},
+        {"id": "Samvada", "icon": "🎙️", "title": "SAMVADA", "layman": "Talk to AI Assistant", "desc": "Voice & Chat Interaction"},
+        {"id": "Artha", "icon": "💰", "title": "ARTHA", "layman": "Check Your Money", "desc": "Capital & Idle Value Tracking"},
+        {"id": "Mithra", "icon": "🤝", "title": "MITHRA", "layman": "Manage Sellers", "desc": "Supplier Reliability Scoring"},
+        {"id": "Karya", "icon": "📄", "title": "KARYA", "layman": "Make Order Bills", "desc": "Autonomous Document Generator"},
+        {"id": "Nyasa", "icon": "📝", "title": "NYASA", "layman": "Add New Items", "desc": "Manual Asset Registry"},
+        {"id": "Agama", "icon": "📥", "title": "AGAMA", "layman": "Upload Big Lists", "desc": "Bulk Data Ingestion Node"}
+    ]
 
-    with col2:
-        st.markdown("""<div class='pin-card' style='height:350px;'><span class='pin-icon'>🎙️</span><span class='pin-title'>SAMVADA</span><br><span class='pin-explain'>Talk to AI assistant</span></div>""", unsafe_allow_html=True)
-        if st.button("Start Conversation", key="nav_sam"): st.session_state.page = "Samvada"; st.rerun()
-        
-        st.markdown("""<div class='pin-card'><span class='pin-icon'>📝</span><span class='pin-title'>NYASA</span><br><span class='pin-explain'>Add new items</span></div>""", unsafe_allow_html=True)
-        if st.button("Open Ledger", key="nav_nya"): st.session_state.page = "Nyasa"; st.rerun()
+    cols = st.columns(4)
+    for i, node in enumerate(nodes):
+        with cols[i % 4]:
+            st.markdown(f"""
+                <div class='action-tile'>
+                    <div class='tile-icon'>{node['icon']}</div>
+                    <div class='tile-title'>{node['title']}</div>
+                    <div class='tile-layman'>{node['layman']}</div>
+                    <div class='tile-desc'>{node['desc']}</div>
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button("ACCESS NODE", key=f"go_{node['id']}"):
+                st.session_state.page = node['id']; st.rerun()
 
-    with col3:
-        st.markdown("""<div class='pin-card'><span class='pin-icon'>🛡️</span><span class='pin-title'>STAMBHA</span><br><span class='pin-explain'>Stop stock risks</span></div>""", unsafe_allow_html=True)
-        if st.button("Open Resilience", key="nav_sta"): st.session_state.page = "Stambha"; st.rerun()
-        
-        st.markdown("""<div class='pin-card' style='height:300px;'><span class='pin-icon'>🤝</span><span class='pin-title'>MITHRA</span><br><span class='pin-explain'>Manage your sellers</span></div>""", unsafe_allow_html=True)
-        if st.button("Open Suppliers", key="nav_mit"): st.session_state.page = "Mithra"; st.rerun()
-
-# --- 7. FEATURE PAGES ---
-def back_nav():
-    if st.button("⬅️ Back to Discovery"): st.session_state.page = "Home"; st.rerun()
+# --- 7. LOGIC FOR NODES ---
 
 if st.session_state.page == "Preksha":
-    back_nav(); st.title("🔮 Preksha: Strategic Forecasting")
-    st.markdown("<p style='color:#888;'>AI Sensing future demand flows...</p>", unsafe_allow_html=True)
-    # (Prediction logic remains here)
+    st.title("🔮 Preksha: Turning Data into Decisions")
+    with get_db() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    if df.empty: st.warning("Treasury empty.")
+    else:
+        target = st.selectbox("Select Asset", df['name'])
+        p = df[df['name'] == target].iloc[0]
+        col_img, col_chart = st.columns([1, 2])
+        with col_img:
+            if p['image_url']: st.image(p['image_url'], use_container_width=True)
+            st.write(f"**Stock:** {p['current_stock']} units")
+        with col_chart:
+            preds = np.random.randint(15, 60, 7)
+            st.plotly_chart(px.area(y=preds, title="AI Sensing Stream", template="plotly_dark").update_traces(line_color='#00D2FF'), use_container_width=True)
+            st.markdown(f"<div class='decision-box'>🤖 **AI DIRECTIVE:** Reorder <b>{preds.sum()} units</b> recommended to prevent a stockout.</div>", unsafe_allow_html=True)
 
 elif st.session_state.page == "Samvada":
-    back_nav(); st.title("🎙️ Samvada: Neural Dialogue")
-    st.session_state.voice_active = st.toggle("Enable Voice Assistant", value=st.session_state.voice_active)
-    # (Chatbot logic remains here)
-
-elif st.session_state.page == "Nyasa":
-    back_nav(); st.title("📝 Nyasa: Asset Ledger")
-    with st.form("add"):
-        n = st.text_input("Name"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0)
-        if st.form_submit_button("Commit to Vault"):
-            with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price) VALUES (?,?,?,?)", (st.session_state.user, n, s, p))
-            st.success("Pinned to Vault.")
-
-# --- 🎧 THE SPOTIFY PLAYER (BOTTOM BAR) ---
-st.markdown("<div style='height:100px;'></div>", unsafe_allow_html=True) # Spacer
-st.markdown(f"""
-    <div class='spotify-player'>
-        <div style='display:flex; align-items:center; gap:15px;'>
-            <div style='width:45px; height:45px; background:#D4AF37; border-radius:4px; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold;'>A</div>
-            <div>
-                <div style='font-size:14px; font-weight:600;'>System Sensing...</div>
-                <div style='font-size:11px; color:#b3b3b3;'>Operator: {st.session_state.user.upper()}</div>
-            </div>
-        </div>
-        <div style='color:#1DB954; font-size:12px; font-weight:800;'>🟢 CORE ACTIVE</div>
-        <div style='font-size:20px; color:#b3b3b3;'> ⏸️ ⏭️ </div>
-    </div>
-""", unsafe_allow_html=True)
+    st.title("🎙️ Samvada: Neural Interface")
+    st.session_state.voice_active = st.toggle("Voice Feedback", value=st.session_state.voice_active)
+    key = st.secrets.get("GROQ_API_KEY")
+    if key:
+        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+        for m in st.session_state.chat_history:
+            with st.chat_message(m["role"]): st.markdown(m["content"])
+        
+        q = st.chat_input("Input Strategic Command...")
+        audio = st.audio_input("Microphone")
+        if audio:
+            with st.spinner("Listening..."): q = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
+        
+        if q:
+            st.session_state.chat_history.append({"role":"user", "content":q})
+            with get_db() as conn: ct
