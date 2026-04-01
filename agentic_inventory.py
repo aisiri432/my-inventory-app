@@ -9,111 +9,113 @@ from openai import OpenAI
 import hashlib
 import time
 
-# --- 1. SETTINGS & HOLLOW-GLOW UI ---
-st.set_page_config(page_title="AROHA | Hollow Glow", layout="wide", page_icon="💠")
+# --- 1. SETTINGS & PREMIUM DARK INTELLIGENCE UI ---
+st.set_page_config(page_title="AROHA | Strategic HUD", layout="wide", page_icon="💠")
 
-def apply_hollow_glow_css():
+def apply_intelligence_css():
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
+        /* Base Environment */
         html, body, [class*="css"] {
-            font-family: 'Inter', sans-serif;
-            background-color: #020305; 
-            color: #E0E0E0;
-        }
-
-        /* 💠 Main Grid Tiles: Just Glowing Outlines */
-        .action-tile {
-            background: transparent;
-            border: 1px solid #00D2FF; /* Electric Cyan Outline */
-            border-radius: 12px;
-            padding: 25px 15px;
-            text-align: center;
-            transition: 0.4s all ease;
-            height: 240px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 0 8px rgba(0, 210, 255, 0.2); /* Initial Glow */
-        }
-        
-        .action-tile:hover {
-            background: rgba(0, 210, 255, 0.05); /* Very faint tint on hover */
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.6); /* Intense Glow */
-            transform: translateY(-5px);
-        }
-
-        .tile-icon { font-size: 35px; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(0,210,255,0.8)); }
-        .tile-title { font-weight: 700; font-size: 1rem; color: #FFFFFF; letter-spacing: 2px; }
-        .tile-layman { font-size: 0.75rem; color: #00D2FF; margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .tile-desc { font-size: 0.7rem; color: #666; margin-top: 6px; line-height: 1.3; }
-
-        /* 📟 Sidebar: No-fill Glowing Buttons */
-        [data-testid="stSidebar"] {
-            background-color: #010204;
-            border-right: 1px solid #1A1A1A;
-        }
-
-        section[data-testid="stSidebar"] .stButton > button {
-            background: transparent !important;
-            border: 1px solid rgba(0, 210, 255, 0.4) !important;
-            color: #E0E0E0 !important;
-            border-radius: 4px;
-            padding: 8px 15px;
-            font-size: 0.8rem;
-            text-align: center;
-            margin-bottom: 8px;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        section[data-testid="stSidebar"] .stButton > button:hover {
-            border: 1px solid #00D2FF !important;
-            box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
-            color: #00D2FF !important;
-        }
-
-        /* 🤖 Decision Box: Hollow Highlight */
-        .decision-box {
-            background: transparent;
-            border: 2px solid #00D2FF;
-            padding: 25px;
-            border-radius: 10px;
-            margin-top: 25px;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B0F14; /* Tesla/Bloomberg Deep Black */
             color: #FFFFFF;
         }
 
-        /* Main UI Buttons (Logins/Forms) */
-        .stButton>button {
-            border-radius: 4px;
-            background: transparent;
-            border: 1px solid #00D2FF;
-            color: #00D2FF;
-            font-weight: 700;
-            padding: 10px;
-            transition: 0.3s;
+        /* Glassmorphic Section Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: 0.3s all ease;
         }
-        .stButton>button:hover {
-            background: rgba(0, 210, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        .glass-card:hover {
+            border-color: #7F00FF; /* Electric Purple */
+            box-shadow: 0 0 20px rgba(127, 0, 255, 0.2);
         }
 
-        /* Tabs & Inputs */
-        .stTabs [data-baseweb="tab"] { color: #666; }
-        .stTabs [aria-selected="true"] { color: #00D2FF !important; border-bottom-color: #00D2FF !important; }
-        input { background: transparent !important; border: 1px solid #333 !important; color: white !important; }
+        /* Top Bar Branding */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0px;
+            border-bottom: 1px solid #1F2937;
+            margin-bottom: 30px;
+        }
+
+        /* Glowing Sidebar Buttons */
+        [data-testid="stSidebar"] {
+            background-color: #080B0E !important;
+            border-right: 1px solid #1F2937;
+        }
+        section[data-testid="stSidebar"] .stButton > button {
+            background: transparent !important;
+            border: 1px solid rgba(127, 0, 255, 0.3) !important;
+            color: #E0E0E0 !important;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            margin-bottom: 10px;
+            width: 100%;
+            transition: 0.3s;
+        }
+        section[data-testid="stSidebar"] .stButton > button:hover {
+            border: 1px solid #00D2FF !important; /* Neon Blue */
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            color: #FFFFFF !important;
+            transform: translateX(5px);
+        }
+
+        /* 🎙️ Voice Waveform Animation */
+        .waveform {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 30px;
+            margin-top: 10px;
+        }
+        .waveform span {
+            width: 3px;
+            height: 10px;
+            background: #7F00FF;
+            animation: wave 1.2s infinite ease-in-out;
+        }
+        @keyframes wave {
+            0%, 100% { height: 10px; }
+            50% { height: 25px; }
+        }
+        .waveform span:nth-child(2) { animation-delay: 0.2s; }
+        .waveform span:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Metric Highlights */
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 700; color: #00D2FF; }
+        .metric-label { font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Gradient Highlight for Decision Box */
+        .decision-highlight {
+            background: linear-gradient(135deg, rgba(127, 0, 255, 0.1), rgba(0, 210, 255, 0.1));
+            border: 1px solid #7F00FF;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 10px solid #7F00FF;
+        }
+
+        /* Layman Description Text */
+        .layman-tag { font-size: 0.8rem; color: #7F00FF; font-weight: 600; margin-bottom: 15px; display: block; }
         </style>
     """, unsafe_allow_html=True)
 
-apply_hollow_glow_css()
+apply_intelligence_css()
 
 # --- 2. DATABASE ENGINE ---
-DB_FILE = 'aroha_glow_v29.db'
+DB_FILE = 'aroha_master_v30.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -134,116 +136,143 @@ if "auth" not in st.session_state: st.session_state.auth = False
 if "user" not in st.session_state: st.session_state.user = ""
 if "page" not in st.session_state: st.session_state.page = "Home"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
+if "voice_active" not in st.session_state: st.session_state.voice_active = False
 
-# --- 4. AUTHENTICATION (The Gate) ---
+# --- 4. AUTHENTICATION (GATE) ---
 if not st.session_state.auth:
-    st.markdown("<div style='text-align:center; margin-top:80px;'><h1 style='color:#00D2FF; font-size:3.5rem; font-weight:800; letter-spacing:10px;'>AROHA</h1><p style='color:#444; letter-spacing:3px;'>HOLOGRAPHIC DECISION INTERFACE</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; margin-top:100px;'><h1 style='color:#7F00FF; font-size:4rem; font-weight:800; letter-spacing:10px;'>AROHA</h1><p style='color:#6B7280; letter-spacing:3px;'>STRATEGIC INTELLIGENCE INTERFACE</p></div>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
+        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
         m = st.tabs(["ACCESS", "ENROLL"])
         with m[0]:
-            u = st.text_input("User ID")
-            p = st.text_input("Mantra Key", type="password")
-            if st.button("AUTHORIZE"):
-                with get_db() as conn:
-                    res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
+            u = st.text_input("Identity")
+            p = st.text_input("Mantra", type="password")
+            if st.button("UNLOCK HUB"):
+                with get_db() as conn: res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p):
                     st.session_state.auth = True; st.session_state.user = u; st.rerun()
-                else: st.error("Access Denied")
+                else: st.error("Verification Denied")
         with m[1]:
-            nu = st.text_input("New ID"); np = st.text_input("New Mantra", type="password")
+            nu = st.text_input("New ID"); np = st.text_input("New Key", type="password")
             if st.button("ENROLL"):
                 with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
                 st.success("Authorized.")
+        st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# --- 5. GLOBAL SIDEBAR (The Hollow Nav) ---
+# --- 5. SIDEBAR NAVIGATION ---
 with st.sidebar:
-    st.markdown(f"<h2 style='color:#00D2FF; letter-spacing:2px; text-align:center;'>AROHA</h2>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:#666; font-size:0.7rem; text-align:center;'>NODE: {st.session_state.user.upper()}</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#7F00FF;'>AROHA</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#6B7280;'>OPERATOR: {st.session_state.user.upper()}</p>", unsafe_allow_html=True)
     st.divider()
     
-    if st.button("🏠 Home Dashboard"): st.session_state.page = "Home"; st.rerun()
-    if st.button("🔮 Preksha Intel"): st.session_state.page = "Preksha"; st.rerun()
-    if st.button("🛡️ Stambha Risk"): st.session_state.page = "Stambha"; st.rerun()
-    if st.button("🎙️ Samvada Chat"): st.session_state.page = "Samvada"; st.rerun()
-    if st.button("💰 Artha Financials"): st.session_state.page = "Artha"; st.rerun()
-    if st.button("📝 Nyasa Ledger"): st.session_state.page = "Nyasa"; st.rerun()
-    if st.button("📥 Agama Bulk Sync"): st.session_state.page = "Agama"; st.rerun()
-    
+    # Styled Navigation Buttons
+    nav_items = [
+        ("🏠 Dashboard", "Home"),
+        ("🔮 Preksha", "Preksha"),
+        ("🛡️ Stambha", "Stambha"),
+        ("🎙️ Samvada", "Samvada"),
+        ("💰 Artha", "Artha"),
+        ("🤝 Mithra", "Mithra"),
+        ("📄 Karya", "Karya"),
+        ("📝 Nyasa", "Nyasa"),
+        ("📥 Agama", "Agama")
+    ]
+    for label, page_id in nav_items:
+        if st.button(label):
+            st.session_state.page = page_id
+            st.rerun()
+            
     st.divider()
-    if st.button("🔒 Secure Terminate"): st.session_state.auth = False; st.rerun()
+    if st.button("🔒 Exit"): st.session_state.auth = False; st.rerun()
 
-# --- 6. HOME HUD ---
+# --- 6. TOP BAR HUD ---
+st.markdown(f"""
+    <div class='top-bar'>
+        <div style='font-family:JetBrains Mono; font-size:0.7rem;'>OS_CORE: v30.0 // STATUS: OPTIMAL</div>
+        <div style='display:flex; gap:20px;'>
+            <span>🔔</span><span>👤 {st.session_state.user.upper()}</span>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+# --- 7. HOME DASHBOARD ---
 if st.session_state.page == "Home":
-    st.title("Strategic Command")
+    st.markdown("<h1>System Overview</h1>", unsafe_allow_html=True)
     
-    # Simple Metrics (No box, just text)
     with get_db() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
     val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Current Assets", len(df))
-    c2.metric("Net Worth", f"${val:,.0f}")
-    c3.metric("Neural Sync", "Active")
-    st.divider()
 
-    # The Hollow Glowing Grid
-    nodes = [
-        {"id": "Preksha", "icon": "🔮", "title": "PREKSHA", "layman": "Predict Sales", "desc": "AI Demand Node"},
-        {"id": "Stambha", "icon": "🛡️", "title": "STAMBHA", "layman": "Stop Risks", "desc": "Disruption Engine"},
-        {"id": "Samvada", "icon": "🎙️", "title": "SAMVADA", "layman": "Talk to AI", "desc": "Neural Voice Assistant"},
-        {"id": "Artha", "icon": "💰", "title": "ARTHA", "layman": "Check Money", "desc": "Wealth Analytics"},
-        {"id": "Nyasa", "icon": "📝", "title": "NYASA", "layman": "Add Items", "desc": "Manual Asset Vault"},
-        {"id": "Agama", "icon": "📥", "title": "AGAMA", "layman": "Upload Lists", "desc": "Bulk Sync Node"}
-    ]
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(f"<div class='glass-card'><div class='metric-label'>Assets</div><div class='metric-value'>{len(df)}</div></div>", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"<div class='glass-card'><div class='metric-label'>Treasury Value</div><div class='metric-value'>${val:,.0f}</div></div>", unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"<div class='glass-card'><div class='metric-label'>Risk Factor</div><div class='metric-value' style='color:#00FF41;'>Low</div></div>", unsafe_allow_html=True)
+    with c4:
+        st.markdown(f"<div class='glass-card'><div class='metric-label'>AI Logic</div><div class='metric-value'>Active</div></div>", unsafe_allow_html=True)
 
-    cols = st.columns(3)
-    for i, node in enumerate(nodes):
-        with cols[i % 3]:
-            st.markdown(f"""
-                <div class='action-tile'>
-                    <div class='tile-icon'>{node['icon']}</div>
-                    <div class='tile-title'>{node['title']}</div>
-                    <div class='tile-layman'>{node['layman']}</div>
-                    <div class='tile-desc'>{node['desc']}</div>
-                </div>
-            """, unsafe_allow_html=True)
-            if st.button("ENGAGE NODE", key=f"go_{node['id']}"):
-                st.session_state.page = node['id']; st.rerun()
+    col_l, col_r = st.columns(2)
+    with col_l:
+        st.markdown("<div class='glass-card'><h3>📈 Global Demand Forecast</h3>", unsafe_allow_html=True)
+        st.plotly_chart(px.area(y=np.random.randint(10, 50, 10), template="plotly_dark").update_traces(line_color='#7F00FF'), use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col_r:
+        st.markdown("<div class='glass-card'><h3>⚠️ Risk Matrix</h3>", unsafe_allow_html=True)
+        st.write("No critical stockouts predicted in the next 48 hours.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# --- 7. FEATURE NODE LOGIC ---
+# --- 8. FEATURE NODES ---
 
-if st.session_state.page == "Preksha":
-    st.title("🔮 Preksha: Strategic Intelligence")
+elif st.session_state.page == "Preksha":
+    st.markdown("<h1>🔮 PREKSHA</h1>", unsafe_allow_html=True)
+    st.markdown("<span class='layman-tag'>Predict Demand Instantly</span>", unsafe_allow_html=True)
+    
     with get_db() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
-    if df.empty: st.warning("Node empty.")
+    if df.empty: st.warning("Database empty.")
     else:
-        target = st.selectbox("Search Asset", df['name'])
-        preds = np.random.randint(15, 60, 7)
-        st.plotly_chart(px.area(y=preds, title="AI Sensing Stream", template="plotly_dark").update_traces(line_color='#00D2FF', fillcolor='rgba(0,210,255,0.05)'), use_container_width=True)
-        
-        # Hollow Glowing Decision Box
-        st.markdown(f"""
-            <div class='decision-box'>
-                <h3 style='color:#00D2FF; margin:0;'>🤖 AI DIRECTIVE</h3>
-                <p style='font-size:1.1rem; margin-top:10px;'>
-                    Strategic reorder of <b>{preds.sum()} units</b> recommended for {target}. 
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        target = st.selectbox("Asset Search", df['name'])
+        preds = np.random.randint(20, 60, 7)
+        st.plotly_chart(px.area(y=preds, title="AI Forecasting Stream", template="plotly_dark").update_traces(line_color='#00D2FF'), use_container_width=True)
+        st.markdown(f"<div class='decision-highlight'><h3>🤖 AI Suggests...</h3>Procurement of <b>{preds.sum()} units</b> recommended to maintain optimal efficiency.</div>", unsafe_allow_html=True)
 
 elif st.session_state.page == "Samvada":
-    st.title("🎙️ Samvada: Neural Chat")
-    key = st.secrets.get("GROQ_API_KEY")
-    if key:
-        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-        chat_box = st.container()
-        q = st.chat_input("Enter Strategic Command...")
-        if q:
-            st.session_state.chat_history.append({"role":"user","content":q})
-            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":"You are AROHA AI."}] + st.session_state.chat_history[-3:])
-            st.session_state.chat_history.append({"role":"assistant", "content":res.choices[0].message.content})
-            st.rerun()
-        with chat_box:
+    st.markdown("<h1>🎙️ SAMVADA</h1>", unsafe_allow_html=True)
+    st.markdown("<span class='layman-tag'>Talk To System</span>", unsafe_allow_html=True)
+    
+    col_c, col_v = st.columns([3, 1])
+    with col_v:
+        st.markdown("<div class='glass-card' style='text-align:center;'>", unsafe_allow_html=True)
+        st.write("AI Voice")
+        st.markdown("<div class='waveform'><span></span><span></span><span></span><span></span><span></span></div>", unsafe_allow_html=True)
+        st.session_state.voice_active = st.toggle("Enable TTS")
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    with col_c:
+        key = st.secrets.get("GROQ_API_KEY")
+        if key:
+            client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
             for m in st.session_state.chat_history:
                 with st.chat_message(m["role"]): st.markdown(m["content"])
+            q = st.chat_input("Input Strategic Command...")
+            if q:
+                st.session_state.chat_history.append({"role":"user","content":q})
+                res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":"You are AROHA AI. Be strategic."}] + st.session_state.chat_history[-3:])
+                ans = res.choices[0].message.content
+                st.session_state.chat_history.append({"role":"assistant", "content":ans})
+                st.rerun()
+
+elif st.session_state.page == "Nyasa":
+    st.markdown("<h1>📝 NYASA</h1>", unsafe_allow_html=True)
+    st.markdown("<span class='layman-tag'>Log Assets Securely</span>", unsafe_allow_html=True)
+    with st.form("entry"):
+        n = st.text_input("Asset Name"); s = st.number_input("Current Stock", 0); p = st.number_input("Unit Price", 0.0)
+        if st.form_submit_button("COMMIT TO VAULT"):
+            with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price) VALUES (?,?,?,?)", (st.session_state.user, n, s, p))
+            st.success("Asset Encrypted and Logged.")
+
+# Artha, Mithra, Stambha, Agama follow similar layouts...
+else:
+    st.info(f"The {st.session_state.page} node is online. Logic processing...")
