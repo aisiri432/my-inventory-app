@@ -40,10 +40,9 @@ def apply_elite_css():
 
 apply_elite_css()
 
-# --- 2. DATABASE ENGINE (v14 - STABLE SCHEMA) ---
-DB_FILE = 'aroha_master_v14.db'
-def get_db_conn():
-    return sqlite3.connect(DB_FILE, check_same_thread=False)
+# --- 2. DATABASE ENGINE ---
+DB_FILE = 'aroha_master_v15.db'
+def get_db_conn(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
     with get_db_conn() as conn:
@@ -54,29 +53,22 @@ def init_db():
                       category TEXT, current_stock INTEGER, unit_price REAL, lead_time INTEGER, 
                       supplier TEXT, image_url TEXT, reviews TEXT)''')
         conn.commit()
-
 init_db()
 
-def make_hashes(p):
-    return hashlib.sha256(str.encode(p)).hexdigest()
+def make_hashes(p): return hashlib.sha256(str.encode(p)).hexdigest()
 
 # --- 3. SESSION & VOICE STATE ---
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "user" not in st.session_state:
-    st.session_state.user = ""
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "voice_on" not in st.session_state:
-    st.session_state.voice_on = False
+if "logged_in" not in st.session_state: st.session_state.logged_in = False
+if "user" not in st.session_state: st.session_state.user = ""
+if "page" not in st.session_state: st.session_state.page = "Home"
+if "chat_history" not in st.session_state: st.session_state.chat_history = []
+if "voice_on" not in st.session_state: st.session_state.voice_on = False
 
 def speak_aloud(text):
     if st.session_state.voice_on:
-        clean_text = text.replace('"', '').replace("'", "")
-        js_code = f"<script>var m = new SpeechSynthesisUtterance(); m.text='{clean_text}'; window.speechSynthesis.speak(m);</script>"
-        st.components.v1.html(js_code, height=0)
+        clean = text.replace('"', '').replace("'", "")
+        js = f"<script>var m = new SpeechSynthesisUtterance(); m.text='{clean}'; window.speechSynthesis.speak(m);</script>"
+        st.components.v1.html(js, height=0)
 
 # --- 4. AUTHENTICATION ---
 if not st.session_state.logged_in:
@@ -91,33 +83,24 @@ if not st.session_state.logged_in:
                 with get_db_conn() as conn:
                     res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u,))
                 if not res.empty and res.iloc[0]['password'] == make_hashes(p):
-                    st.session_state.logged_in = True
-                    st.session_state.user = u
-                    st.rerun()
-                else:
-                    st.error("Access Denied")
+                    st.session_state.logged_in = True; st.session_state.user = u; st.rerun()
+                else: st.error("Access Denied")
         with m[1]:
-            nu = st.text_input("New User", key="r_u")
-            np = st.text_input("New Password", type="password", key="r_p")
+            nu = st.text_input("New User", key="r_u"); np = st.text_input("New Password", type="password", key="r_p")
             if st.button("AUTHORIZE ACCOUNT ✅"):
                 if nu and np:
                     try:
-                        with get_db_conn() as conn:
-                            conn.execute("INSERT INTO users VALUES (?,?)", (nu, make_hashes(np)))
+                        with get_db_conn() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, make_hashes(np)))
                         st.success("Authorized! Switch to Login.")
-                    except:
-                        st.error("User exists.")
+                    except: st.error("User exists.")
     st.stop()
 
-# --- 5. COMMAND CENTER ---
+# --- 5. COMMAND CENTER (3x3 Grid) ---
 if st.session_state.page == "Home":
-    st.markdown(f"<div class='header-info'>🟢 ONLINE | VAULT: {st.session_state.user.upper()} | VERSION 14.0</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='header-info'>🟢 ONLINE | VAULT: {st.session_state.user.upper()} | VERSION 15.0</div>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align:center; color:#D4AF37; letter-spacing:10px;'>COMMAND CENTER</h1>", unsafe_allow_html=True)
     
-    c1, c2, c3 = st.columns(3)
-    c4, c5, c6 = st.columns(3)
-    c7, c8, c9 = st.columns(3)
-    
+    c1, c2, c3 = st.columns(3); c4, c5, c6 = st.columns(3); c7, c8, c9 = st.columns(3)
     modules = [
         {"id": "Preksha", "icon": "🔮", "title": "PREKSHA", "desc": "AI Demand & Visual Profile", "col": c1},
         {"id": "Stambha", "icon": "🛡️", "title": "STAMBHA", "desc": "TTS vs TTR Resilience", "col": c2},
@@ -133,124 +116,126 @@ if st.session_state.page == "Home":
         with m["col"]:
             st.markdown(f"<div class='glass-card'><span class='icon-orb'>{m['icon']}</span><span class='title-text'>{m['title']}</span><span class='desc-text'>{m['desc']}</span></div>", unsafe_allow_html=True)
             if st.button(f"ENTER {m['title']}", key=m['id']):
-                if m['id'] == "Exit":
-                    st.session_state.logged_in = False
-                    st.rerun()
-                else:
-                    st.session_state.page = m['id']
-                    st.rerun()
+                if m['id'] == "Exit": st.session_state.logged_in = False; st.rerun()
+                else: st.session_state.page = m['id']; st.rerun()
 
 # --- 6. FEATURE PAGES ---
 def nav_back():
-    if st.button("⬅️ RETURN TO COMMAND CENTER"):
-        st.session_state.page = "Home"
-        st.rerun()
+    if st.button("⬅️ RETURN TO COMMAND CENTER"): st.session_state.page = "Home"; st.rerun()
 
-# Node 1: Preksha
+# 1. PREKSHA
 if st.session_state.page == "Preksha":
-    nav_back()
-    st.title("🔮 Preksha: Strategic Intelligence")
-    with get_db_conn() as conn:
-        df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
-    if df.empty:
-        st.warning("Treasury empty.")
+    nav_back(); st.title("🔮 Preksha: Strategic Intelligence")
+    with get_db_conn() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    if df.empty: st.warning("Treasury empty.")
     else:
         target = st.selectbox("Select Asset", df['name'])
         p_row = df[df['name'] == target].iloc[0]
         col_img, col_chart = st.columns([1, 2])
         with col_img:
-            if p_row['image_url']:
-                st.image(p_row['image_url'], use_container_width=True)
+            if p_row['image_url']: st.image(p_row['image_url'], use_container_width=True)
             st.markdown("### Customer Sentiment")
             if p_row['reviews']:
-                for r in p_row['reviews'].split('|'):
-                    st.markdown(f"<div class='review-box'>⭐ {r}</div>", unsafe_allow_html=True)
+                for r in p_row['reviews'].split('|'): st.markdown(f"<div class='review-box'>⭐ {r}</div>", unsafe_allow_html=True)
         with col_chart:
             sentiment = st.select_slider("Market Sensing", options=[0.8, 1.0, 1.2, 1.5, 2.0], value=1.0)
             preds = (np.random.randint(20, 50, size=7) * sentiment).astype(int)
-            st.plotly_chart(px.area(y=preds, title="7-Day Demand Forecast", template="plotly_dark").update_traces(line_color='#D4AF37'), use_container_width=True)
+            st.plotly_chart(px.area(y=preds, title=f"7-Day Demand path", template="plotly_dark").update_traces(line_color='#D4AF37'), use_container_width=True)
             reorder = max(0, (preds.sum() + 20) - p_row['current_stock'])
             st.markdown(f"<div class='ai-decision-box'>🤖 **AI Decision:** Recommendation to order **{reorder} units**.</div>", unsafe_allow_html=True)
 
-# Node 2: Stambha
+# 2. STAMBHA
 elif st.session_state.page == "Stambha":
-    nav_back()
-    st.title("🛡️ Stambha: Resilience")
-    scenario = st.selectbox("Trigger Shock", ["Normal", "Port Closure", "Factory Fire"])
-    with get_db_conn() as conn:
-        df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    nav_back(); st.title("🛡️ Stambha: Resilience Simulator")
+    scenario = st.selectbox("Trigger Shock", ["Normal", "Port Closure (3x Lead Time)", "Factory Fire (+30d)"])
+    with get_db_conn() as conn: df = pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
     if not df.empty:
         results = []
         for _, p in df.iterrows():
             ttr = p['lead_time']
             if "Port" in scenario: ttr *= 3
+            if "Fire" in scenario: ttr += 30
             tts = round(p['current_stock'] / 12, 1)
             status = "🟢 Safe" if tts > ttr else "🔴 CRITICAL"
             results.append({"Asset": p['name'], "Survival(d)": tts, "Recovery(d)": ttr, "Status": status})
         st.table(pd.DataFrame(results))
 
-# Node 4: Samvada (FIXED SYNTAX)
+# 3. ARTHA
+elif st.session_state.page == "Artha":
+    nav_back(); st.title("💰 Artha: Financial Intelligence")
+    with get_db_conn() as conn: df = pd.read_sql_query("SELECT current_stock, unit_price FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    if not df.empty:
+        total_v = (df['current_stock'] * df['unit_price']).sum()
+        c1, c2 = st.columns(2)
+        c1.markdown(f"<div class='financial-stat'>Total Inventory Value<br><h2>${total_v:,.2F}</h2></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='financial-stat'>Idle Capital Risk (15%)<br><h2 style='color:red;'>${total_v*0.15:,.2F}</h2></div>", unsafe_allow_html=True)
+        st.plotly_chart(px.pie(df, values='current_stock', names='unit_price', title="Value Distribution", template="plotly_dark"))
+
+# 4. SAMVADA
 elif st.session_state.page == "Samvada":
-    nav_back()
-    st.title("🎙️ Samvada: Voice AI Assistant")
+    nav_back(); st.title("🎙️ Samvada: Voice Assistant")
     st.session_state.voice_on = st.toggle("🔊 AI Voice Feedback", value=st.session_state.voice_on)
     key = st.secrets.get("GROQ_API_KEY")
-    if not key:
-        st.error("Key missing.")
+    if not key: st.error("Key missing.")
     else:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-        # Indented properly to avoid SyntaxError
         for m in st.session_state.chat_history:
             with st.chat_message(m["role"]):
                 st.markdown(m["content"])
-        
-        u_in = st.chat_input("Type your question...")
-        audio = st.audio_input("Speak")
+        u_in = st.chat_input("Type or use Voice below...")
+        audio = st.audio_input("Speak Command")
         if audio:
-            with st.spinner("Processing..."):
-                u_in = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
+            with st.spinner("Transcribing..."): u_in = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
         if u_in:
             st.session_state.chat_history.append({"role":"user","content":u_in})
-            with get_db_conn() as conn:
-                ctx = pd.read_sql_query("SELECT name, current_stock FROM products WHERE username=?", conn, params=(st.session_state.user,)).to_string(index=False)
-            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are Samvada. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
+            with get_db_conn() as conn: ctx = pd.read_sql_query("SELECT name, current_stock FROM products WHERE username=?", conn, params=(st.session_state.user,)).to_string(index=False)
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are Samvada AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
             ans = res.choices[0].message.content
             st.session_state.chat_history.append({"role":"assistant","content":ans})
-            speak_aloud(ans)
-            st.rerun()
+            speak_aloud(ans); st.rerun()
 
-# Node 7: Nyasa
+# 5. MITHRA
+elif st.session_state.page == "Mithra":
+    nav_back(); st.title("🤝 Mithra: Supplier Network")
+    with get_db_conn() as conn: df = pd.read_sql_query("SELECT supplier, lead_time, name FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    if not df.empty:
+        st.subheader("Vendor Lead Time Matrix")
+        st.dataframe(df, use_container_width=True)
+    else: st.info("No supplier data available.")
+
+# 6. KARYA
+elif st.session_state.page == "Karya":
+    nav_back(); st.title("📄 Karya: Autonomous Documents")
+    with get_db_conn() as conn: df = pd.read_sql_query("SELECT name, supplier FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    if not df.empty:
+        target = st.selectbox("Select Item for Purchase Order", df['name'])
+        if st.button("GENERATE DIGITAL PO"):
+            st.success("Document Generated.")
+            st.code(f"PO-ID: {np.random.randint(1000,9999)}\nITEM: {target}\nSTATUS: APPROVED\nVAULT: {st.session_state.user.upper()}")
+    else: st.info("Add products to generate orders.")
+
+# 7. NYASA
 elif st.session_state.page == "Nyasa":
-    nav_back()
-    st.title("📝 Nyasa Asset Ledger")
+    nav_back(); st.title("📝 Nyasa Asset Ledger")
     with st.form("add"):
         n = st.text_input("Name"); c = st.text_input("Category"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead Time", 1); sup = st.text_input("Supplier"); img = st.text_input("Image URL"); rev = st.text_area("Reviews (| split)")
         if st.form_submit_button("COMMIT"):
-            with get_db_conn() as conn:
-                conn.execute("INSERT INTO products (username, name, category, current_stock, unit_price, lead_time, supplier, image_url, reviews) VALUES (?,?,?,?,?,?,?,?,?)", (st.session_state.user, n, c, s, p, lt, sup, img, rev))
+            with get_db_conn() as conn: conn.execute("INSERT INTO products (username, name, category, current_stock, unit_price, lead_time, supplier, image_url, reviews) VALUES (?,?,?,?,?,?,?,?,?)", (st.session_state.user, n, c, s, p, lt, sup, img, rev))
             st.success("Asset Committed.")
 
-# Node 8: Agama
+# 8. AGAMA
 elif st.session_state.page == "Agama":
-    nav_back()
-    st.title("📥 Agama: Bulk Sync")
+    nav_back(); st.title("📥 Agama: Bulk Sync")
     file = st.file_uploader("Choose CSV", type="csv")
     if file:
         u_df = pd.read_csv(file)
-        required = ['name', 'current_stock', 'unit_price', 'lead_time']
-        optional = ['category', 'supplier', 'image_url', 'reviews']
-        if all(c in u_df.columns for c in required):
-            for col in optional:
-                if col not in u_df.columns:
-                    u_df[col] = ""
+        req = ['name', 'current_stock', 'unit_price', 'lead_time']
+        opt = ['category', 'supplier', 'image_url', 'reviews']
+        if all(c in u_df.columns for c in req):
+            for col in opt:
+                if col not in u_df.columns: u_df[col] = ""
             u_df['username'] = st.session_state.user
             final_df = u_df[['username', 'name', 'category', 'current_stock', 'unit_price', 'lead_time', 'supplier', 'image_url', 'reviews']]
-            if st.button("SYNCHRONIZE WITH VAULT"):
-                with get_db_conn() as conn:
-                    final_df.to_sql('products', conn, if_exists='append', index=False)
+            if st.button("SYNCHRONIZE"):
+                with get_db_conn() as conn: final_df.to_sql('products', conn, if_exists='append', index=False)
                 st.success("Sync Successful.")
-
-# Other nodes
-else:
-    nav_back()
-    st.info("Module under strategic maintenance.")
