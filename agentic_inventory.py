@@ -10,7 +10,7 @@ from openai import OpenAI
 import hashlib
 import time
 
-# --- 1. PREMIUM UI CONFIG (UNIVERSAL ADAPTIVE & HOLLOW GLOW) ---
+# --- 1. PREMIUM UI CONFIG (UNIVERSAL RESPONSIVE & HOLLOW GLOW) ---
 st.set_page_config(
     page_title="AROHA | Strategic Intelligence", 
     layout="wide", 
@@ -72,8 +72,8 @@ def apply_aroha_style():
 
 apply_aroha_style()
 
-# --- 2. DATABASE ---
-DB_FILE = 'aroha_final_v74.db' # Renamed to force clean schema
+# --- 2. DATABASE ENGINE ---
+DB_FILE = 'aroha_master_v75.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -119,12 +119,12 @@ if not st.session_state.auth:
             if st.button("Enroll Session"):
                 try:
                     with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
-                    st.success("Authorized.")
+                    st.success("Authorized. Please log in.")
                 except: st.error("ID exists.")
     st.stop()
 
-# --- 5. TOP HUD ---
-st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] Neural link active for {st.session_state.user.upper()} // [LOGISTICS] Hover over Map for Precision Addresses // [VITTA] Capital efficiency optimized.</div></div>", unsafe_allow_html=True)
+# --- 5. TOP TICKER ---
+st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] Neural link active for {st.session_state.user.upper()} // [MAP] 🔴 Risk in Singapore Port // [SANCHARA] Punah Loop updated // [VITTA] Capital allocation efficiency optimized.</div></div>", unsafe_allow_html=True)
 
 # --- 6. SIDEBAR ---
 with st.sidebar:
@@ -157,16 +157,15 @@ if st.session_state.page == "Dashboard":
     c1, c2, c3 = st.columns(3)
     with c1: st.metric("📝 Assets", len(df))
     with c2: st.metric("💰 Treasury", f"₹{val:,.0f}")
-    with c3: st.metric("🛡️ System", "OPTIMAL")
+    with c3: st.metric("🛡️ Status", "OPTIMAL")
 
 # 📝 NYASA (UPLOAD FIRST)
 elif st.session_state.page == "Nyasa":
     st.markdown("<div class='feature-header'>📝 NYASA</div>", unsafe_allow_html=True)
     t1, t2, t3 = st.tabs(["📥 Bulk Sync", "✍️ Manual Registry", "📄 PO Generator"])
     with t1:
-        st.info("Upload CSV (name, current_stock, unit_price, lead_time)")
-        f = st.file_uploader("Upload CSV", type="csv")
-        if f and st.button("Sync"):
+        f = st.file_uploader("Upload CSV (name, current_stock, unit_price, lead_time)", type="csv")
+        if f and st.button("Synchronize"):
             u_df = pd.read_csv(f); u_df['username'] = st.session_state.user
             for col in ['category','supplier','image_url','reviews']: u_df[col] = u_df.get(col, "")
             with get_db() as conn: u_df.to_sql('products', conn, if_exists='append', index=False)
@@ -223,27 +222,27 @@ elif st.session_state.page == "Vitta":
         c1, c2 = st.columns(2)
         with c1:
             st.markdown(f"<div class='financial-stat'>Total Value<br><h2>₹{total_v:,.0f}</h2></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk<br><h2 style='color:red;'>₹{total_v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk (15%)<br><h2 style='color:red;'>₹{total_v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
         with c2: st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark"))
 
-# 📦 SANCHARA (MAP + DESCRIPTION + UPDATED FLOOR OPS)
+# 📦 SANCHARA (MAP + DESCRIPTION + UPDATED FLOOR OPS + RETURNS)
 elif st.session_state.page == "Sanchara":
     st.markdown("<div class='feature-header'>📦 SANCHARA</div>", unsafe_allow_html=True)
     t1, t2, t3 = st.tabs(["🌐 Precision Map", "📦 Floor Ops", "↩️ Returns"])
     with t1:
-        map_points = pd.DataFrame({
-            'lat': [12.97, 22.31, 37.77, 1.35], 'lon': [77.59, 114.16, -122.41, 103.81],
-            'Node': ['Hub', 'Factory', 'HQ', 'Risk Zone'],
-            'Address': ['MG Road, Bangalore', 'Lantau, HK', 'Market St, SF', 'Jurong, Singapore (🔴 PORT CLOSED)']
-        })
+        map_points = pd.DataFrame({'lat': [12.97, 22.31, 37.77, 1.35], 'lon': [77.59, 114.16, -122.41, 103.81], 'Node': ['Hub', 'Factory', 'HQ', 'Risk Zone'], 'Address': ['MG Road, Bangalore', 'Lantau, HK', 'Market St, SF', 'Jurong, Singapore (🔴 PORT CLOSED)']})
         st.plotly_chart(px.scatter_mapbox(map_points, lat="lat", lon="lon", hover_name="Node", hover_data={"Address": True}, zoom=1, height=450).update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}), use_container_width=True)
         st.markdown("<div style='background:rgba(255,255,255,0.02); padding:15px; border-radius:10px; border:1px solid #333; margin-top:15px;'><h4 style='color:#00D4FF; margin-top:0;'>Strategic Map Guide</h4><p>📍 Blue: Stable Hubs. 🔴 Red: Crisis Points. Hover dots for addresses.</p></div>", unsafe_allow_html=True)
     with t2:
         c1, c2 = st.columns(2); c1.metric("📦 Items Shipped Today", "1,240")
         current_sum = get_user_data()['current_stock'].sum() if not get_user_data().empty else 0
         c2.metric("🏭 Total Floor Assets", f"{current_sum + 142} Units", "+142 Returns")
+    with t3:
+        st.subheader("PUNAH Returns Analysis")
+        df_ret = pd.DataFrame({'Product': ['Laptop', 'Monitor'], 'Amount': [4, 2], 'Reason': ['Defective', 'Screen Bleed']})
+        st.table(df_ret)
 
-# 🤝 MITHRA (FULL RELIABILITY)
+# 🤝 MITHRA
 elif st.session_state.page == "Mithra":
     st.markdown("<div class='feature-header'>🤝 MITHRA</div>", unsafe_allow_html=True)
     df = get_user_data()
@@ -252,13 +251,15 @@ elif st.session_state.page == "Mithra":
         st.dataframe(df[['supplier', 'name', 'lead_time', 'Reliability']].sort_values(by='Reliability', ascending=False), use_container_width=True)
         st.plotly_chart(px.bar(df, x='supplier', y='Reliability', color='Reliability', color_continuous_scale='Portland', template='plotly_dark'))
 
-# 🎙️ SAMVADA (CHAT)
+# 🎙️ SAMVADA
 elif st.session_state.page == "Samvada":
     st.markdown("<div class='feature-header'>🎙️ SAMVADA</div>", unsafe_allow_html=True)
     key = st.secrets.get("GROQ_API_KEY")
     if key:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-        for m in st.session_state.chat_history: with st.chat_message(m["role"]): st.markdown(m["content"])
+        for m in st.session_state.chat_history:
+            with st.chat_message(m["role"]):
+                st.markdown(m["content"])
         u_in = st.chat_input("Strategic query...")
         if u_in:
             st.session_state.chat_history.append({"role":"user", "content":u_in})
