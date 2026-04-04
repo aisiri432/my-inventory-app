@@ -36,6 +36,7 @@ def apply_aroha_style():
             .brand-title { font-size: 2.2rem !important; }
             section[data-testid="stSidebar"] .stButton > button { font-size: 1.2rem !important; }
             .sidebar-sub { font-size: 0.75rem !important; margin-left: 10px !important; }
+            .saas-card { padding: 15px !important; }
         }
 
         /* 📟 SIDEBAR: RADIANT HOLLOW BLUE GLOW */
@@ -47,24 +48,23 @@ def apply_aroha_style():
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); margin-bottom: 5px; transition: 0.3s;
         }
         section[data-testid="stSidebar"] .stButton > button:hover { border: 2px solid #00D4FF !important; box-shadow: 0 0 20px rgba(0, 212, 255, 0.6); color: #00D4FF !important; }
-        .sidebar-sub { color: #6C63FF; font-weight: 700; display: block; margin-top: -10px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-sub { font-size: 0.95rem !important; color: #6C63FF; font-weight: 700; display: block; margin-top: -10px; margin-bottom: 25px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* 💎 BRANDING */
         .brand-title { font-weight: 800; color: #FFFFFF; letter-spacing: -2px; text-shadow: 0 0 25px rgba(108, 99, 255, 0.6); margin-bottom: 0; }
         .decisions-fade { color: #6C63FF; font-weight: 700; animation: glowPulse 2s infinite alternate; }
         @keyframes glowPulse { from { text-shadow: 0 0 5px #6C63FF; } to { text-shadow: 0 0 15px #38BDF8; } }
 
-        /* CARDS & INSIGHTS */
         .saas-card { background: #0D1117; border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
-        .insight-box { background: rgba(0, 212, 255, 0.05); border: 1px solid #00D4FF; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .ai-decision-box { background: rgba(17, 25, 40, 0.75); border: 2px solid #D4AF37; padding: 25px; border-radius: 15px; border-left: 12px solid #D4AF37; margin-top: 25px; }
         .feature-header { font-weight: 800; color: #00D4FF !important; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 212, 255, 0.3); text-transform: uppercase; }
         .review-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid #222; margin-bottom: 10px; font-size: 0.85rem; }
         .financial-stat { background: #111; padding: 20px; border-radius: 10px; border-top: 4px solid #D4AF37; text-align: center; }
+        .insight-box { background: rgba(0, 212, 255, 0.05); border: 1px solid #00D4FF; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
 
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         .ticker-wrap { width: 100%; overflow: hidden; background: rgba(0, 212, 255, 0.05); border-bottom: 1px solid rgba(0, 212, 255, 0.2); padding: 8px 0; margin-bottom: 20px; }
         .ticker-text { display: inline-block; white-space: nowrap; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #00D4FF; animation: ticker 40s linear infinite; }
-
+        
         header {visibility: hidden;}
         footer {visibility: hidden;}
         </style>
@@ -73,7 +73,7 @@ def apply_aroha_style():
 apply_aroha_style()
 
 # --- 2. DATABASE ---
-DB_FILE = 'aroha_nexus_v82.db'
+DB_FILE = 'aroha_platinum_v83.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -89,8 +89,7 @@ init_db()
 
 def hash_p(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def get_user_data():
-    with get_db() as conn: 
-        return pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
+    with get_db() as conn: return pd.read_sql_query("SELECT * FROM products WHERE username=?", conn, params=(st.session_state.user,))
 
 # --- 3. SESSION STATE ---
 if "auth" not in st.session_state: st.session_state.auth = False
@@ -108,7 +107,7 @@ if not st.session_state.auth:
         with m[0]:
             u_input = st.text_input("Username", key="l_u")
             p_input = st.text_input("Password", type="password", key="l_p")
-            if st.button("Unlock Hub"):
+            if st.button("Unlock Strategic Hub"):
                 with get_db() as conn: res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u_input,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p_input):
                     st.session_state.auth = True; st.session_state.user = u_input; st.rerun()
@@ -122,13 +121,17 @@ if not st.session_state.auth:
                 except: st.error("ID exists.")
     st.stop()
 
-# --- 5. TOP HUD TICKER ---
-st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[LOGISTICS] {st.session_state.user.upper()} // [TRAFFIC] Singapore Port status: RESTRICTED // [SENSING] Predicted demand surge in Accessories (+22%) // [SYSTEM] Neural link pulse stable.</div></div>", unsafe_allow_html=True)
+# --- 5. TOP TICKER ---
+st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] {st.session_state.user.upper()} NODE ACTIVE // [MAP] Precision Address Syncing Active // [LOGISTICS] Return Logic PUNAH reconciled // [FINANCE] VITTA Idle Capital Risk detected.</div></div>", unsafe_allow_html=True)
 
-# --- 6. SIDEBAR ---
+# --- 6. SIDEBAR (DASHBOARD FIRST) ---
 with st.sidebar:
     st.markdown(f"<div class='brand-container'><div class='brand-title' style='font-size:2.2rem !important;'>AROHA</div><div style='color:#9AA0A6; font-size:0.9rem;'>Data into <span class='decisions-fade'>Decisions</span></div></div>", unsafe_allow_html=True)
     
+    # NAVIGATION ORDER: Dashboard First
+    if st.button("🏠 DASHBOARD"): st.session_state.page = "Dashboard"; st.rerun()
+    st.markdown("<span class='sidebar-sub'>Strategic Overview</span>", unsafe_allow_html=True)
+
     nodes = [
         ("📝 NYASA", "Nyasa", "Add Items & PO Gen"),
         ("📈 PREKSHA", "Preksha", "Predict Demand Instantly"),
@@ -136,17 +139,15 @@ with st.sidebar:
         ("🎙️ SAMVADA", "Samvada", "Talk To System"),
         ("💰 VITTA", "Vitta", "Track Money Flow"),
         ("📦 SANCHARA", "Sanchara", "Global Map & Flow"),
-        ("🤝 MITHRA", "Mithra", "Supplier Intelligence"),
-        ("🏠 DASHBOARD", "Dashboard", "System Overview")
+        ("🤝 MITHRA", "Mithra", "Supplier Intelligence")
     ]
     for label, page_id, layman in nodes:
         if st.button(label):
             st.session_state.page = page_id; st.rerun()
         st.markdown(f"<span class='sidebar-sub'>{layman}</span>", unsafe_allow_html=True)
-
     if st.button("🔒 Logout"): st.session_state.auth = False; st.rerun()
 
-# --- 7. LOGIC NODES ---
+# --- 7. CONTENT NODES ---
 
 # 🏠 DASHBOARD
 if st.session_state.page == "Dashboard":
@@ -154,93 +155,101 @@ if st.session_state.page == "Dashboard":
     df = get_user_data()
     val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
     c1, c2, c3 = st.columns(3)
-    with c1: st.metric("📝 Assets Managed", len(df))
-    with c2: st.metric("💰 Treasury Value", f"₹{val:,.0f}")
-    with c3: st.metric("🛡️ System Integrity", "OPTIMAL")
-    st.markdown("<div class='insight-box'><b>💡 Agent Briefing:</b> Your warehouse is operating at 84% efficiency. Recent returns from Bangalore Hub have been reconciled. AI suggests checking <b>PREKSHA</b> for a weekend demand spike.</div>", unsafe_allow_html=True)
+    with c1: st.metric("📝 Assets", len(df))
+    with c2: st.metric("💰 Treasury", f"₹{val:,.0f}")
+    with c3: st.metric("🛡️ System", "OPTIMAL")
+    st.markdown("<div class='insight-box'><b>💡 Command Directive:</b> Your dashboard is responsive. Switch to <b>NYASA</b> to import assets or <b>PREKSHA</b> to profile items with images and reviews.</div>", unsafe_allow_html=True)
 
-# 📦 SANCHARA (REIMAGINED: INTEL + MAP + FLOOR + RETURNS)
+# 💰 VITTA
+elif st.session_state.page == "Vitta":
+    st.markdown("<div class='feature-header'>💰 VITTA</div>", unsafe_allow_html=True)
+    df = get_user_data()
+    if not df.empty:
+        total_v = (df['current_stock'] * df['unit_price']).sum()
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown(f"<div class='financial-stat'>Total Inventory Value<br><h2>₹{total_v:,.0f}</h2></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk (15%)<br><h2 style='color:red;'>₹{total_v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
+        with c2:
+            st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark", title="Capital Matrix"), use_container_width=True)
+
+# 🤝 MITHRA
+elif st.session_state.page == "Mithra":
+    st.markdown("<div class='feature-header'>🤝 MITHRA</div>", unsafe_allow_html=True)
+    df = get_user_data()
+    if not df.empty:
+        df['Reliability'] = (100 - (df['lead_time'] * 2)).clip(50, 99)
+        st.dataframe(df[['supplier', 'name', 'lead_time', 'Reliability']].sort_values(by='Reliability', ascending=False), use_container_width=True)
+        st.plotly_chart(px.bar(df, x='supplier', y='Reliability', color='Reliability', color_continuous_scale='Portland', template='plotly_dark'))
+
+# 📦 SANCHARA (MAP + ADDRESSES + SHIPPED + RETURNS)
 elif st.session_state.page == "Sanchara":
     st.markdown("<div class='feature-header'>📦 SANCHARA</div>", unsafe_allow_html=True)
-    
-    # User-Friendly Summary
-    st.markdown("""<div class='insight-box'><b>🚀 Operations Pulse:</b> Your global logistics are flowing smoothly. 
-    A minor delay is sensed in the Singapore corridor, but local stock is sufficient to cover the gap.</div>""", unsafe_allow_html=True)
-    
-    t1, t2, t3 = st.tabs(["🌐 Precision Map", "📦 Floor Ops", "↩️ Returns (PUNAH)"])
-    
+    t1, t2, t3 = st.tabs(["🌐 Map Node", "🏭 Floor Ops", "↩️ Returns"])
     with t1:
-        st.subheader("Global Supply Intelligence")
-        map_points = pd.DataFrame({'lat':[12.97, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Bangalore Hub', 'HK Factory', 'SF HQ', 'Port Zone'], 'Address':['MG Road, Bangalore', 'Lantau, HK', 'Market St, SF', 'Jurong, Singapore (🔴 PORT CLOSED)']})
-        st.plotly_chart(px.scatter_mapbox(map_points, lat="lat", lon="lon", hover_name="Node", hover_data={"Address": True}, color_discrete_sequence=["cyan"], zoom=1, height=450).update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}), use_container_width=True)
-        st.markdown("<div style='background:rgba(255,255,255,0.02); padding:15px; border-radius:10px; border:1px solid #333; margin-top:15px;'><h4 style='color:#00D4FF; margin-top:0;'>🗺️ Strategic Map Guide</h4><p>📍 Blue Hubs: Active Suppliers. 🔴 Red Nodes: Emergency zones. Tap dots for exact physical addresses for rerouting.</p></div>", unsafe_allow_html=True)
-    
+        map_points = pd.DataFrame({'lat':[12.97, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Bangalore Hub', 'HK Factory', 'SF HQ', 'Singapore Port'], 'Address':['MG Road, Bangalore, India', 'Lantau, HK S.A.R.', 'Market St, San Francisco, USA', 'Jurong Island, Singapore (🔴 PORT CLOSED)']})
+        st.plotly_chart(px.scatter_mapbox(map_points, lat="lat", lon="lon", hover_name="Node", hover_data={"Address": True}, zoom=1, height=450).update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}), use_container_width=True)
+        st.markdown("<div class='insight-box'><b>📍 Strategic Map Legend:</b> Blue nodes are stable hubs. Red zones (like Singapore) are active disruption points. Hover over dots for physical address retrieval.</div>", unsafe_allow_html=True)
     with t2:
-        st.subheader("Live Warehouse Throughput")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("📦 Shipped Today", "1,240 Units", "↑ 12%")
-        c2.metric("🚛 New Inbound", "3,500 Units", "Stable")
-        
-        # Calculate dynamic floor total
-        returns_q = 142
-        current_inv = get_user_data()['current_stock'].sum() if not get_user_data().empty else 0
-        total_floor = current_inv + returns_q
-        c3.metric("🏭 Total Assets on Floor", f"{total_floor} Units", f"+{returns_q} Returns")
-        
-        # User-friendly progress bar
-        st.write("### Warehouse Capacity Utilization")
-        capacity = 5000
-        util = (total_floor / capacity) * 100
-        st.progress(util / 100)
-        st.write(f"The warehouse is {round(util,1)}% full. Optimization recommended at 90%.")
-
+        c1, c2 = st.columns(2)
+        c1.metric("📦 Items Shipped Today", "1,240", "↑ 12%")
+        curr_total = get_user_data()['current_stock'].sum() if not get_user_data().empty else 0
+        c2.metric("🏭 Total Floor Assets", f"{curr_total + 142} Units", "+142 Returns")
     with t3:
-        st.subheader("PUNAH Returns Analysis")
-        df_ret = pd.DataFrame({
-            'Product': ['Quantum Laptop', '4K Monitor', 'Logic Board', 'Ergo Chair'],
-            'Qty': [4, 2, 120, 1],
-            'Reason': ['Defective Logic Board', 'Screen backlight bleed', 'Wrong SKU delivered', 'Color mismatch'],
-            'Urgency': ['High', 'Medium', 'Critical', 'Low']
-        })
-        # Style table by urgency
-        st.dataframe(df_ret, use_container_width=True)
-        st.plotly_chart(px.bar(df_ret, x='Reason', y='Qty', color='Urgency', title="Returned Quantity by Cause", template="plotly_dark"))
+        st.subheader("Returns Log (PUNAH)")
+        df_ret = pd.DataFrame({'Product': ['Laptop', 'Monitor', 'Kit'], 'Amount': [4, 2, 1], 'Reason': ['Defective Logic', 'Screen Bleed', 'Transit Damage']})
+        st.table(df_ret)
 
-# 📈 PREKSHA (REVIEWS + PHOTOS RESTORED)
+# 🛡️ STAMBHA (RISK MESSAGES)
+elif st.session_state.page == "Stambha":
+    st.markdown("<div class='feature-header'>🛡️ STAMBHA</div>", unsafe_allow_html=True)
+    s = st.selectbox("Trigger Shock", ["Normal", "Port Closure (3x Lead)"])
+    df = get_user_data()
+    if not df.empty:
+        for _, p in df.iterrows():
+            ttr = p['lead_time'] * (3 if "Port" in s else 1)
+            tts = round(p['current_stock'] / 12, 1)
+            if tts < ttr: st.error(f"🔴 CRITICAL RISK: {p['name']} runs out in {tts}d. Recovery: {ttr}d.")
+        st.table(df[['name', 'current_stock', 'lead_time']])
+
+# 📈 PREKSHA (PHOTOS + REVIEWS + SUGGESTIONS)
 elif st.session_state.page == "Preksha":
     st.markdown("<div class='feature-header'>📈 PREKSHA</div>", unsafe_allow_html=True)
     df = get_user_data()
-    if df.empty: st.warning("Please add items in NYASA first.")
-    else:
-        target = st.selectbox("Asset Search", df['name']); p_row = df[df['name'] == target].iloc[0]
+    if not df.empty:
+        target = st.selectbox("Asset Search", df['name']); p = df[df['name'] == target].iloc[0]
         col_m, col_v = st.columns([1, 2])
         with col_m:
-            if p_row['image_url'] and str(p_row['image_url']) != "nan": 
-                st.image(p_row['image_url'], use_container_width=True, caption=target)
-            if p_row['reviews'] and str(p_row['reviews']) != "nan":
-                st.subheader("Sentiment Feed")
-                for r in p_row['reviews'].split('|'):
-                    st.markdown(f"<div class='review-box'>💬 {r}</div>", unsafe_allow_html=True)
+            if p['image_url'] and str(p['image_url']) != "nan": st.image(p['image_url'], use_container_width=True)
+            if p['reviews'] and str(p['reviews']) != "nan":
+                for r in p['reviews'].split('|'): st.markdown(f"<div class='review-box'>💬 {r}</div>", unsafe_allow_html=True)
         with col_v:
-            sent = st.select_slider("Market Sentiment (External Events)", options=[0.8, 1.0, 1.5, 2.0], value=1.0)
             preds = np.random.randint(20, 50, 7)
-            st.plotly_chart(px.area(y=preds, title="AI Forecasting Stream", template="plotly_dark").update_traces(line_color='#00D4FF'), use_container_width=True)
-            st.markdown(f"<div class='ai-decision-box'><h3>🤖 AGENT DECISION</h3>Based on <b>{sent}x</b> sentiment, order <b>{max(0, preds.sum() - p_row['current_stock'])}</b> units now.</div>", unsafe_allow_html=True)
+            st.plotly_chart(px.area(y=preds, template="plotly_dark").update_traces(line_color='#00D4FF'), use_container_width=True)
+            st.markdown(f"<div class='ai-decision-box'><h3>🤖 AI DIRECTIVE</h3>Order <b>{max(0, preds.sum() - p['current_stock'])}</b> units immediately.</div>", unsafe_allow_html=True)
 
-# 🛡️ STAMBHA (FIXED RISK MESSAGES)
-elif st.session_state.page == "Stambha":
-    st.markdown("<div class='feature-header'>🛡️ STAMBHA</div>", unsafe_allow_html=True)
-    s = st.selectbox("Shock Scenario", ["Normal", "Port Closure (3x Lead Time)", "Factory Fire (+30d)"])
-    df = get_user_data()
-    if not df.empty:
-        for index, row in df.iterrows():
-            ttr = row['lead_time'] * (3 if "Port" in s else 1)
-            tts = round(row['current_stock'] / 12, 1)
-            if tts < ttr:
-                st.error(f"🚨 **CRITICAL ALERT:** {row['name']} will run out in {tts} days. Recovery time: {ttr} days. IMMEDIATE ACTION.")
-            elif tts < (ttr * 1.5):
-                st.warning(f"🟡 **WARNING:** {row['name']} buffer is low ({tts} days). Monitor supplier: {row['supplier']}.")
-        st.table(df[['name', 'current_stock', 'lead_time', 'supplier']])
+# 📝 NYASA (UPLOAD FIRST)
+elif st.session_state.page == "Nyasa":
+    st.markdown("<div class='feature-header'>📝 NYASA</div>", unsafe_allow_html=True)
+    t1, t2, t3 = st.tabs(["📥 Bulk Sync", "✍️ Manual", "📄 PO Gen"])
+    with t1:
+        f = st.file_uploader("Upload CSV", type="csv")
+        if f and st.button("Synchronize"):
+            u_df = pd.read_csv(f); u_df['username'] = st.session_state.user
+            for col in ['category','supplier','image_url','reviews']: u_df[col] = u_df.get(col, "")
+            with get_db() as conn: u_df.to_sql('products', conn, if_exists='append', index=False)
+            st.success("Synced.")
+    with t2:
+        with st.form("manual"):
+            n = st.text_input("Name"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead", 1); img = st.text_input("Img URL"); rev = st.text_area("Reviews")
+            if st.form_submit_button("Commit"):
+                with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url, reviews) VALUES (?,?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img, rev))
+                st.success("Saved.")
+    with t3:
+        df_po = get_user_data()
+        if not df_po.empty:
+            t = st.selectbox("Select for PO", df_po['name'])
+            if st.button("Generate PO"): st.code(f"PO-ID: #ARH-{np.random.randint(1000,9999)}\nITEM: {t}")
 
 # 🎙️ SAMVADA (CHAT)
 elif st.session_state.page == "Samvada":
@@ -249,8 +258,7 @@ elif st.session_state.page == "Samvada":
     if key:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
         for m in st.session_state.chat_history:
-            with st.chat_message(m["role"]):
-                st.markdown(m["content"])
+            with st.chat_message(m["role"]): st.markdown(m["content"])
         u_in = st.chat_input("Strategic query...")
         if u_in:
             st.session_state.chat_history.append({"role":"user", "content":u_in})
@@ -258,46 +266,3 @@ elif st.session_state.page == "Samvada":
             res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
             ans = res.choices[0].message.content
             st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun()
-
-# --- OTHER NODES: VITTA, MITHRA, NYASA logic from previous versions ---
-elif st.session_state.page == "Vitta":
-    st.markdown("<div class='feature-header'>💰 VITTA</div>", unsafe_allow_html=True)
-    df = get_user_data()
-    if not df.empty:
-        v = (df['current_stock'] * df['unit_price']).sum()
-        c1, c2 = st.columns(2)
-        with c1:
-            st.markdown(f"<div class='financial-stat'>Inventory Value<br><h2>₹{v:,.0f}</h2></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk<br><h2 style='color:red;'>₹{v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
-        with c2:
-            st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark", title="Allocation"), use_container_width=True)
-
-elif st.session_state.page == "Mithra":
-    st.markdown("<div class='feature-header'>🤝 MITHRA</div>", unsafe_allow_html=True)
-    df = get_user_data()
-    if not df.empty:
-        df['Reliability'] = (100 - (df['lead_time'] * 2)).clip(50, 99)
-        st.plotly_chart(px.bar(df, x='supplier', y='Reliability', color='Reliability', template='plotly_dark'))
-        st.dataframe(df[['supplier', 'name', 'lead_time', 'Reliability']], use_container_width=True)
-
-elif st.session_state.page == "Nyasa":
-    st.markdown("<div class='feature-header'>📝 NYASA</div>", unsafe_allow_html=True)
-    t1, t2, t3 = st.tabs(["📥 Bulk Sync", "✍️ Manual Registry", "📄 PO Gen"])
-    with t1:
-        f = st.file_uploader("Upload CSV", type="csv")
-        if f and st.button("Sync Data"):
-            u_df = pd.read_csv(f); u_df['username'] = st.session_state.user
-            for col in ['category','supplier','image_url','reviews']: u_df[col] = u_df.get(col, "")
-            with get_db() as conn: u_df.to_sql('products', conn, if_exists='append', index=False)
-            st.success("Synced.")
-    with t2:
-        with st.form("man_add"):
-            n = st.text_input("Name"); s = st.number_input("Stock", 0); p = st.number_input("Price", 0.0); lt = st.number_input("Lead", 1); img = st.text_input("Img URL"); rev = st.text_area("Revs")
-            if st.form_submit_button("Commit"):
-                with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url, reviews) VALUES (?,?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img, rev))
-                st.success("Saved.")
-    with t3:
-        df_po = get_user_data()
-        if not df_po.empty:
-            t = st.selectbox("Select for PO", df_po['name'])
-            if st.button("Generate"): st.code(f"PO-ID: #ARH-{np.random.randint(1000,9999)}\nITEM: {t}")
