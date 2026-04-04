@@ -38,7 +38,7 @@ def apply_aroha_style():
         [data-testid="stSidebar"] { background-color: #080A0C !important; border-right: 1px solid #1F2229; min-width: 400px; }
         section[data-testid="stSidebar"] .stButton > button { 
             background: transparent !important; border: 2px solid rgba(0, 212, 255, 0.4) !important; 
-            color: #FFFFFF !important; text-align: left !important; padding: 12px 18px !important; width: 100%; 
+            color: #FFFFFF !important; text-align: left !important; padding: 15px 18px !important; width: 100%; 
             font-size: 1.5rem; font-weight: 800 !important; letter-spacing: 1px;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); margin-bottom: 5px; transition: 0.3s;
         }
@@ -67,7 +67,7 @@ def apply_aroha_style():
 apply_aroha_style()
 
 # --- 2. DATABASE ---
-DB_FILE = 'aroha_master_v70.db'
+DB_FILE = 'aroha_master_v71.db'
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -116,7 +116,7 @@ if not st.session_state.auth:
     st.stop()
 
 # --- 5. TOP TICKER ---
-st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] Neural link active for {st.session_state.user.upper()} // [LOGISTICS] Hover over Spandana Map for Precision Addresses // [MITHRA] Supplier Reliability Scores recalculated // [VITTA] Capital allocation efficiency at 94.2%.</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] Neural link active for {st.session_state.user.upper()} // [LOGISTICS] Hover over Spandana Map for Precision Addresses // [MITHRA] Supplier Reliability Scores recalculated // [SANCHARA] Punah-Returns Loop updated dynamically.</div></div>", unsafe_allow_html=True)
 
 # --- 6. SIDEBAR ---
 with st.sidebar:
@@ -151,30 +151,26 @@ if st.session_state.page == "Dashboard":
     with c2: st.metric("💰 Treasury Value", f"₹{val:,.0f}")
     with c3: st.metric("🛡️ System Integrity", "OPTIMAL")
 
-# VITTA-FINANCE (RESTORED METRICS + PIE CHART)
+# VITTA-FINANCE
 elif st.session_state.page == "Vitta":
     st.markdown("<div class='feature-header'>💰 VITTA</div>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
         total_v = (df['current_stock'] * df['unit_price']).sum()
-        idle_v = total_v * 0.15 # 15% Estimated holding cost
-        
+        idle_v = total_v * 0.15 
         c1, c2 = st.columns([1, 1])
         with c1:
             st.markdown(f"<div class='financial-stat'>Total Inventory Value<br><h2>₹{total_v:,.0f}</h2></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk (Holding Cost)<br><h2 style='color:red;'>₹{idle_v:,.0f}</h2></div>", unsafe_allow_html=True)
-            st.info("💡 Insight: Per capita capital risk represents the potential loss due to unsold static inventory over 30 days.")
+            st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Idle Capital Risk<br><h2 style='color:red;'>₹{idle_v:,.0f}</h2></div>", unsafe_allow_html=True)
         with c2:
             st.markdown("<div class='saas-card'><b>Capital Allocation Matrix</b>", unsafe_allow_html=True)
             st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark"), use_container_width=True)
-    else: st.warning("Add data to view financial analysis.")
 
-# MITHRA-ALLIANCE (RESTORED MATRIX + BAR CHART)
+# MITHRA-ALLIANCE
 elif st.session_state.page == "Mithra":
     st.markdown("<div class='feature-header'>🤝 MITHRA</div>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
-        # Reliability Score logic from previous high-end version
         df['Reliability Score'] = (100 - (df['lead_time'] * 2)).clip(50, 99)
         col_list, col_matrix = st.columns([2, 1])
         with col_list:
@@ -184,17 +180,25 @@ elif st.session_state.page == "Mithra":
             st.write("### Risk Profile")
             fig = px.bar(df, x='supplier', y='Reliability Score', color='Reliability Score', color_continuous_scale='Portland', template='plotly_dark')
             st.plotly_chart(fig, use_container_width=True)
-        st.info("💡 Strategic Tip: Suppliers with scores below 70% are automatically flagged for alternative sourcing.")
-    else: st.warning("No supplier data found.")
 
-# SANCHARA (MAP + DESCRIPTION + SHIPPED METRICS)
+# SANCHARA (MAP + DESCRIPTION + UPDATED FLOOR OPS + DETAILED RETURNS)
 elif st.session_state.page == "Sanchara":
     st.markdown("<div class='feature-header'>📦 SANCHARA</div>", unsafe_allow_html=True)
-    t1, t2, t3 = st.tabs(["🌐 Precision Map", "📦 Floor Ops", "↩️ Returns"])
+    t1, t2, t3 = st.tabs(["🌐 Precision Map", "📦 Floor Ops", "↩️ Returns (PUNAH)"])
+    
+    # Mock Data for Returns (Amount + Reasons)
+    df_returns = pd.DataFrame({
+        'Product': ['Quantum X1 Laptop', '4K Precision Monitor', 'Neural-Link Keyboard', 'Titanium Chassis Kit'],
+        'Amount': [4, 2, 15, 1],
+        'Reason': ['Defective Logic Board', 'Screen backlight bleed', 'Keycaps damaged in transit', 'Material mismatch'],
+        'Status': ['In Repair', 'Replacing', 'Restocking', 'Audit']
+    })
+    total_returned_qty = df_returns['Amount'].sum()
+
     with t1:
         st.subheader("Global SPANDANA Intelligence Map")
         map_points = pd.DataFrame({
-            'lat': [12.9716, 22.3193, 37.7749, 1.3521], 'lon': [77.5946, 114.1694, -122.4194, 103.8198],
+            'lat': [12.97, 22.31, 37.77, 1.35], 'lon': [77.59, 114.16, -122.41, 103.81],
             'Location': ['Main Hub', 'Component Factory', 'Strategic HQ', 'Risk Zone'],
             'Address': ['MG Road, Bangalore, India', 'Lantau Island, Hong Kong', 'Market St, San Francisco, USA', 'Jurong Island, Singapore (🔴 PORT CLOSED)'],
             'Risk': ['Low', 'Low', 'Low', '🔴 CRITICAL']
@@ -204,21 +208,28 @@ elif st.session_state.page == "Sanchara":
         st.plotly_chart(fig, use_container_width=True)
         st.markdown("""<div style='background:rgba(255,255,255,0.02); padding:15px; border-radius:10px; border:1px solid #333; margin-top:15px;'>
         <h4 style='color:#00D4FF; margin-top:0;'>🗺️ Strategic Map Description</h4>
-        <p><b>📍 Precision Hover:</b> Hover or tap any marker to view the <b>Exact Physical Address</b> and regional status.</p>
-        <p><b>🛰️ Global Link:</b> Map dots represent satellite-verified supplier nodes and high-risk disruption zones (Red).</p></div>""", unsafe_allow_html=True)
+        <p><b>📍 Precision Hover:</b> Tap or hover on dots to see <b>Exact Addresses</b>. 🔴 Red nodes indicate disrupted logistics hubs requiring immediate decision-making.</p></div>""", unsafe_allow_html=True)
+
     with t2:
+        st.subheader("Live Warehouse Throughput")
         c1, c2, c3 = st.columns(3)
         df_inv = get_user_data()
-        current_total = df_inv['current_stock'].sum() if not df_inv.empty else 0
+        current_vault_stock = df_inv['current_stock'].sum() if not df_inv.empty else 0
+        
+        # Logic: Shipped items subtract from flow, Returns add to floor assets
         c1.metric("📦 Items Shipped Today", "1,240", "↑ 12%")
-        c2.metric("🚛 New Inbound", "3,500", "Stable")
-        c3.metric("🏭 Total Floor Assets", f"{current_total + 142} Units") # Includes simulated returns
-    with t3:
-        st.subheader("PUNAH Returns Log")
-        df_ret = pd.DataFrame({'Product': ['Quantum Laptop', '4K Monitor'], 'Reason': ['Defective Logic Board', 'Screen Bleed'], 'Action': ['Repair', 'Replace']})
-        st.table(df_ret)
+        c2.metric("🚛 New Inbound Arrived", "3,500", "Stable")
+        # UPDATED FLOOR LOGIC: Current Stock + Returns
+        c3.metric("🏭 Total Floor Assets", f"{current_vault_stock + total_returned_qty} Units", f"+{total_returned_qty} Returns")
+        st.caption("Floor Assets include physical stock in vault plus recently received returns pending audit.")
 
-# PREKSHA (REVIEWS + PHOTOS RESTORED)
+    with t3:
+        st.subheader("PUNAH: Returns & Why-Analysis")
+        st.write("### Live Return Ledger")
+        st.dataframe(df_returns, use_container_width=True)
+        st.plotly_chart(px.bar(df_returns, x='Product', y='Amount', color='Reason', title="Returned Quantity by Reason", template="plotly_dark"), use_container_width=True)
+
+# PREKSHA (PHOTOS + REVIEWS RESTORED)
 elif st.session_state.page == "Preksha":
     st.markdown("<div class='feature-header'>📈 PREKSHA</div>", unsafe_allow_html=True)
     df = get_user_data()
@@ -229,13 +240,13 @@ elif st.session_state.page == "Preksha":
         with col_m:
             if p_row['image_url'] and str(p_row['image_url']) != "nan": st.image(p_row['image_url'], use_container_width=True)
             if p_row['reviews'] and str(p_row['reviews']) != "nan":
-                st.subheader("Customer Sentiment")
+                st.subheader("Sentiment Feed")
                 for r in p_row['reviews'].split('|'): st.markdown(f"<div class='review-box'>💬 {r}</div>", unsafe_allow_html=True)
         with col_v:
             sent = st.select_slider("Market Sentiment", options=[0.8, 1.0, 1.5, 2.0], value=1.0)
             preds = (np.random.randint(20, 50, 7) * sent).astype(int)
             st.plotly_chart(px.area(y=preds, title="AI Forecasting Stream", template="plotly_dark").update_traces(line_color='#00D4FF'), use_container_width=True)
-            st.markdown(f"<div class='ai-decision-box'><h3 style='color:#D4AF37; margin:0;'>🤖 AGENT SUGGESTION</h3>Reorder <b>{max(0, preds.sum() - p_row['current_stock'])}</b> units immediately.</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='ai-decision-box'><h3 style='color:#D4AF37; margin:0;'>🤖 AGENT SUGGESTION</h3>Order <b>{max(0, preds.sum() - p_row['current_stock'])}</b> units immediately.</div>", unsafe_allow_html=True)
 
 # STAMBHA (RISK MESSAGES RESTORED)
 elif st.session_state.page == "Stambha":
@@ -243,15 +254,13 @@ elif st.session_state.page == "Stambha":
     s_scenario = st.selectbox("Trigger Disruption", ["Normal", "Port Closure (3x TTR)", "Factory Fire (+30d)"])
     df = get_user_data()
     if not df.empty:
-        res_list = []
         for _, p in df.iterrows():
             ttr = p['lead_time'] * (3 if "Port" in s_scenario else 1)
             if "Fire" in s_scenario: ttr += 30
             tts = round(p['current_stock'] / 12, 1)
-            status = "🟢 Safe" if tts > ttr else "🔴 CRITICAL"
-            if status == "🔴 CRITICAL": st.error(f"⚠️ DANGER: {p['name']} risk. TTS ({tts}d) < TTR ({ttr}d).")
-            res_list.append({"Asset": p['name'], "TTS (d)": tts, "TTR (d)": ttr, "Status": status})
-        st.table(pd.DataFrame(res_list))
+            if tts < ttr: st.error(f"⚠️ DANGER: {p['name']} risk. TTS ({tts}d) < TTR ({ttr}d). STOCKOUT IMMINENT.")
+        # Summary Table
+        st.table(pd.DataFrame([{"Asset": p['name'], "TTS (d)": round(p['current_stock']/12,1), "Status": "Safe" if (p['current_stock']/12) > (p['lead_time']*(3 if "Port" in s_scenario else 1)) else "CRITICAL"} for _,p in df.iterrows()]))
 
 # NYASA, SAMVADA logic ...
 elif st.session_state.page == "Nyasa":
@@ -294,4 +303,4 @@ elif st.session_state.page == "Samvada":
             ctx = get_user_data().to_string(index=False)
             res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
             ans = res.choices[0].message.content
-            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun()
+            st.session_state.chat_history.append({"role":"assistant", "content":ans}); speak(ans); st.rerun()
