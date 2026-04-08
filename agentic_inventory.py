@@ -538,7 +538,7 @@ elif st.session_state.page == "Nyasa":
 ---
 *Generated securely by AROHA Strategic Intelligence.*
 *Turn Data Into Decisions.*
-\"\"\"
+"""
                 st.markdown(f"<div class='saas-card' style='background:rgba(0,0,0,0.5); padding:30px; font-family:monospace; margin-top:20px;'><pre style='color:#fff; white-space: pre-wrap;'>{po_text}</pre></div>", unsafe_allow_html=True)
                 st.download_button("📥 Download PO (.txt)", data=po_text, file_name=f"{po_num}.txt", mime="text/plain")
                 st.success("Draft created successfully. You can download the text record below.")
