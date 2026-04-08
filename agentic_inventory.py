@@ -20,87 +20,13 @@ st.set_page_config(
 
 def apply_aroha_style():
     st.markdown("""
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
-
-        html, body, [class*="css"] { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #050709; 
-            color: #E6E8EB; 
-        }
-
-        /* 🔥 ULTRA BRAND TITLE */
-        .brand-title { 
-            font-weight: 900;
-            font-size: 4.5rem;
-            letter-spacing: -3px;
-            background: linear-gradient(90deg, #6C63FF, #00D4FF, #38BDF8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            
-            text-shadow: 
-                0 0 10px rgba(108, 99, 255, 0.8),
-                0 0 25px rgba(0, 212, 255, 0.6),
-                0 0 50px rgba(56, 189, 248, 0.5);
-
-            animation: glowPulseBrand 2s infinite alternate;
-            margin-bottom: 5px;
-        }
-
-        @keyframes glowPulseBrand {
-            from {
-                text-shadow:
-                    0 0 10px rgba(108, 99, 255, 0.6),
-                    0 0 20px rgba(0, 212, 255, 0.4);
-            }
-            to {
-                text-shadow:
-                    0 0 20px rgba(108, 99, 255, 1),
-                    0 0 40px rgba(0, 212, 255, 0.9),
-                    0 0 80px rgba(56, 189, 248, 0.7);
-            }
-        }
-
-        .decisions-fade { 
-            color: #6C63FF; 
-            font-weight: 700; 
-            animation: glowPulse 2s infinite alternate; 
-        }
-
-        @keyframes glowPulse { 
-            from { text-shadow: 0 0 5px #6C63FF; } 
-            to { text-shadow: 0 0 15px #38BDF8; } 
-        }
-
-        /* Sidebar */
-        [data-testid="stSidebar"] { 
-            background-color: #080A0C !important; 
-            border-right: 1px solid #1F2229; 
-        }
-
-        section[data-testid="stSidebar"] .stButton > button { 
-            background: transparent !important; 
-            border: 2px solid rgba(0, 212, 255, 0.4) !important; 
-            color: #FFFFFF !important; 
-            text-align: left !important; 
-            padding: 15px 18px !important; 
-            width: 100%; 
-            font-size: 1.4rem; 
-            font-weight: 800 !important; 
-            letter-spacing: 1.2px;
-        }
-
-        .feature-header { 
-            font-size: 3.2rem !important; 
-            font-weight: 800 !important; 
-            color: #00D4FF !important; 
-            text-transform: uppercase; 
-        }
-
-        header {visibility: hidden;} 
-        footer {visibility: hidden;}
-        </style>
-    """, unsafe_allow_html=True)
+<div style='text-align:center; margin-top:-10px; margin-bottom:30px;'>
+    <div style='height:4px; width:180px; margin:auto; border-radius:10px;
+        background: linear-gradient(90deg, #6C63FF, #00D4FF);
+        box-shadow: 0 0 15px #00D4FF, 0 0 30px #6C63FF;">
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- 2. DATABASE ---
 DB_FILE = 'aroha_nexus_v121.db'
@@ -360,4 +286,4 @@ elif st.session_state.page == "Samvada":
             ctx = get_user_data().to_string(index=False)
             res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
             ans = res.choices[0].message.content
-            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun()
+            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun(
