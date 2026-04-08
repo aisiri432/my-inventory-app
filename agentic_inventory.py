@@ -482,7 +482,7 @@ elif st.session_state.page == "Nyasa":
 
 # 🎙️ SAMVADA
 elif st.session_state.page == "Samvada":
-    st.markdown("<div class='feature-header'>🎙️ SAMVADA Comms</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>🎙️ SAMVADA Voice Comms</div>", unsafe_allow_html=True)
     key = st.secrets.get("GROQ_API_KEY", None)
     if key:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
@@ -495,7 +495,27 @@ elif st.session_state.page == "Samvada":
                 st.markdown(f"<div style='text-align: left; margin-bottom: 15px;'><span style='background: #00D4FF; color: black; padding: 10px 15px; border-radius: 15px 15px 15px 0; display: inline-block; font-weight: 500;'>{m['content']}</span></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
         
+        col_text, col_voice = st.columns([3, 1])
+        
+        with col_voice:
+            # Native Streamlit audio input available in st >= 1.39
+            audio_in = st.audio_input("Speak to AROHA")
+            
         u_in = st.chat_input("Input strategic query here...")
+        
+        if audio_in:
+            with st.spinner("Listening..."):
+                try:
+                    # Send audio to Groq's super-fast Whisper model
+                    transcription = client.audio.transcriptions.create(
+                        file=("audio.wav", audio_in.getvalue()),
+                        model="whisper-large-v3"
+                    )
+                    u_in = transcription.text
+                    st.success(f"Heard: _'{u_in}'_")
+                except Exception as e:
+                    st.error(f"Audio transcription failed: {e}")
+                    
         if u_in:
             st.session_state.chat_history.append({"role":"user", "content":u_in})
             ctx = get_user_data().to_string(index=False)
