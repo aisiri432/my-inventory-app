@@ -207,13 +207,13 @@ elif st.session_state.page == "Mithra":
                 st.metric("Potential Savings", "₹12,400", "↑ 8%")
                 st.text_area("Drafted Strategy", f"Dear {vendor},\n\nWe sensed a 35% increase in volume. We request a pricing re-alignment...")
                # --- CLIENT SCOREBOARD ---
-st.markdown("### 🏆 Client Scoreboard")
+        st.markdown("### 🏆 Client Scoreboard")
 
-client_data = pd.DataFrame({
-    "Client": ["Alpha Corp", "Zenith Ltd", "Nova Industries", "Orion Traders"],
-    "Deal Value (₹)": [120000, 95000, 78000, 150000],
-    "Negotiation Success (%)": [92, 85, 78, 96],
-    "Trust Score": ["High", "Medium", "Medium", "High"]
+        client_data = pd.DataFrame({
+            "Client": ["Alpha Corp", "Zenith Ltd", "Nova Industries", "Orion Traders"],
+            "Deal Value (₹)": [120000, 95000, 78000, 150000],
+            "Negotiation Success (%)": [92, 85, 78, 96],
+            "Trust Score": ["High", "Medium", "Medium", "High"]
 })
 
 st.dataframe(client_data, use_container_width=True)
