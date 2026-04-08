@@ -21,18 +21,21 @@ st.set_page_config(
 def apply_aroha_style():
     st.markdown("""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
         /* Base Aura Aesthetics */
         .stApp {
             /* Smooth, deep violet-to-midnight gradient (Aura vibe) */
             background: radial-gradient(ellipse at top left, #2e1065 0%, #0f172a 40%, #020617 100%);
             color: #F8FAFC;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Outfit', sans-serif !important;
             letter-spacing: -0.2px;
         }
 
-        /* MASSIVE FONT SIZES FOR READABILITY */
+        /* EVEN LARGER FONT SIZES FOR READABILITY */
         p, li, span, div, label, input, select, textarea {
-            font-size: 1.25rem !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-size: 1.35rem !important; /* Bumped up */
             font-weight: 500;
         }
 
@@ -42,91 +45,96 @@ def apply_aroha_style():
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
-            font-size: 3.5rem !important;
+            font-size: 4rem !important;
             letter-spacing: -1.5px;
             margin-bottom: 0px;
         }
         .feature-header {
-            font-size: 2.8rem !important;
+            font-size: 3rem !important;
             font-weight: 800;
             color: #FFFFFF;
             margin-bottom: 24px;
             padding-bottom: 12px;
             letter-spacing: -1px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(192, 132, 252, 0.4);
+            text-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
         }
         .feature-sub {
-            color: #94a3b8;
-            font-size: 1.4rem !important;
+            color: #cbd5e1;
+            font-size: 1.5rem !important;
             font-weight: 500;
             margin-top: -15px;
             margin-bottom: 30px;
             display: block;
         }
 
-        /* Pillow/Soft Glass Cards */
+        /* HIGH-POP Glow Cards */
         .saas-card, .financial-stat, .insight-box, .ai-decision-box {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(192, 132, 252, 0.5); /* Strong vibrant border */
             margin-bottom: 24px;
-            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px 0 rgba(192, 132, 252, 0.2); /* Colored glowing shadow */
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .saas-card:hover, .financial-stat:hover, .insight-box:hover {
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(192, 132, 252, 0.3);
-            box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.3);
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(56, 189, 248, 0.7); /* Shifts to Cyan on hover */
+            box-shadow: 0 20px 50px 0 rgba(56, 189, 248, 0.3);
         }
         
         .insight-box {
-            background: linear-gradient(135deg, rgba(192, 132, 252, 0.1), transparent);
-            border-left: 4px solid #c084fc;
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.15), transparent);
+            border-left: 6px solid #c084fc;
         }
         .ai-decision-box {
-            background: rgba(56, 189, 248, 0.05);
-            border: 1px solid rgba(56, 189, 248, 0.2);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1.5px solid rgba(56, 189, 248, 0.5);
+            box-shadow: 0 10px 40px rgba(56, 189, 248, 0.2);
         }
         .ai-decision-box h3 {
             color: #7dd3fc;
             margin-top: 0;
-            font-size: 1.5rem !important;
-            font-weight: 700;
+            font-size: 1.6rem !important;
+            font-weight: 800;
         }
         .directive-msg {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid #38bdf8;
-            padding: 20px 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #38bdf8;
+            padding: 24px;
             margin-bottom: 12px;
-            border-radius: 16px;
-            color: #f1f5f9;
+            border-radius: 20px;
+            color: #f8fafc;
+            font-weight: 600;
         }
         .review-box {
-            background-color: rgba(255, 255, 255, 0.03);
-            padding: 16px 20px;
-            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 16px;
             margin-bottom: 10px;
-            color: #cbd5e1;
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         /* User Friendly Soft Inputs */
         div[data-baseweb="input"] > div, 
         div[data-baseweb="select"] > div,
         div[data-baseweb="textarea"] > div {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border-radius: 16px !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            padding: 4px 8px;
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 6px 10px;
             transition: all 0.3s ease;
         }
         div[data-baseweb="input"] > div:hover, 
         div[data-baseweb="select"] > div:hover {
-            border-color: rgba(192, 132, 252, 0.5) !important;
-            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(192, 132, 252, 0.6) !important;
+            background-color: rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.2);
         }
 
         /* Ticker */
@@ -134,18 +142,19 @@ def apply_aroha_style():
             width: 100%;
             overflow: hidden;
             background-color: transparent;
-            padding: 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(192, 132, 252, 0.3);
             margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px rgba(192,132,252,0.1);
         }
         .ticker-text {
             white-space: nowrap;
             box-sizing: border-box;
             animation: ticker 30s linear infinite;
-            color: #64748b;
-            font-weight: 500;
+            color: #e2e8f0;
+            font-weight: 600;
         }
         @keyframes ticker {
             0%   { transform: translate3d(100%, 0, 0); }
@@ -155,38 +164,39 @@ def apply_aroha_style():
         /* Metrics overriding - Huge round numbers */
         div[data-testid="stMetricValue"] {
             color: #FFFFFF !important;
-            font-size: 3.5rem !important;
+            font-size: 4rem !important;
             font-weight: 800 !important;
             letter-spacing: -2px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
         div[data-testid="stMetricLabel"] {
-            font-size: 1.3rem !important;
-            color: #94A3B8 !important;
-            font-weight: 500;
+            font-size: 1.4rem !important;
+            color: #cbd5e1 !important;
+            font-weight: 600;
         }
 
         /* ==================================================== */
-        /* CREATIVE SIDEBAR OVERHAUL (SOFT AURA)                */
+        /* CREATIVE SIDEBAR OVERHAUL                            */
         /* ==================================================== */
         
         [data-testid="stSidebar"] {
             background: rgba(15, 23, 42, 0.4) !important;
             backdrop-filter: blur(40px) !important;
             -webkit-backdrop-filter: blur(40px) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-right: 1px solid rgba(192, 132, 252, 0.2) !important;
         }
 
         /* Customizing Sidebar Buttons */
         [data-testid="stSidebar"] div.stButton > button {
             background: transparent;
             border: none;
-            border-radius: 16px;
-            color: #94a3b8;
+            border-radius: 20px;
+            color: #cbd5e1;
             text-align: left;
-            padding: 16px 20px;
-            margin-bottom: 4px;
+            padding: 18px 20px;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 1.3rem !important; 
+            font-size: 1.4rem !important; 
             width: 100%;
             transition: all 0.3s ease;
             justify-content: flex-start;
@@ -198,27 +208,28 @@ def apply_aroha_style():
 
         /* Soft Hover Effect */
         [data-testid="stSidebar"] div.stButton > button:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             color: #FFFFFF;
-            transform: scale(1.02); 
+            transform: scale(1.03); 
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
         
         /* App Primary Buttons */
         .main div.stButton>button {
-            background: #cbd5e1;
-            color: #0f172a;
+            background: linear-gradient(135deg, #c084fc, #38bdf8);
+            color: #000000;
             border: none;
-            border-radius: 16px;
-            padding: 12px 28px;
-            font-weight: 700;
-            font-size: 1.2rem !important;
+            border-radius: 20px;
+            padding: 14px 32px;
+            font-weight: 800;
+            font-size: 1.3rem !important;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(192,132,252,0.3);
         }
         .main div.stButton>button:hover {
-            background: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(56,189,248,0.4);
+            color: #000000;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -258,7 +269,7 @@ if "voice_on" not in st.session_state: st.session_state.voice_on = False
 
 # --- 4. AUTHENTICATION (Clean Vibe) ---
 if not st.session_state.auth:
-    st.markdown("<div style='text-align:center; margin-top:100px;'><h1 class='brand-title'>AROHA.</h1><p style='color:#94A3B8; font-size:1.4rem !important; font-weight: 500;'>Smart inventory, zero stress.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; margin-top:100px;'><h1 class='brand-title'>AROHA.</h1><p style='color:#cbd5e1; font-size:1.6rem !important; font-weight: 600;'>Smart inventory, zero stress.</p></div>", unsafe_allow_html=True)
     c1, col_center, c3 = st.columns([0.25, 0.5, 0.25])
     with col_center:
         m = st.tabs(["Log in", "Sign up"])
@@ -296,15 +307,15 @@ with st.sidebar:
     
     # 🎨 Aura Profile Card
     st.markdown(f"""
-    <div style='background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; text-align: center;'>
-        <div style='width: 70px; height: 70px; border-radius: 50%; background: #c084fc; color: #020617; display:flex; align-items:center; justify-content:center; font-size: 2rem; font-weight: 800; margin: 0 auto 12px auto;'>
+    <div style='background: rgba(255,255,255,0.05); padding: 24px; border-radius: 24px; border: 1.px solid rgba(192, 132, 252, 0.3); margin-bottom: 30px; text-align: center; box-shadow: 0 10px 30px rgba(192, 132, 252, 0.15);'>
+        <div style='width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #c084fc, #38bdf8); color: #FFFFFF; display:flex; align-items:center; justify-content:center; font-size: 2.2rem; font-weight: 800; margin: 0 auto 12px auto; box-shadow: 0 0 20px rgba(56,189,248,0.5);'>
             {user_initial}
         </div>
-        <div style='color: #FFFFFF; font-weight: 700; font-size: 1.4rem;'>@{st.session_state.user.lower()}</div>
+        <div style='color: #FFFFFF; font-weight: 800; font-size: 1.6rem;'>@{st.session_state.user.lower()}</div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div style='color:#64748B; font-weight:700; font-size:1rem; margin-bottom: 8px; padding-left: 10px;'>MENU</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#cbd5e1; font-weight:800; font-size:1.1rem; margin-bottom: 8px; padding-left: 10px; letter-spacing: 1px;'>MENU</div>", unsafe_allow_html=True)
     
     # Simple, direct feature descriptions (1-2 words in the button)
     if st.button("🏠 Home • Overview", use_container_width=True): 
@@ -363,7 +374,7 @@ elif st.session_state.page == "Kriya":
             if st.button("Scan item barcode"):
                 st.error("Wait, wrong item. Please double check Shelf B2.")
         with col_s:
-            st.markdown("<div class='saas-card' style='text-align:center;'><h4>Pick Speed</h4><h2 style='color:#FFFFFF; font-size:3.5rem; font-weight:800;'>42<span style='font-size:1.5rem;'>/hr</span></h2><p style='color:#34D399; font-weight:700;'>12% above average</p></div>", unsafe_allow_html=True)
+            st.markdown("<div class='saas-card' style='text-align:center;'><h4>Pick Speed</h4><h2 style='color:#FFFFFF; font-size:4rem; font-weight:800;'>42<span style='font-size:1.5rem;'>/hr</span></h2><p style='color:#34D399; font-weight:700;'>12% above average</p></div>", unsafe_allow_html=True)
             st.warning("You've been going fast for a while. Take a quick water break.")
 
     with tab_manager:
@@ -388,11 +399,12 @@ elif st.session_state.page == "Vitta":
         total_v = (df['current_stock'] * df['unit_price']).sum()
         c1, c2 = st.columns([1, 1])
         with c1:
-            st.markdown(f"<div class='saas-card'><div style='color:#94a3b8;'>Total stock value</div><div style='color:#FFFFFF; font-size:3.5rem; font-weight:800;'>₹{total_v:,.0f}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='saas-card'><div style='color:#94a3b8;'>Risk limit (Items sitting > 30 days)</div><div style='color:#f43f5e; font-size:3rem; font-weight:800;'>₹{total_v*0.15:,.0f}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='saas-card'><div style='color:#e2e8f0;'>Total stock value</div><div style='color:#FFFFFF; font-size:4rem; font-weight:800; text-shadow: 0 0 20px rgba(255,255,255,0.3);'>₹{total_v:,.0f}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='saas-card'><div style='color:#e2e8f0;'>Risk limit (Items sitting > 30 days)</div><div style='color:#f43f5e; font-size:3.5rem; font-weight:800; text-shadow: 0 0 20px rgba(244,63,94,0.3);'>₹{total_v*0.15:,.0f}</div></div>", unsafe_allow_html=True)
         with c2:
-            st.markdown("<div class='saas-card'><div style='color:#94a3b8; margin-bottom:16px;'>Value distribution</div>", unsafe_allow_html=True)
-            fig = px.pie(df, values='current_stock', names='name', hole=0.6, template="plotly_dark", color_discrete_sequence=px.colors.sequential.Amd)
+            st.markdown("<div class='saas-card'><div style='color:#e2e8f0; margin-bottom:16px;'>Value distribution</div>", unsafe_allow_html=True)
+            # FIXED THE PLOTLY VALUE BUG HERE - USED PLASMA INSTEAD OF AMD
+            fig = px.pie(df, values='current_stock', names='name', hole=0.6, template="plotly_dark", color_discrete_sequence=px.colors.sequential.Plasma)
             fig.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=350)
             st.plotly_chart(fig, use_container_width=True)
             st.markdown("</div>", unsafe_allow_html=True)
@@ -417,8 +429,8 @@ elif st.session_state.page == "Mithra":
                     f"Hey {vendor},\n\nHope you're doing well. We've been looking at our Q3 numbers and want to chat about adjusting pricing to keep this partnership scaling well for both of us..."
                 )
 
-        st.markdown("<hr style='border-color:rgba(255,255,255,0.1); margin: 40px 0;'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='font-size:1.5rem; color:#FFFFFF;'>Supplier scorecards</h3>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-color:rgba(192, 132, 252, 0.3); margin: 40px 0;'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='font-size:2rem; color:#FFFFFF;'>Supplier scorecards</h3>", unsafe_allow_html=True)
 
         client_data = pd.DataFrame({
             "Supplier": ["Alpha Corp", "Zenith", "Nova", "Orion"],
@@ -451,9 +463,11 @@ elif st.session_state.page == "Sanchara":
         fig.update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True)
     with t2:
-        c1, c2 = st.columns(2)
+        # ADDED THE RETURNED PRODUCTS METRIC HERE
+        c1, c2, c3 = st.columns(3)
         c1.metric("Ships today", "1,240 items", "+5%")
         c2.metric("Items in house", f"{get_user_data()['current_stock'].sum() if not get_user_data().empty else 0} items")
+        c3.metric("Returned products", "142 items", "-12% vs last week", delta_color="inverse")
     with t3:
         st.table(pd.DataFrame({'Item':['Quantum X1','4K Screen'], 'Shortage':[4,2], 'Note':['Failed quality check','Broken in transit']}))
 
@@ -493,7 +507,7 @@ elif st.session_state.page == "Stambha":
             ttr = p['lead_time'] * (3 if "port" in s.lower() else 1)
             tts = round(p['current_stock'] / 12, 1) 
             if tts < ttr: 
-                st.markdown(f"<div class='saas-card' style='border-left: 6px solid #f43f5e;'><div style='color:#f43f5e; font-weight:800; font-size:1.3rem; margin-bottom:8px;'>⚠️ RISK FOUND</div><div style='color:#f1f5f9;'>If you don't act, you'll run out of <b>{p['name']}</b> in {tts} days. It takes {ttr} days to restock.</div></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='saas-card' style='border-left: 6px solid #f43f5e;'><div style='color:#f43f5e; font-weight:800; font-size:1.6rem; margin-bottom:8px;'>⚠️ RISK FOUND</div><div style='color:#f8fafc;'>If you don't act, you'll run out of <b>{p['name']}</b> in {tts} days. It takes {ttr} days to restock.</div></div>", unsafe_allow_html=True)
         st.dataframe(df[['name', 'current_stock', 'lead_time']], use_container_width=True)
 
 # NYASA
@@ -534,9 +548,9 @@ elif st.session_state.page == "Samvada":
         st.markdown("<div class='saas-card' style='height: 500px; overflow-y: auto; background-color: rgba(0,0,0,0.2)'>", unsafe_allow_html=True)
         for m in st.session_state.chat_history:
             if m["role"] == "user":
-                st.markdown(f"<div style='text-align: right; margin-bottom: 20px;'><span style='background: #c084fc; color: #020617; padding: 16px 24px; border-radius: 20px 20px 0 20px; display: inline-block; font-weight:600;'>{m['content']}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: right; margin-bottom: 20px;'><span style='background: linear-gradient(135deg, #c084fc, #38bdf8); color: #020617; padding: 20px 28px; border-radius: 24px 24px 0 24px; display: inline-block; font-weight:700; box-shadow: 0 4px 15px rgba(192,132,252,0.3);'>{m['content']}</span></div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div style='text-align: left; margin-bottom: 20px;'><span style='background: rgba(255,255,255,0.1); color: #f8fafc; padding: 16px 24px; border-radius: 20px 20px 20px 0; display: inline-block; font-weight:500; border: 1px solid rgba(255,255,255,0.2);'>{m['content']}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: left; margin-bottom: 20px;'><span style='background: rgba(255,255,255,0.05); color: #f8fafc; padding: 20px 28px; border-radius: 24px 24px 24px 0; display: inline-block; font-weight:600; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);'>{m['content']}</span></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
         
         col_text, col_voice = st.columns([4, 1])
