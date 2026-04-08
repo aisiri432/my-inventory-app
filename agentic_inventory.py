@@ -181,6 +181,8 @@ def apply_aroha_style():
             width: 100%;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             justify-content: flex-start;
+            white-space: pre-line;
+            line-height: 1.4;
         }
 
         [data-testid="stSidebar"] div.stButton > button[kind="secondary"]:hover {
@@ -208,6 +210,8 @@ def apply_aroha_style():
             transform: scale(1.02);
             position: relative;
             overflow: hidden;
+            white-space: pre-line;
+            line-height: 1.4;
         }
         
         [data-testid="stSidebar"] div.stButton > button[kind="primary"]::after {
@@ -363,22 +367,25 @@ with st.sidebar:
     st.markdown("<br><div style='color:#94a3b8; font-weight:700; font-size:0.85rem; margin-bottom: 12px; padding-left: 6px; letter-spacing: 2px; text-transform:uppercase;'>Modules</div>", unsafe_allow_html=True)
 
     nodes = [
-        ("📦 INVENTORY", "Nyasa", "Product Catalog"),
-        ("🔮 FORECAST", "Preksha", "Demand Prediction"),
-        ("🛡️ RISK CHECK", "Stambha", "Supply Chain Risk"),
-        ("👥 EMPLOYEES", "Kriya", "Team Performance"),
-        ("🎙️ AI ASSISTANT", "Samvada", "Voice Intelligence"),
-        ("💸 FINANCES", "Vitta", "Revenue & Costs"),
-        ("🗺️ TRACKING", "Sanchara", "Global Map"),
-        ("🤝 VENDORS", "Mithra", "Supplier Intel")
+        ("NYASA", "Nyasa", "Inventory Catalog", "📦"),
+        ("PREKSHA", "Preksha", "Demand Forecaster", "🔮"),
+        ("STAMBHA", "Stambha", "Risk Check", "🛡️"),
+        ("KRIYA", "Kriya", "Employee Ops", "👥"),
+        ("SAMVADA", "Samvada", "Voice Chatbot", "🎙️"),
+        ("VITTA", "Vitta", "Finance Dashboard", "💸"),
+        ("SANCHARA", "Sanchara", "Live Map", "🗺️"),
+        ("MITHRA", "Mithra", "Supplier Relations", "🤝")
     ]
     
-    for label, page_id, desc in nodes:
+    for title, page_id, desc, icon in nodes:
         b_type = "primary" if st.session_state.page == page_id else "secondary"
-        if st.button(label, key=f"nav_{page_id}", type=b_type, use_container_width=True):
+        label = f"{icon} {title}\n<small style='font-weight:500; font-size:0.85rem;'>{desc}</small>"
+        # Streamlit button doesn't parse HTML but plain \n works with our CSS.
+        label_plain = f"{icon} {title}\n{desc}"
+        if st.button(label_plain, key=f"nav_{page_id}", type=b_type, use_container_width=True):
             st.session_state.page = page_id
             st.rerun()
-        
+
     st.markdown("<br><hr style='border-color: rgba(192,132,252,0.2);'><br>", unsafe_allow_html=True)
     if st.button("🚪 Log out", use_container_width=True): 
         st.session_state.auth = False
@@ -387,7 +394,7 @@ with st.sidebar:
 # --- 7. LOGIC NODES ---
 # OVERVIEW (Dashboard)
 if st.session_state.page == "Dashboard":
-    st.markdown("<div class='feature-header'>Home Dashboard</div><span class='feature-sub'>Overview of your entire system capabilities.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>AROHA Dashboard</div><span class='feature-sub'>Overview of your entire system capabilities.</span>", unsafe_allow_html=True)
     df = get_user_data()
     val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
     c1, c2, c3 = st.columns(3)
@@ -411,18 +418,18 @@ if st.session_state.page == "Dashboard":
     
     # Feature Grid Display
     cols = st.columns(4)
-    for i, (label, page_id, desc) in enumerate(nodes):
+    for i, (title, page_id, desc, icon) in enumerate(nodes):
         with cols[i % 4]:
             st.markdown(f"""
             <div style='background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.3); border-radius:12px; padding:20px 15px; margin-bottom:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;'>
-                <div style='font-size: 1.15rem; font-weight: 700; color: #ffffff;'>{label}</div>
+                <div style='font-size: 1.15rem; font-weight: 800; color: #ffffff; letter-spacing:1px;'>{icon} {title}</div>
                 <div style='font-size: 0.95rem; color: #38bdf8; margin-top: 8px; font-weight: 500;'>{desc}</div>
             </div>
             """, unsafe_allow_html=True)
 
 # KRIYA (Employees)
 elif st.session_state.page == "Kriya":
-    st.markdown("<div class='feature-header'>Employees & Operations</div><span class='feature-sub'>Track team tasks and overall employee performance.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>KRIYA</div><span class='feature-sub'>Employee Operations & Team Performance.</span>", unsafe_allow_html=True)
     
     tab_worker, tab_manager = st.tabs(["🎯 Active Tasks", "📊 Employee Performance"])
 
@@ -458,7 +465,7 @@ elif st.session_state.page == "Kriya":
 
 # VITTA (Finances)
 elif st.session_state.page == "Vitta":
-    st.markdown("<div class='feature-header'>Finances</div><span class='feature-sub'>A clear overview of revenue, inventory costs, and capital.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>VITTA</div><span class='feature-sub'>A clear overview of revenue, inventory costs, and capital.</span>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
         total_v = (df['current_stock'] * df['unit_price']).sum()
@@ -475,7 +482,7 @@ elif st.session_state.page == "Vitta":
 
 # MITHRA+ (Vendors)
 elif st.session_state.page == "Mithra":
-    st.markdown("<div class='feature-header'>Vendors & Partners</div><span class='feature-sub'>Manage your suppliers, contracts, and delivery success rates.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>MITHRA</div><span class='feature-sub'>Manage your suppliers, contracts, and delivery success rates.</span>", unsafe_allow_html=True)
     df = get_user_data()
     
     if not df.empty:
@@ -517,7 +524,7 @@ elif st.session_state.page == "Mithra":
 
 # SANCHARA (Tracking)
 elif st.session_state.page == "Sanchara":
-    st.markdown("<div class='feature-header'>Live Tracking</div><span class='feature-sub'>Monitor your physical inventory across multiple locations globally.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>SANCHARA</div><span class='feature-sub'>Monitor your physical inventory across multiple locations globally.</span>", unsafe_allow_html=True)
     t1, t2, t3 = st.tabs(["🌍 Global Map", "⚡ Total Shipments", "🚨 Active Alerts"])
     with t1:
         map_pts = pd.DataFrame({'lat':[12.9716, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Primary','Warehouse','Storefront','Delayed Area'], 'Location':['Bangalore','HK','SF','Singapore']})
@@ -534,7 +541,7 @@ elif st.session_state.page == "Sanchara":
 
 # PREKSHA (Forecast)
 elif st.session_state.page == "Preksha":
-    st.markdown("<div class='feature-header'>Demand Forecast</div><span class='feature-sub'>Use predictive AI to figure out what stock you will need next.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>PREKSHA</div><span class='feature-sub'>Use predictive AI to figure out what stock you will need next.</span>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
         target = st.selectbox("Select a Product to Analyze", df['name'])
@@ -560,7 +567,7 @@ elif st.session_state.page == "Preksha":
 
 # STAMBHA (Risk Check)
 elif st.session_state.page == "Stambha":
-    st.markdown("<div class='feature-header'>Risk Check</div><span class='feature-sub'>Simulate terrible situations (like shipping delays) to see if you survive.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>STAMBHA</div><span class='feature-sub'>Simulate terrible situations (like shipping delays) to see if you survive.</span>", unsafe_allow_html=True)
     s = st.selectbox("Choose a Disaster Scenario to Test", ["Normal Operations", "Severe Supplier Delay (Takes 3x Longer)"])
     df = get_user_data()
     if not df.empty:
@@ -573,7 +580,7 @@ elif st.session_state.page == "Stambha":
 
 # NYASA (Inventory)
 elif st.session_state.page == "Nyasa":
-    st.markdown("<div class='feature-header'>Inventory Catalog</div><span class='feature-sub'>Add new products and manage your database here.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>NYASA</div><span class='feature-sub'>Add new products and manage your database here.</span>", unsafe_allow_html=True)
     t1, t2, t3 = st.tabs(["📥 Add Single Item", "📦 Batch Upload (CSV)", "📄 Generate Purchase Order"])
     
     with t3:
@@ -641,7 +648,7 @@ elif st.session_state.page == "Nyasa":
 
 # SAMVADA (Voice AI)
 elif st.session_state.page == "Samvada":
-    st.markdown("<div class='feature-header'>AI Assistant</div><span class='feature-sub'>Use your microphone to ask the AI questions about your data!</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>SAMVADA</div><span class='feature-sub'>Use your microphone to ask the AI questions about your data!</span>", unsafe_allow_html=True)
     key = st.secrets.get("GROQ_API_KEY", None)
     
     if key:
