@@ -1,6 +1,4 @@
-Here is the full, final colorful Streamlit code for your `app.py`. You can seamlessly copy and paste this into your project.
 
-```python
 import streamlit as st
 import pandas as pd
 import numpy as np
