@@ -520,7 +520,7 @@ elif st.session_state.page == "Nyasa":
             if not supp or not items:
                 st.warning("Please fill in Supplier and Items to generate PO.")
             else:
-                po_text = f\"\"\"# PURCHASE ORDER
+                po_text = f"""# PURCHASE ORDER
 **PO Number:** {po_num}
 **Date Generated:** {datetime.now().strftime("%Y-%m-%d")}
 **Requested By:** {st.session_state.user.upper()}
