@@ -19,46 +19,88 @@ st.set_page_config(
 )
 
 def apply_aroha_style():
-    st.markdown(f"""
+    st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
-        html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; background-color: #050709; color: #E6E8EB; }}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-        /* 📟 SIDEBAR: RADIANT HOLLOW BLUE GLOW */
-        [data-testid="stSidebar"] {{ background-color: #080A0C !important; border-right: 1px solid #1F2229; min-width: 420px; }}
-        @media (max-width: 768px) {{ [data-testid="stSidebar"] {{ min-width: 100% !important; }} }}
+        html, body, [class*="css"] { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #050709; 
+            color: #E6E8EB; 
+        }
 
-        section[data-testid="stSidebar"] .stButton > button {{ 
-            background: transparent !important; border: 2px solid rgba(0, 212, 255, 0.4) !important; 
-            color: #FFFFFF !important; text-align: left !important; padding: 15px 18px !important; width: 100%; 
-            font-size: 1.6rem; font-weight: 800 !important; letter-spacing: 1.5px;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); margin-bottom: 5px; transition: 0.3s;
-        }}
-        section[data-testid="stSidebar"] .stButton > button:hover {{ border-color: #00D4FF !important; box-shadow: 0 0 20px rgba(0, 212, 255, 0.6); color: #00D4FF !important; }}
-        .sidebar-sub {{ font-size: 0.95rem !important; color: #6C63FF; font-weight: 700; display: block; margin-top: -10px; margin-bottom: 25px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px; }}
+        /* 🔥 ULTRA BRAND TITLE */
+        .brand-title { 
+            font-weight: 900;
+            font-size: 4.5rem;
+            letter-spacing: -3px;
+            background: linear-gradient(90deg, #6C63FF, #00D4FF, #38BDF8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            text-shadow: 
+                0 0 10px rgba(108, 99, 255, 0.8),
+                0 0 25px rgba(0, 212, 255, 0.6),
+                0 0 50px rgba(56, 189, 248, 0.5);
 
-        /* 💎 BRANDING & HUD */
-        .brand-title {{ font-weight: 800; color: #FFFFFF; letter-spacing: -2px; text-shadow: 0 0 25px rgba(108, 99, 255, 0.6); margin-bottom: 0; }}
-        .decisions-fade {{ color: #6C63FF; font-weight: 700; animation: glowPulse 2s infinite alternate; }}
-        @keyframes glowPulse {{ from {{ text-shadow: 0 0 5px #6C63FF; }} to {{ text-shadow: 0 0 15px #38BDF8; }} }}
-        
-        .saas-card {{ background: #0D1117; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }}
-        .ai-decision-box {{ background: rgba(17, 25, 40, 0.75); border: 2px solid #D4AF37; padding: 25px; border-radius: 15px; border-left: 12px solid #D4AF37; margin-top: 25px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }}
-        .feature-header {{ font-size: 3.2rem !important; font-weight: 800 !important; color: #00D4FF !important; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 212, 255, 0.3); text-transform: uppercase; }}
-        .review-box {{ background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid #222; margin-bottom: 10px; font-size: 0.85rem; border-left: 4px solid #7F00FF; }}
-        .financial-stat {{ background: #111; padding: 20px; border-radius: 10px; border-top: 4px solid #D4AF37; text-align: center; }}
-        .directive-msg {{ background: rgba(0, 212, 255, 0.05); border-left: 4px solid #00D4FF; padding: 15px; border-radius: 10px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }}
-        .insight-box {{ background: rgba(0, 212, 255, 0.05); border: 1px solid #00D4FF; padding: 15px; border-radius: 10px; margin-bottom: 20px; }}
+            animation: glowPulseBrand 2s infinite alternate;
+            margin-bottom: 5px;
+        }
 
-        @keyframes ticker {{ 0% {{ transform: translateX(100%); }} 100% {{ transform: translateX(-100%); }} }}
-        .ticker-wrap {{ width: 100%; overflow: hidden; background: rgba(0, 212, 255, 0.05); border-bottom: 1px solid rgba(0, 212, 255, 0.2); padding: 8px 0; margin-bottom: 20px; }}
-        .ticker-text {{ display: inline-block; white-space: nowrap; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #00D4FF; animation: ticker 40s linear infinite; }}
+        @keyframes glowPulseBrand {
+            from {
+                text-shadow:
+                    0 0 10px rgba(108, 99, 255, 0.6),
+                    0 0 20px rgba(0, 212, 255, 0.4);
+            }
+            to {
+                text-shadow:
+                    0 0 20px rgba(108, 99, 255, 1),
+                    0 0 40px rgba(0, 212, 255, 0.9),
+                    0 0 80px rgba(56, 189, 248, 0.7);
+            }
+        }
 
-        header {{visibility: hidden;}} footer {{visibility: hidden;}}
+        .decisions-fade { 
+            color: #6C63FF; 
+            font-weight: 700; 
+            animation: glowPulse 2s infinite alternate; 
+        }
+
+        @keyframes glowPulse { 
+            from { text-shadow: 0 0 5px #6C63FF; } 
+            to { text-shadow: 0 0 15px #38BDF8; } 
+        }
+
+        /* Sidebar */
+        [data-testid="stSidebar"] { 
+            background-color: #080A0C !important; 
+            border-right: 1px solid #1F2229; 
+        }
+
+        section[data-testid="stSidebar"] .stButton > button { 
+            background: transparent !important; 
+            border: 2px solid rgba(0, 212, 255, 0.4) !important; 
+            color: #FFFFFF !important; 
+            text-align: left !important; 
+            padding: 15px 18px !important; 
+            width: 100%; 
+            font-size: 1.4rem; 
+            font-weight: 800 !important; 
+            letter-spacing: 1.2px;
+        }
+
+        .feature-header { 
+            font-size: 3.2rem !important; 
+            font-weight: 800 !important; 
+            color: #00D4FF !important; 
+            text-transform: uppercase; 
+        }
+
+        header {visibility: hidden;} 
+        footer {visibility: hidden;}
         </style>
     """, unsafe_allow_html=True)
-
-apply_aroha_style()
 
 # --- 2. DATABASE ---
 DB_FILE = 'aroha_nexus_v121.db'
