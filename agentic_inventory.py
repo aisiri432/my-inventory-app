@@ -154,33 +154,74 @@ def apply_aroha_style():
         /* ==================================================== */
         
         [data-testid="stSidebar"] {
-            background: rgba(15, 23, 42, 0.6) !important;
-            backdrop-filter: blur(25px) !important;
-            border-right: 1px solid rgba(192, 132, 252, 0.2) !important; 
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%) !important;
+            border-right: 1px solid rgba(192, 132, 252, 0.4) !important; 
         }
 
-        /* Customizing Sidebar Buttons */
-        [data-testid="stSidebar"] div.stButton > button {
-            background: transparent; 
-            border: none;
-            border-radius: 10px;
-            color: #cbd5e1;
+        [data-testid="stSidebar"]::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #c084fc, #38bdf8, #34d399);
+            z-index: 100;
+        }
+
+        /* Inactive Buttons (Secondary) */
+        [data-testid="stSidebar"] div.stButton > button[kind="secondary"] {
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: #94a3b8;
             text-align: left;
-            padding: 12px 18px;
-            margin-bottom: 6px;
+            padding: 14px 20px;
+            margin-bottom: 10px;
             font-weight: 600;
-            font-size: 1.15rem !important; 
+            font-size: 1.05rem !important; 
             width: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             justify-content: flex-start;
         }
 
-        /* Colorful Highlight */
-        [data-testid="stSidebar"] div.stButton > button:hover {
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
-            color: #ffffff;
-            border-left: 4px solid #38bdf8;
+        [data-testid="stSidebar"] div.stButton > button[kind="secondary"]:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #e2e8f0;
             transform: translateX(4px); 
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Active Button (Primary) - MASSIVE POP */
+        [data-testid="stSidebar"] div.stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, #c084fc 0%, #38bdf8 100%);
+            border: none;
+            border-radius: 12px;
+            color: #020617 !important;
+            text-align: left;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            font-weight: 800;
+            font-size: 1.15rem !important; 
+            width: 100%;
+            justify-content: flex-start;
+            box-shadow: 0 8px 25px rgba(192, 132, 252, 0.6);
+            transform: scale(1.02);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-testid="stSidebar"] div.stButton > button[kind="primary"]::after {
+            content: '●';
+            position: absolute;
+            right: 15px;
+            color: #020617;
+            font-size: 0.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; text-shadow: 0 0 10px #fff; }
+            100% { opacity: 0.5; }
         }
         
         /* Main Action Buttons  */
@@ -314,25 +355,26 @@ with st.sidebar:
     
     st.markdown("<div style='color:#94a3b8; font-weight:700; font-size:0.85rem; margin-bottom: 12px; padding-left: 6px; letter-spacing: 2px; text-transform:uppercase;'>Overview</div>", unsafe_allow_html=True)
     
-    if st.button("⌂ HOME", use_container_width=True): 
+    if st.button("🏠 HOME ✦ Hub", key="nav_home", type="primary" if st.session_state.page == "Dashboard" else "secondary", use_container_width=True): 
         st.session_state.page = "Dashboard"
         st.rerun()
 
     st.markdown("<br><div style='color:#94a3b8; font-weight:700; font-size:0.85rem; margin-bottom: 12px; padding-left: 6px; letter-spacing: 2px; text-transform:uppercase;'>Modules</div>", unsafe_allow_html=True)
 
     nodes = [
-        ("NYASA ✦ Inventory", "Nyasa"),
-        ("PREKSHA ✦ Forecast", "Preksha"),
-        ("STAMBHA ✦ Risk Check", "Stambha"),
-        ("KRIYA ✦ Team Ops", "Kriya"),
-        ("SAMVADA ✦ Voice AI", "Samvada"),
-        ("VITTA ✦ Finances", "Vitta"),
-        ("SANCHARA ✦ Live Map", "Sanchara"),
-        ("MITHRA ✦ Suppliers", "Mithra")
+        ("📦 NYASA ✦ Catalog", "Nyasa"),
+        ("🔮 PREKSHA ✦ Forecast", "Preksha"),
+        ("🛡️ STAMBHA ✦ Risk Check", "Stambha"),
+        ("🤖 KRIYA ✦ Team Ops", "Kriya"),
+        ("🎙️ SAMVADA ✦ Voice AI", "Samvada"),
+        ("💸 VITTA ✦ Treasury", "Vitta"),
+        ("🗺️ SANCHARA ✦ Global Map", "Sanchara"),
+        ("🤝 MITHRA ✦ Partners", "Mithra")
     ]
     
     for label, page_id in nodes:
-        if st.button(label, key=f"nav_{page_id}", use_container_width=True):
+        b_type = "primary" if st.session_state.page == page_id else "secondary"
+        if st.button(label, key=f"nav_{page_id}", type=b_type, use_container_width=True):
             st.session_state.page = page_id
             st.rerun()
         
