@@ -286,4 +286,4 @@ elif st.session_state.page == "Samvada":
             ctx = get_user_data().to_string(index=False)
             res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
             ans = res.choices[0].message.content
-            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun(
+            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun()
