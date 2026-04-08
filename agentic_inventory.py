@@ -15,16 +15,15 @@ st.set_page_config(
     page_title="AROHA | Strategic Intelligence", 
     layout="wide", 
     page_icon="💠",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 # LOGO SVG DEFINITION
 logo_svg = """
 <svg width="500" height="500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M50 5L10 85H30L50 35L70 85H90L50 5Z" fill="url(#paint0_linear_logo)"/>
-<circle cx="50" cy="45" r="5" fill="#00D4FF"/>
-<defs><linearGradient id="paint0_linear_logo" x1="10" y1="5" x2="90" y2="85" gradientUnits="userSpaceOnUse">
-<stop stop-color="#7F00FF"/><stop offset="1" stop-color="#00D4FF"/></linearGradient></defs></svg>
+<path d="M50 5L10 85H30L50 35L70 85H90L50 5Z" fill="white" fill-opacity="0.1"/>
+<circle cx="50" cy="45" r="5" fill="white" fill-opacity="0.2"/>
+</svg>
 """
 
 def apply_aroha_style():
@@ -33,50 +32,45 @@ def apply_aroha_style():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; background-color: #050709; color: #E6E8EB; }}
 
-        /* 📱 UNIVERSAL RESPONSIVITY */
-        @media (max-width: 768px) {{
-            .brand-title {{ font-size: 2.2rem !important; }}
-            .feature-header {{ font-size: 2rem !important; }}
-            section[data-testid="stSidebar"] {{ min-width: 100% !important; }}
-        }}
-
-        /* 💠 PERSISTENT LOGO WATERMARK */
+        /* 💠 WATERMARK BACKGROUND */
         [data-testid="stAppViewContainer"]::before {{
             content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
             width: 70vw; height: 70vw; background-image: url('data:image/svg+xml;utf8,{logo_svg}');
             background-repeat: no-repeat; background-position: center; opacity: 0.05; z-index: -1; pointer-events: none; filter: blur(5px);
         }}
 
-        /* 📟 SIDEBAR: RADIANT HOLLOW BLUE GLOW */
-        [data-testid="stSidebar"] {{ background-color: #080A0C !important; border-right: 1px solid #1F2229; min-width: 420px !important; }}
-        section[data-testid="stSidebar"] .stButton > button {{ 
-            background: transparent !important; border: 2px solid rgba(0, 212, 255, 0.4) !important; 
-            color: #FFFFFF !important; text-align: left !important; padding: 15px 18px !important; width: 100%; 
-            font-size: 1.6rem !important; font-weight: 800 !important; letter-spacing: 1.5px;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); margin-bottom: 5px; transition: 0.3s;
+        /* 📱 DYNAMIC RESPONSIVITY (Mobile vs Laptop) */
+        @media (min-width: 768px) {{
+            [data-testid="stSidebar"] {{ min-width: 420px !important; max-width: 420px !important; }}
+            .brand-title {{ font-size: 3.5rem !important; }}
+            .feature-header {{ font-size: 3.2rem !important; }}
+        }}
+        @media (max-width: 767px) {{
+            .brand-title {{ font-size: 2.2rem !important; }}
+            .feature-header {{ font-size: 1.8rem !important; }}
+            section[data-testid="stSidebar"] .stButton > button {{ font-size: 1.2rem !important; }}
+            .sidebar-sub {{ font-size: 0.75rem !important; margin-left: 10px !important; }}
         }}
 
-        /* 🌈 SPECTRUM COLORS */
-        div[data-testid="stSidebar"] button[key*="nyasa"]:hover {{ border-color: #00FF88 !important; box-shadow: 0 0 15px #00FF88; color: #00FF88 !important; }}
-        div[data-testid="stSidebar"] button[key*="preksha"]:hover {{ border-color: #7F00FF !important; box-shadow: 0 0 15px #7F00FF; color: #7F00FF !important; }}
-        div[data-testid="stSidebar"] button[key*="stambha"]:hover {{ border-color: #FF0055 !important; box-shadow: 0 0 15px #FF0055; color: #FF0055 !important; }}
-        div[data-testid="stSidebar"] button[key*="karma"]:hover {{ border-color: #FF33FF !important; box-shadow: 0 0 15px #FF33FF; color: #FF33FF !important; }}
-        div[data-testid="stSidebar"] button[key*="samvada"]:hover {{ border-color: #00D4FF !important; box-shadow: 0 0 15px #00D4FF; color: #00D4FF !important; }}
-        div[data-testid="stSidebar"] button[key*="vitta"]:hover {{ border-color: #FFD700 !important; box-shadow: 0 0 15px #FFD700; color: #FFD700 !important; }}
-        div[data-testid="stSidebar"] button[key*="sanchara"]:hover {{ border-color: #FF8800 !important; box-shadow: 0 0 15px #FF8800; color: #FF8800 !important; }}
-        div[data-testid="stSidebar"] button[key*="mithra"]:hover {{ border-color: #34D399 !important; box-shadow: 0 0 15px #34D399; color: #34D399 !important; }}
+        /* 📟 SIDEBAR: RADIANT HOLLOW BLUE GLOW */
+        [data-testid="stSidebar"] {{ background-color: #080A0C !important; border-right: 1px solid #1F2229; }}
+        section[data-testid="stSidebar"] .stButton > button {{ 
+            background: transparent !important; border: 2px solid rgba(0, 212, 255, 0.4) !important; 
+            color: #FFFFFF !important; text-align: left !important; padding: 12px 18px !important; width: 100%; 
+            font-weight: 800 !important; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-bottom: 5px; transition: 0.3s;
+        }}
+        section[data-testid="stSidebar"] .stButton > button:hover {{ border: 2px solid #00D4FF !important; box-shadow: 0 0 20px rgba(0, 212, 255, 0.6); color: #00D4FF !important; }}
+        .sidebar-sub {{ font-size: 0.95rem; color: #6C63FF; font-weight: 700; display: block; margin-top: -10px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }}
 
-        .sidebar-sub {{ font-size: 0.95rem !important; color: #6C63FF; font-weight: 700; display: block; margin-top: -10px; margin-bottom: 25px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px; }}
-
-        /* BRANDING */
-        .brand-title {{ font-size: 3.5rem !important; font-weight: 800 !important; color: #FFFFFF !important; letter-spacing: -2px; text-shadow: 0 0 25px rgba(108, 99, 255, 0.6); margin-bottom: 0; }}
+        .brand-title {{ font-weight: 800; color: #FFFFFF; letter-spacing: -2px; text-shadow: 0 0 25px rgba(108, 99, 255, 0.6); margin-bottom: 0; }}
         .decisions-fade {{ color: #6C63FF; font-weight: 700; animation: glowPulse 2s infinite alternate; }}
         @keyframes glowPulse {{ from {{ text-shadow: 0 0 5px #6C63FF; }} to {{ text-shadow: 0 0 15px #38BDF8; }} }}
 
-        /* CARDS & PANELS */
         .saas-card {{ background: #0D1117; border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }}
         .ai-decision-box {{ background: rgba(17, 25, 40, 0.75); border: 2px solid #D4AF37; padding: 25px; border-radius: 15px; border-left: 12px solid #D4AF37; margin-top: 25px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }}
-        .feature-header {{ font-size: 3.2rem !important; font-weight: 800 !important; color: #00D4FF !important; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 212, 255, 0.3); text-transform: uppercase; }}
+        .feature-header {{ font-weight: 800; color: #00D4FF !important; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 212, 255, 0.3); text-transform: uppercase; }}
+        .review-box {{ background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid #222; margin-bottom: 10px; font-size: 0.85rem; }}
         .financial-stat {{ background: #111; padding: 20px; border-radius: 10px; border-top: 4px solid #D4AF37; text-align: center; }}
         .karma-mission {{ background: rgba(255, 51, 255, 0.1); border-left: 5px solid #FF33FF; padding: 15px; border-radius: 10px; margin-bottom: 10px; }}
 
@@ -92,7 +86,7 @@ def apply_aroha_style():
 apply_aroha_style()
 
 # --- 2. DATABASE ---
-DB_FILE = 'aroha_master_v101.db'
+DB_FILE = 'aroha_master_v102.db' # Renamed to force clean schema
 def get_db(): return sqlite3.connect(DB_FILE, check_same_thread=False)
 
 def init_db():
@@ -132,7 +126,7 @@ if not st.session_state.auth:
         with m[0]:
             u_input = st.text_input("Username", key="l_u")
             p_input = st.text_input("Password", type="password", key="l_p")
-            if st.button("Unlock Hub"):
+            if st.button("Unlock Strategic Hub"):
                 with get_db() as conn: res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u_input,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p_input):
                     st.session_state.auth = True; st.session_state.user = u_input; st.rerun()
@@ -142,19 +136,18 @@ if not st.session_state.auth:
             if st.button("Enroll Session"):
                 try:
                     with get_db() as conn: conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np)))
-                    st.success("Authorized.")
+                    st.success("Authorized. Please login.")
                 except: st.error("ID exists.")
     st.stop()
 
-# --- 5. TOP HUD TICKER ---
-st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] {st.session_state.user.upper()} ACTIVE // [SENSING] 12% demand spike predicted // [LOGISTICS] Hover map for precision addresses // [SYSTEM] Multi-Agent Neural Mesh Stable.</div></div>", unsafe_allow_html=True)
+# --- 5. TOP HUD ---
+st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>[DHWANI] {st.session_state.user.upper()} ACTIVE // [SENSING] 12% demand spike predicted // [LOGISTICS] Hover Map for addresses.</div></div>", unsafe_allow_html=True)
 
 # --- 6. SIDEBAR (UNIFIED 8 NODES) ---
 with st.sidebar:
     st.markdown(f"<div class='brand-container'><div class='brand-title' style='font-size:2.2rem !important;'>AROHA</div><div style='color:#9AA0A6; font-size:0.9rem;'>Data into <span class='decisions-fade'>Decisions</span></div></div>", unsafe_allow_html=True)
     if st.button("🏠 DASHBOARD"): st.session_state.page = "Dashboard"; st.rerun()
     st.markdown("<span class='sidebar-sub'>System Overview</span>", unsafe_allow_html=True)
-
     nodes = [
         ("📝 NYASA", "Nyasa", "Add Items & PO Gen"),
         ("📈 PREKSHA", "Preksha", "Predict Demand Instantly"),
@@ -166,15 +159,13 @@ with st.sidebar:
         ("🤝 MITHRA+", "Mithra", "AI Negotiation")
     ]
     for label, page_id, layman in nodes:
-        if st.button(label, key=f"nav_{page_id.lower()}"):
-            st.session_state.page = page_id; st.rerun()
+        if st.button(label): st.session_state.page = page_id; st.rerun()
         st.markdown(f"<span class='sidebar-sub'>{layman}</span>", unsafe_allow_html=True)
-
     if st.button("🔒 Logout"): st.session_state.auth = False; st.rerun()
 
 # --- 7. LOGIC NODES ---
 
-# DASHBOARD
+# 🏠 DASHBOARD
 if st.session_state.page == "Dashboard":
     st.markdown(f"<h1>Strategic Hub: {st.session_state.user.upper()}</h1>", unsafe_allow_html=True)
     df = get_user_data()
@@ -184,13 +175,13 @@ if st.session_state.page == "Dashboard":
     with c2: st.metric("💰 Treasury", f"₹{val:,.0f}")
     with c3: st.metric("🛡️ System", "OPTIMAL")
 
-# NYASA
+# 📝 NYASA (UPLOAD FIRST)
 elif st.session_state.page == "Nyasa":
-    st.markdown("<div class='feature-header' style='color:#00FF88 !important;'>📝 NYASA</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>📝 NYASA</div>", unsafe_allow_html=True)
     t1, t2, t3 = st.tabs(["📥 Bulk Sync", "✍️ Manual Registry", "📄 PO Gen"])
     with t1:
         f = st.file_uploader("Upload CSV", type="csv")
-        if f and st.button("Sync Vault"):
+        if f and st.button("Sync Data"):
             u_df = pd.read_csv(f); u_df['username'] = st.session_state.user
             for col in ['category','supplier','image_url','reviews']: u_df[col] = u_df.get(col, "")
             with get_db() as conn: u_df.to_sql('products', conn, if_exists='append', index=False)
@@ -202,14 +193,14 @@ elif st.session_state.page == "Nyasa":
                 with get_db() as conn: conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url, reviews) VALUES (?,?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img, rev))
                 st.success("Saved.")
     with t3:
-        df = get_user_data()
-        if not df.empty:
-            t = st.selectbox("Asset", df['name'])
+        df_po = get_user_data()
+        if not df_po.empty:
+            t = st.selectbox("Asset for PO", df_po['name'])
             if st.button("Generate PO"): st.code(f"PO-ID: #ARH-{np.random.randint(1000,9999)}\nITEM: {t}")
 
-# PREKSHA
+# 📈 PREKSHA (PHOTOS + REVIEWS + SUGGESTIONS)
 elif st.session_state.page == "Preksha":
-    st.markdown("<div class='feature-header' style='color:#7F00FF !important;'>📈 PREKSHA</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>📈 PREKSHA</div>", unsafe_allow_html=True)
     df = get_user_data()
     if df.empty: st.warning("Add data in NYASA node.")
     else:
@@ -223,13 +214,13 @@ elif st.session_state.page == "Preksha":
         with col_v:
             sent = st.select_slider("Market Sentiment", options=[0.8, 1.0, 1.5, 2.0], value=1.0)
             preds = np.random.randint(20, 50, 7)
-            st.plotly_chart(px.area(y=preds, title="AI Forecasting Stream", template="plotly_dark").update_traces(line_color='#7F00FF'), use_container_width=True)
-            st.markdown(f"<div class='ai-decision-box'><h3>🤖 AI SUGGESTION</h3>Order <b>{max(0, preds.sum() - p_row['current_stock'])}</b> units now.</div>", unsafe_allow_html=True)
+            st.plotly_chart(px.area(y=preds, title="AI Forecasting Path", template="plotly_dark").update_traces(line_color='#00D4FF'), use_container_width=True)
+            st.markdown(f"<div class='ai-decision-box'><h3>🤖 AI SUGGESTION</h3>Reorder <b>{max(0, preds.sum() - p_row['current_stock'])}</b> units immediately.</div>", unsafe_allow_html=True)
 
-# STAMBHA
+# 🛡️ STAMBHA (FIXED RISK ALERTS)
 elif st.session_state.page == "Stambha":
-    st.markdown("<div class='feature-header' style='color:#FF0055 !important;'>🛡️ STAMBHA</div>", unsafe_allow_html=True)
-    s = st.selectbox("Shock Event", ["Normal", "Port Closure (3x Lead)", "Factory Fire (+30d)"])
+    st.markdown("<div class='feature-header'>🛡️ STAMBHA</div>", unsafe_allow_html=True)
+    s = st.selectbox("Trigger Shock", ["Normal", "Port Closure (3x Lead)"])
     df = get_user_data()
     if not df.empty:
         for _, p in df.iterrows():
@@ -238,62 +229,57 @@ elif st.session_state.page == "Stambha":
             if tts < ttr: st.error(f"🔴 CRITICAL: {p['name']} risk. TTS ({tts}d) < TTR ({ttr}d).")
         st.table(df[['name', 'current_stock', 'lead_time']])
 
-# KARMA+
-elif st.session_state.page == "Karma":
-    st.markdown("<h1 style='color:#FF33FF;'>👷‍♂️ KARMA+: Workforce Intelligence</h1>", unsafe_allow_html=True)
-    t1, t2 = st.tabs(["🏹 Missions", "📊 Analytics"])
-    with t1:
-        st.markdown("<div class='karma-mission'><b>Pick 12x Titanium Chassis</b> | 💎 500 XP</div>", unsafe_allow_html=True)
-    with t2:
-        st.plotly_chart(go.Figure(data=go.Scatterpolar(r=[90,95,70,85,60], theta=['Picking','Accuracy','Packing','Safety','Strength'], fill='toself')).update_layout(template="plotly_dark"))
-
-# SAMVADA (FIXED SYNTAX)
-elif st.session_state.page == "Samvada":
-    st.markdown("<div class='feature-header' style='color:#00D4FF !important;'>🎙️ SAMVADA</div>", unsafe_allow_html=True)
-    st.session_state.voice_on = st.toggle("Enable Voice Assistant")
-    key = st.secrets.get("GROQ_API_KEY")
-    if key:
-        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
-        
-        # --- FIXED SYNTAX: New lines for loop and with statement ---
-        for m in st.session_state.chat_history:
-            with st.chat_message(m["role"]):
-                st.markdown(m["content"])
-        
-        u_in = st.chat_input("Strategic query...")
-        audio = st.audio_input("Speak Command")
-        if audio:
-            with st.spinner("Processing Voice..."):
-                u_in = client.audio.transcriptions.create(file=("q.wav", audio.read()), model="whisper-large-v3", response_format="text")
-        if u_in:
-            st.session_state.chat_history.append({"role":"user", "content":u_in})
-            ctx = get_user_data().to_string(index=False)
-            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
-            ans = res.choices[0].message.content
-            st.session_state.chat_history.append({"role":"assistant", "content":ans}); speak(ans); st.rerun()
-
-# VITTA
+# 💰 VITTA (PIE + METRICS)
 elif st.session_state.page == "Vitta":
-    st.markdown("<div class='feature-header' style='color:#FFD700 !important;'>💰 VITTA</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>💰 VITTA</div>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
         total_v = (df['current_stock'] * df['unit_price']).sum()
         c1, c2 = st.columns(2)
         with c1:
-            st.markdown(f"<div class='financial-stat'>Value<br><h2>₹{total_v:,.0f}</h2></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='financial-stat'>Total Value<br><h2>₹{total_v:,.0f}</h2></div>", unsafe_allow_html=True)
             st.markdown(f"<div class='financial-stat' style='margin-top:20px;'>Risk (15%)<br><h2 style='color:red;'>₹{total_v*0.15:,.0f}</h2></div>", unsafe_allow_html=True)
-        with c2: st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark"))
+        with c2: st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark", title="Capital Allocation"))
 
-# SANCHARA
+# 📦 SANCHARA (MAP + ADDRESSES + SHIPPED + RETURNS)
 elif st.session_state.page == "Sanchara":
-    st.markdown("<div class='feature-header' style='color:#FF8800 !important;'>📦 SANCHARA</div>", unsafe_allow_html=True)
-    map_points = pd.DataFrame({'lat':[12.97, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Hub','Factory','HQ','Port'], 'Address':['Bangalore','HK','SF','Singapore Port (🔴 CLOSED)']})
-    st.plotly_chart(px.scatter_mapbox(map_points, lat="lat", lon="lon", hover_name="Node", hover_data={"Address": True}, zoom=1, height=450).update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}), use_container_width=True)
+    st.markdown("<div class='feature-header'>📦 SANCHARA</div>", unsafe_allow_html=True)
+    t1, t2, t3 = st.tabs(["🌐 Precision Map", "📦 Floor Ops", "↩️ Returns"])
+    with t1:
+        map_points = pd.DataFrame({'lat':[12.97, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Hub', 'Factory', 'HQ', 'Risk Zone'], 'Address':['MG Road, Bangalore', 'Lantau, HK', 'Market St, SF', 'Jurong, Singapore (🔴 PORT CLOSED)']})
+        st.plotly_chart(px.scatter_mapbox(map_points, lat="lat", lon="lon", hover_name="Node", hover_data={"Address": True}, zoom=1, height=450).update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}), use_container_width=True)
+        st.markdown("<div style='background:rgba(255,255,255,0.02); padding:15px; border-radius:10px; border:1px solid #333; margin-top:15px;'><h4 style='color:#00D4FF; margin-top:0;'>Strategic Map Guide</h4><p>📍 Blue: Stable Hubs. 🔴 Red: Crisis Points. Hover dots for addresses.</p></div>", unsafe_allow_html=True)
+    with t2:
+        c1, c2 = st.columns(2); c1.metric("📦 Items Shipped Today", "1,240"); c2.metric("🏭 Total Floor Assets", "4,462 Units", "+142 Returns")
+    with t3:
+        st.table(pd.DataFrame({'Product':['Laptop','Monitor'], 'Amount':[4,2], 'Reason':['Defective','Bleed']}))
 
-# MITHRA+
+# 🎙️ SAMVADA
+elif st.session_state.page == "Samvada":
+    st.markdown("<div class='feature-header'>🎙️ SAMVADA</div>", unsafe_allow_html=True)
+    key = st.secrets.get("GROQ_API_KEY")
+    if key:
+        client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
+        for m in st.session_state.chat_history:
+            with st.chat_message(m["role"]): st.markdown(m["content"])
+        u_in = st.chat_input("Strategic query...")
+        if u_in:
+            st.session_state.chat_history.append({"role":"user", "content":u_in})
+            ctx = get_user_data().to_string(index=False)
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are AROHA AI. Data: {ctx}"}, *st.session_state.chat_history[-3:]])
+            ans = res.choices[0].message.content
+            st.session_state.chat_history.append({"role":"assistant", "content":ans}); st.rerun()
+
+# 👷‍♂️ KARMA+
+elif st.session_state.page == "Karma":
+    st.markdown("<div class='feature-header'>👷‍♂️ KARMA+</div>", unsafe_allow_html=True)
+    st.markdown("<div class='karma-mission'><b>Pick 12x Titanium Chassis</b> | 💎 500 XP</div>", unsafe_allow_html=True)
+    st.plotly_chart(go.Figure(data=go.Scatterpolar(r=[90,95,70,85,60], theta=['Picking','Accuracy','Packing','Safety','Strength'], fill='toself')).update_layout(template="plotly_dark"))
+
+# 🤝 MITHRA+
 elif st.session_state.page == "Mithra":
-    st.markdown("<div class='feature-header' style='color:#34D399 !important;'>🤝 MITHRA+</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>🤝 MITHRA+</div>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
-        vendor = st.selectbox("Select Vendor", df['supplier'].unique())
-        if st.button("🚀 NEGOTIATE"): st.info(f"AI generating strategy for {vendor}...")
+        df['Reliability'] = (100 - (df['lead_time'] * 2)).clip(50, 99)
+        st.plotly_chart(px.bar(df, x='supplier', y='Reliability', color='Reliability', template='plotly_dark'))
