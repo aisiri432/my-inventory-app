@@ -10,208 +10,212 @@ from openai import OpenAI
 import hashlib
 import time
 
-# --- 1. AURA AESTHETIC CONFIG (MATURE GEN Z - MAXIMUM IMPACT) ---
+# --- 1. PRO STARTUP AESTHETIC CONFIG (HACKATHON WINNER) ---
 st.set_page_config(
-    page_title="AROHA",
+    page_title="AROHA | Strategic Intelligence",
     layout="wide",
-    page_icon="✨",
+    page_icon="💠",
     initial_sidebar_state="expanded"
 )
 
 def apply_aroha_style():
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
-
-        /* Base Aura Aesthetics */
+        /* Base Pro Aesthetics (Vercel/Linear vibes) */
         .stApp {
-            /* DEEPER SPACE, MORE CONTRAST gradient */
-            background: radial-gradient(circle at top center, #3b0764 0%, #0f172a 50%, #000000 100%);
-            color: #F8FAFC;
-            font-family: 'Outfit', sans-serif !important;
-            letter-spacing: -0.2px;
+            background-color: #000000;
+            background-image: radial-gradient(circle at 50% 0%, #171717 0%, #000000 70%);
+            color: #FAFAFA;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
         }
 
-        /* EVEN LARGER FONT SIZES FOR MAXIMUM READABILITY */
+        /* REVERT TEXT TO PROFESSIONAL SIZES */
         p, li, span, div, label, input, select, textarea {
-            font-family: 'Outfit', sans-serif !important;
-            font-size: 1.4rem !important; 
-            font-weight: 500;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+            font-size: 1rem !important; 
+            font-weight: 400;
+            color: #d4d4d8;
         }
 
-        /* ✨ MASSIVE BRAND TITLE ✨ */
+        /* ✨ AROHA BRAND TITLE - SLEEK & STRIKING ✨ */
         .brand-container {
-            filter: drop-shadow(0 0 30px rgba(192, 132, 252, 0.8));
             text-align: center;
-            margin-top: 80px;
-            margin-bottom: 40px;
+            margin-top: 10vh;
+            margin-bottom: 50px;
         }
         .brand-title {
-            background: linear-gradient(135deg, #c084fc 0%, #38bdf8 50%, #34d399 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            font-size: 8rem !important; /* ENORMOUS */
-            letter-spacing: -4px;
-            line-height: 1;
+            font-weight: 800;
+            font-size: 4.5rem !important;
+            letter-spacing: 8px;
             margin: 0;
             padding: 0;
+            text-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+        }
+        .brand-sub {
+            color: #38bdf8;
+            font-size: 0.9rem !important;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 10px;
         }
         
-        /* 🔥 MASSIVE FEATURE HEADERS 🔥 */
+        /* 🔥 PROFESSIONAL FEATURE HEADERS 🔥 */
         .feature-header {
-            font-size: 4.5rem !important; 
-            font-weight: 900;
+            font-size: 2.2rem !important; 
+            font-weight: 700;
             color: #FFFFFF;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            letter-spacing: -2px;
-            border-bottom: 4px solid #38bdf8; /* Bold cyan line */
-            text-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
-            display: inline-block; /* Makes the border tight to the text */
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+            border-bottom: none;
         }
         .feature-sub {
-            color: #c084fc; /* Vibrant purple subtitle */
-            font-size: 1.8rem !important;
-            font-weight: 700;
-            margin-top: 10px;
-            margin-bottom: 40px;
+            color: #a1a1aa; 
+            font-size: 1rem !important;
+            font-weight: 400;
+            margin-bottom: 30px;
             display: block;
+            border-bottom: 1px solid #27272a;
+            padding-bottom: 20px;
         }
 
-        /* 💎 HIGH-CONTRAST NEON CARDS 💎 */
+        /* 💎 SHARP, ULTRA-CLEAN CARDS 💎 */
         .saas-card, .financial-stat, .insight-box, .ai-decision-box {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95)); /* Darker backing for pop */
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 32px;
-            padding: 35px;
-            border: 2px solid rgba(192, 132, 252, 0.8); /* STRONGER border */
-            margin-bottom: 30px;
-            box-shadow: 0 15px 50px 0 rgba(192, 132, 252, 0.25); /* Heavy glow */
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover */
+            background: #09090b; 
+            border-radius: 12px; /* Professional sharp corners */
+            padding: 24px;
+            border: 1px solid #27272a; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s ease, transform 0.2s ease;
         }
         .saas-card:hover, .financial-stat:hover, .insight-box:hover {
-            transform: translateY(-12px) scale(1.02);
-            border: 2px solid #38bdf8; /* Snaps to bright cyan on hover */
-            box-shadow: 0 25px 60px 0 rgba(56, 189, 248, 0.4);
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 1));
+            border-color: #38bdf8; 
+            transform: translateY(-2px);
         }
         
         .insight-box {
-            background: linear-gradient(135deg, rgba(192, 132, 252, 0.25), rgba(0,0,0,0.5));
-            border-left: 8px solid #c084fc;
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.05), #09090b);
+            border-left: 3px solid #38bdf8;
         }
         .ai-decision-box {
-            background: rgba(56, 189, 248, 0.15);
-            border: 2px solid #38bdf8;
-            box-shadow: 0 15px 50px rgba(56, 189, 248, 0.3);
+            background: #050505;
+            border: 1px solid #27272a;
         }
         .ai-decision-box h3 {
-            color: #7dd3fc;
+            color: #fafafa;
             margin-top: 0;
-            font-size: 2rem !important;
-            font-weight: 900;
+            font-size: 1.2rem !important;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ai-decision-box h3::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8;
         }
         .directive-msg {
-            background-color: rgba(30, 41, 59, 0.8);
-            border-left: 6px solid #38bdf8;
-            padding: 30px;
-            margin-bottom: 15px;
-            border-radius: 24px;
-            color: #FFFFFF;
-            font-weight: 700;
-            font-size: 1.5rem !important;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background-color: #18181b;
+            border-left: 2px solid #a855f7;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-weight: 400;
+            font-size: 1rem !important;
+            border-top: 1px solid #27272a;
+            border-right: 1px solid #27272a;
+            border-bottom: 1px solid #27272a;
         }
         
-        /* ⚡ HUGE IMPACT METRICS ⚡ */
+        /* ⚡ PRECISION METRICS ⚡ */
         div[data-testid="stMetricValue"] {
             color: #FFFFFF !important;
-            font-size: 5rem !important; /* GIGANTIC */
-            font-weight: 900 !important;
-            letter-spacing: -3px;
-            text-shadow: 0 0 30px rgba(56, 189, 248, 0.8); /* Insane Cyan glow */
+            font-size: 2.8rem !important; 
+            font-weight: 700 !important;
+            letter-spacing: -1px;
         }
         div[data-testid="stMetricLabel"] {
-            font-size: 1.6rem !important;
-            color: #38bdf8 !important; /* Colored label */
-            font-weight: 800;
+            font-size: 0.85rem !important;
+            color: #a1a1aa !important; 
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         /* ==================================================== */
-        /* CREATIVE SIDEBAR OVERHAUL (MAXIMUM STAND-OUT)        */
+        /* SIDEBAR (SLEEK NAVIGATION)                           */
         /* ==================================================== */
         
         [data-testid="stSidebar"] {
-            background: rgba(15, 23, 42, 0.5) !important;
-            backdrop-filter: blur(50px) !important;
-            -webkit-backdrop-filter: blur(50px) !important;
-            border-right: 2px solid rgba(192, 132, 252, 0.5) !important; /* Thicker border */
+            background: #09090b !important;
+            border-right: 1px solid #27272a !important; 
         }
 
         /* Customizing Sidebar Buttons */
         [data-testid="stSidebar"] div.stButton > button {
-            background: rgba(30, 41, 59, 0.5); /* Solid backing */
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
-            color: #e2e8f0;
+            background: transparent; 
+            border: none;
+            border-radius: 6px;
+            color: #a1a1aa;
             text-align: left;
-            padding: 22px 20px;
-            margin-bottom: 12px;
-            font-weight: 700;
-            font-size: 1.5rem !important; 
+            padding: 10px 16px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 1.05rem !important; 
             width: 100%;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s ease;
             justify-content: flex-start;
+            border-left: 2px solid transparent;
         }
 
-        /* 🔥 Aggressive Hover Effect 🔥 */
+        /* Sleek Highlight */
         [data-testid="stSidebar"] div.stButton > button:hover {
-            background: linear-gradient(90deg, rgba(192, 132, 252, 0.6), rgba(56, 189, 248, 0.6));
-            color: #FFFFFF;
-            transform: translateX(10px) scale(1.05); 
-            border-left: 8px solid #38bdf8;
-            border-top: 1px solid #FFFFFF;
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.5);
+            background: #18181b;
+            color: #ffffff;
+            border-left: 2px solid #38bdf8;
+            transform: translateX(4px); 
         }
         
-        /* 🚀 Main Action Buttons 🚀 */
+        /* Main Action Buttons  */
         .main div.stButton>button {
-            background: linear-gradient(135deg, #c084fc, #38bdf8);
-            color: #FFFFFF;
-            border: 2px solid rgba(255,255,255,0.5);
-            border-radius: 24px;
-            padding: 20px 40px;
-            font-weight: 900;
-            font-size: 1.5rem !important;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(192,132,252,0.5);
+            background: #ffffff;
+            color: #000000 !important;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 0.95rem !important;
+            transition: all 0.2s ease;
         }
         .main div.stButton>button:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(56,189,248,0.7);
-            border-color: #FFFFFF;
+            background: #f4f4f5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
         }
 
-        /* Text Inputs popping harder */
+        /* Form Inputs Pro */
         div[data-baseweb="input"] > div, 
         div[data-baseweb="select"] > div,
         div[data-baseweb="textarea"] > div {
-            background-color: rgba(30, 41, 59, 0.8) !important;
-            border-radius: 24px !important;
-            border: 2px solid rgba(192, 132, 252, 0.4) !important;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
+            background-color: #09090b !important;
+            border-radius: 8px !important;
+            border: 1px solid #27272a !important;
+            padding: 2px 8px;
+            transition: all 0.2s ease;
         }
-        div[data-baseweb="input"] > div:hover, 
-        div[data-baseweb="select"] > div:hover {
+        div[data-baseweb="input"] > div:focus-within, 
+        div[data-baseweb="select"] > div:focus-within {
             border-color: #38bdf8 !important;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5) !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -249,23 +253,23 @@ if "page" not in st.session_state: st.session_state.page = "Dashboard"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 if "voice_on" not in st.session_state: st.session_state.voice_on = False
 
-# --- 4. AUTHENTICATION (Maximum Impact) ---
+# --- 4. AUTHENTICATION (Hackathon Pro) ---
 if not st.session_state.auth:
     st.markdown("""
         <div class='brand-container'>
             <h1 class='brand-title'>AROHA</h1>
-            <p style='color:#c084fc; font-size:2rem !important; font-weight: 800; margin-top:20px; letter-spacing: 2px; text-transform: uppercase;'>Smart Inventory • Zero Stress</p>
+            <p class='brand-sub'>AI-Powered Command Center</p>
         </div>
     """, unsafe_allow_html=True)
     
-    c1, col_center, c3 = st.columns([0.25, 0.5, 0.25])
+    c1, col_center, c3 = st.columns([0.3, 0.4, 0.3])
     with col_center:
-        m = st.tabs(["🔒 Log in", "✨ Sign up"])
+        m = st.tabs(["Secure Login", "Register"])
         with m[0]:
-            u_input = st.text_input("Username", key="l_u", placeholder="Enter your username")
-            p_input = st.text_input("Password", type="password", key="l_p", placeholder="Enter your password")
+            u_input = st.text_input("Username", key="l_u")
+            p_input = st.text_input("Password", type="password", key="l_p")
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("Access Hub", use_container_width=True):
+            if st.button("Authenticate", use_container_width=True):
                 with get_db() as conn: 
                     res = pd.read_sql_query("SELECT password FROM users WHERE username=?", conn, params=(u_input,))
                 if not res.empty and res.iloc[0]['password'] == hash_p(p_input):
@@ -273,53 +277,59 @@ if not st.session_state.auth:
                     st.session_state.user = u_input
                     st.rerun()
                 else: 
-                    st.error("Hmm, that didn't work. Check your password.")
+                    st.error("Invalid credentials.")
         with m[1]:
-            nu = st.text_input("Choose a Username", placeholder="e.g., alex_ops")
+            nu = st.text_input("Choose a Username", placeholder="e.g., commander_01")
             np_in = st.text_input("Choose a Password", type="password")
             st.markdown("<br>", unsafe_allow_html=True)
             if st.button("Create Account", use_container_width=True):
                 try:
                     with get_db() as conn: 
                         conn.execute("INSERT INTO users VALUES (?,?)", (nu, hash_p(np_in)))
-                    st.success("You're in. Go ahead and log in.")
+                    st.success("Account created securely.")
                 except: 
                     st.error("Username is already taken.")
     st.stop()
 
 # --- 5. TOP HUD TICKER ---
-st.markdown(f"<div class='ticker-wrap'><div class='ticker-text'>✨ STATUS ONLINE • WELCOME {st.session_state.user.upper()} • ENGINES OPTIMAL • NO SEVERE BOTTLENECKS DETECTED TODAY.</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='background:#09090b; border:1px solid #27272a; padding:8px 16px; border-radius:6px; margin-bottom:24px; font-size:0.85rem; color:#a1a1aa; letter-spacing:1px;'><span style='color:#34d399;'>●</span> SYSTEM ONLINE | OPERATOR: <b>{st.session_state.user.upper()}</b> | REFRESH RATE: REAL-TIME</div>", unsafe_allow_html=True)
 
 # --- 6. SIDEBAR ---
 with st.sidebar:
     
     user_initial = st.session_state.user[0].upper() if st.session_state.user else "A"
     
-    # 🎨 Mega Aura Profile Card
+    # 🎨 Clean Pro Profile
     st.markdown(f"""
-    <div style='background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(56,189,248,0.15)); padding: 35px; border-radius: 35px; border: 3px solid rgba(192, 132, 252, 0.8); margin-bottom: 40px; text-align: center; box-shadow: 0 15px 50px rgba(192, 132, 252, 0.4); backdrop-filter: blur(10px);'>
-        <div style='width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #c084fc, #38bdf8); color: #FFFFFF; display:flex; align-items:center; justify-content:center; font-size: 3.5rem; font-weight: 900; margin: 0 auto 15px auto; box-shadow: 0 0 30px rgba(56,189,248,0.8); border: 4px solid #FFFFFF;'>
+    <div style='display:flex; align-items:center; gap:12px; margin-bottom: 30px; padding: 12px; background:#09090b; border:1px solid #27272a; border-radius:8px;'>
+        <div style='width: 40px; height: 40px; border-radius: 6px; background: #ffffff; color: #000000; display:flex; align-items:center; justify-content:center; font-size: 1.2rem; font-weight: 800;'>
             {user_initial}
         </div>
-        <div style='color: #FFFFFF; font-weight: 900; font-size: 2rem; letter-spacing: 1px;'>@{st.session_state.user.lower()}</div>
+        <div>
+            <div style='color: #FFFFFF; font-weight: 600; font-size: 0.95rem;'>{st.session_state.user.lower()}</div>
+            <div style='color: #71717a; font-size: 0.8rem; font-weight: 500;'>Workspace Admin</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div style='color:#38bdf8; font-weight:900; font-size:1.4rem; margin-bottom: 15px; padding-left: 10px; letter-spacing: 2px; text-transform:uppercase;'>Navigation</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#71717a; font-weight:600; font-size:0.75rem; margin-bottom: 10px; padding-left: 6px; letter-spacing: 1px; text-transform:uppercase;'>Overview</div>", unsafe_allow_html=True)
     
-    if st.button("🏠 Home • Overview", use_container_width=True): 
+    if st.button("⌂ HOME", use_container_width=True): 
         st.session_state.page = "Dashboard"
         st.rerun()
 
+    st.markdown("<br><div style='color:#71717a; font-weight:600; font-size:0.75rem; margin-bottom: 10px; padding-left: 6px; letter-spacing: 1px; text-transform:uppercase;'>Modules</div>", unsafe_allow_html=True)
+
+    # REFORMATTED TO MAKE FEATURE NAMES STAND OUT (CAPS)
     nodes = [
-        ("📝 Nyasa • Inventory", "Nyasa"),
-        ("🔮 Preksha • Forecast", "Preksha"),
-        ("🛡️ Stambha • Risk Check", "Stambha"),
-        ("⚡ Kriya • Team Ops", "Kriya"),
-        ("🎙️ Samvada • Voice AI", "Samvada"),
-        ("🏦 Vitta • Finances", "Vitta"),
-        ("🗺️ Sanchara • Live Map", "Sanchara"),
-        ("🤝 Mithra • Suppliers", "Mithra")
+        ("NYASA ✦ Inventory", "Nyasa"),
+        ("PREKSHA ✦ Forecast", "Preksha"),
+        ("STAMBHA ✦ Risk Check", "Stambha"),
+        ("KRIYA ✦ Team Ops", "Kriya"),
+        ("SAMVADA ✦ Voice AI", "Samvada"),
+        ("VITTA ✦ Finances", "Vitta"),
+        ("SANCHARA ✦ Live Map", "Sanchara"),
+        ("MITHRA ✦ Suppliers", "Mithra")
     ]
     
     for label, page_id in nodes:
@@ -327,143 +337,136 @@ with st.sidebar:
             st.session_state.page = page_id
             st.rerun()
         
-    st.markdown("<br><hr style='border-color: rgba(192,132,252,0.4); border-width: 2px;'><br>", unsafe_allow_html=True)
-    if st.button("🚪 Log out", use_container_width=True): 
+    st.markdown("<br><hr style='border-color: #27272a;'><br>", unsafe_allow_html=True)
+    if st.button("Log out", use_container_width=True): 
         st.session_state.auth = False
         st.rerun()
 
 # --- 7. LOGIC NODES ---
 # OVERVIEW
 if st.session_state.page == "Dashboard":
-    st.markdown("<div class='feature-header'>Home</div><span class='feature-sub'>A quick look at how things are doing.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Intelligence Hub</div><span class='feature-sub'>Overview of your current operational status.</span>", unsafe_allow_html=True)
     df = get_user_data()
     val = (df['current_stock'] * df['unit_price']).sum() if not df.empty else 0
     c1, c2, c3 = st.columns(3)
     with c1: 
-        st.metric("Total items", len(df))
+        st.metric("Total Vault Assets", len(df))
     with c2: 
-        st.metric("Total value", f"₹{val:,.0f}")
+        st.metric("Treasury Size", f"₹{val:,.0f}")
     with c3: 
-        st.metric("App status", "All good ✨")
-    st.markdown("<div class='insight-box'><b style='font-size:1.6rem; color:#FFFFFF;'>Vibe check:</b><br>Operations look solid today. Forecast algorithms suggest hitting peak demand this weekend. Highly advise glancing at the Inventory soon.</div>", unsafe_allow_html=True)
+        st.metric("System Status", "Healthy", delta="0 Latency", delta_color="normal")
+    st.markdown("<div class='insight-box'><b>Summary:</b> Operations nominal. Predictive algorithms suggest a weekend velocity surge. Standard Nyasa audit recommended.</div>", unsafe_allow_html=True)
 
 # KRIYA
 elif st.session_state.page == "Kriya":
-    st.markdown("<div class='feature-header'>Kriya</div><span class='feature-sub'>Team Ops & Shifts. Let's see who's doing what.</span>", unsafe_allow_html=True)
-    st.markdown("<div class='insight-box'><b style='font-size:1.6rem; color:#FFFFFF;'>Status Update:</b><br>The system just assigned automated tasks for the morning shift. Everything is green.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Workforce Orchestration</div><span class='feature-sub'>Task allocation and agent efficiency.</span>", unsafe_allow_html=True)
     
-    tab_worker, tab_manager = st.tabs(["For the team", "For management"])
+    tab_worker, tab_manager = st.tabs(["Active Directive", "Command Analytics"])
 
     with tab_worker:
-        st.subheader("Your current task")
         col_q, col_s = st.columns([2, 1])
         with col_q:
-            st.markdown("<div class='directive-msg'><b>TASK #402</b><br><span style='color:#e2e8f0;'>Grab 12x Titanium Chassis for Assembly Station B.</span></div>", unsafe_allow_html=True)
-            st.markdown("<div class='directive-msg' style='border-left-color:#34D399;'><b>FASTEST PATH</b><br><span style='color:#e2e8f0;'>Head to Shelf B2 via Aisle 3. Estimated ETA: 120 seconds.</span></div>", unsafe_allow_html=True)
-            if st.button("Scan item barcode"):
-                st.error("Wait, wrong item code. Please double check Shelf B2.")
+            st.markdown("<div class='directive-msg'><span style='color:#a855f7; font-weight:700;'>TASK #402-A</span><br><br>Gather 12x Titanium Chassis for Assembly Station B.</div>", unsafe_allow_html=True)
+            st.markdown("<div class='directive-msg' style='border-left-color:#38bdf8;'><span style='color:#38bdf8; font-weight:700;'>OPTIMAL PATH</span><br><br>Proceed to Shelf B2 via Aisle 3. Estimated duration: 1m 55s.</div>", unsafe_allow_html=True)
+            if st.button("Authenticate Execution"):
+                st.error("Verification failed: SKU Mismatch detected at Shelf B2.")
         with col_s:
-            st.markdown("<div class='saas-card' style='text-align:center;'><h4 style='color:#c084fc; font-weight:900;'>YOUR SPEED</h4><h2 style='color:#FFFFFF; font-size:6rem; margin:0; font-weight:900; text-shadow:0 0 30px #c084fc;'>42</h2><p style='color:#34D399; font-weight:800; font-size:1.6rem;'>▲ 12% faster</p></div>", unsafe_allow_html=True)
+            st.markdown("<div class='saas-card' style='text-align:center;'><h4 style='color:#a1a1aa; font-weight:500; font-size:0.9rem;'>CURRENT VELOCITY</h4><h2 style='color:#ffffff; font-size:3.5rem; margin:10px 0;'>42<span style='font-size:1rem; color:#71717a;'>/hr</span></h2><p style='color:#34d399; font-weight:600; font-size:0.9rem;'>▲ +12% above mean</p></div>", unsafe_allow_html=True)
 
     with tab_manager:
-        st.subheader("Team performance highlights")
         c1, c2 = st.columns(2)
         with c1:
-            st.write("Speed over the last 5 hours")
+            st.write("Fleet Velocity (T-5 Hours)")
             fig = px.line(y=[80, 85, 75, 90, 88], template="plotly_dark")
-            fig.update_layout(height=400, margin=dict(l=0,r=0,b=0,t=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
-            fig.update_traces(line_color='#c084fc', line_width=6)
+            fig.update_layout(height=300, margin=dict(l=0,r=0,b=0,t=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            fig.update_traces(line_color='#ffffff', line_width=2)
             st.plotly_chart(fig, use_container_width=True)
         with c2:
-            st.write("Accuracy vs Speed")
-            st.bar_chart({"Accuracy": [98, 92, 75], "Speed": [90, 85, 70]}, color=["#38bdf8", "#c084fc"], height=400)
-            st.success("MVP today: Ananya (98% accuracy)")
+            st.write("Unit Precision vs Agility")
+            st.bar_chart({"Precision": [98, 92, 75], "Agility": [90, 85, 70]}, color=["#ffffff", "#38bdf8"], height=300)
 
 # VITTA
 elif st.session_state.page == "Vitta":
-    st.markdown("<div class='feature-header'>Vitta</div><span class='feature-sub'>Finances & Capital Flow. The deep look at money.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Treasury Control</div><span class='feature-sub'>Capital allocation and risk exposure.</span>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
         total_v = (df['current_stock'] * df['unit_price']).sum()
         c1, c2 = st.columns([1, 1])
         with c1:
-            st.markdown(f"<div class='saas-card'><div style='color:#38bdf8; font-weight:800; font-size:1.6rem; text-transform:uppercase;'>Total Stock Value</div><div style='color:#FFFFFF; font-size:5rem; font-weight:900; text-shadow: 0 0 40px rgba(56,189,248,0.6);'>₹{total_v:,.0f}</div></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='saas-card'><div style='color:#f43f5e; font-weight:800; font-size:1.6rem; text-transform:uppercase;'>Dead Money (> 30 days)</div><div style='color:#f43f5e; font-size:4.5rem; font-weight:900; text-shadow: 0 0 30px rgba(244,63,94,0.6);'>₹{total_v*0.15:,.0f}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='saas-card'><div style='color:#a1a1aa; font-size:0.8rem; text-transform:uppercase;'>Total Allocated Value</div><div style='color:#ffffff; font-size:3rem; font-weight:700;'>₹{total_v:,.0f}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='saas-card'><div style='color:#a1a1aa; font-size:0.8rem; text-transform:uppercase;'>Stagnant Capital Risk</div><div style='color:#ef4444; font-size:2.5rem; font-weight:700;'>₹{total_v*0.15:,.0f}</div></div>", unsafe_allow_html=True)
         with c2:
-            st.markdown("<div class='saas-card'><div style='color:#c084fc; font-weight:800; font-size:1.6rem; text-transform:uppercase; margin-bottom:16px;'>Value Breakdown</div>", unsafe_allow_html=True)
-            fig = px.pie(df, values='current_stock', names='name', hole=0.6, template="plotly_dark", color_discrete_sequence=px.colors.sequential.Plasma)
-            fig.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=450)
+            st.markdown("<div class='saas-card'><div style='color:#a1a1aa; font-size:0.8rem; text-transform:uppercase; margin-bottom:10px;'>Distribution Model</div>", unsafe_allow_html=True)
+            fig = px.pie(df, values='current_stock', names='name', hole=0.7, template="plotly_dark", color_discrete_sequence=['#ffffff', '#a1a1aa', '#38bdf8', '#0ea5e9'])
+            fig.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=320)
             st.plotly_chart(fig, use_container_width=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
 # MITHRA+
 elif st.session_state.page == "Mithra":
-    st.markdown("<div class='feature-header'>Mithra</div><span class='feature-sub'>Suppliers. Connect inside the ecosystem.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Partner Intel</div><span class='feature-sub'>Vendor negotiation and ecosystem health.</span>", unsafe_allow_html=True)
     df = get_user_data()
     
     if not df.empty:
         col1, col2 = st.columns([1, 1.5])
 
         with col1:
-            vendor = st.selectbox("Pick a supplier", df['supplier'].unique())
-            style = st.radio("Vibe of the email", ["Friendly", "Direct", "Tough & Cost-driven"])
+            vendor = st.selectbox("Target Node", df['supplier'].unique())
+            style = st.radio("Directive Stance", ["Standard", "Algorithmic-Aggressive"])
 
         with col2:
-            if st.button("Draft an email using AI", use_container_width=True):
-                st.metric("Expected savings", "₹12,400", "+8.0%")
+            if st.button("Generate Correspondence", use_container_width=True):
+                st.metric("Projected Margin Retention", "₹12,400", "+8.0%")
                 st.text_area(
-                    "Here's your draft",
-                    f"Hey {vendor},\n\nHope you're doing well. We've been looking at our Q3 numbers and want to chat about adjusting pricing to keep this partnership scaling well for both of us..."
+                    "AI Output",
+                    f"Hi {vendor},\n\nReviewing Q3 telemetry, we require a recalibration of current fulfillment pricing schedules to maintain operational parity..."
                 )
 
-        st.markdown("<hr style='border-color:rgba(192, 132, 252, 0.5); margin: 60px 0; border-width:3px;'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='font-size:3rem; color:#FFFFFF; font-weight:900;'>Supplier Scorecards</h3>", unsafe_allow_html=True)
+        st.markdown("<br><hr style='border-color:#27272a;'><br>", unsafe_allow_html=True)
+        st.markdown("<h3 style='font-size:1.2rem; color:#ffffff; font-weight:600;'>Vendor Telemetry</h3>", unsafe_allow_html=True)
 
         client_data = pd.DataFrame({
-            "Supplier": ["Alpha Corp", "Zenith", "Nova", "Orion"],
-            "Spend (₹)": [120000, 95000, 78000, 150000],
-            "On-time rate (%)": [92, 85, 78, 96]
+            "Entity": ["Alpha Corp", "Zenith Systems", "Nova Ind", "Orion Log"],
+            "Capital Exhaust (₹)": [120000, 95000, 78000, 150000],
+            "SLA Success (%)": [92, 85, 78, 96]
         })
 
         st.dataframe(client_data, use_container_width=True, hide_index=True)
 
         col1, col2 = st.columns(2)
-
         with col1:
-            fig1 = px.bar(client_data, x="Supplier", y="Spend (₹)", template="plotly_dark", color_discrete_sequence=["#c084fc"])
-            fig1.update_layout(margin=dict(t=20, b=0, l=0, r=0), height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            fig1 = px.bar(client_data, x="Entity", y="Capital Exhaust (₹)", template="plotly_dark", color_discrete_sequence=["#ffffff"])
+            fig1.update_layout(margin=dict(t=20, b=0, l=0, r=0), height=300, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig1, use_container_width=True)
-
         with col2:
-            fig2 = px.line(client_data, x="Supplier", y="On-time rate (%)", markers=True, template="plotly_dark")
-            fig2.update_traces(line_color="#38bdf8", marker=dict(size=18, color="#38bdf8"))
-            fig2.update_layout(margin=dict(t=20, b=0, l=0, r=0), height=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
+            fig2 = px.line(client_data, x="Entity", y="SLA Success (%)", markers=True, template="plotly_dark")
+            fig2.update_traces(line_color="#38bdf8", marker=dict(size=8, color="#38bdf8"))
+            fig2.update_layout(margin=dict(t=20, b=0, l=0, r=0), height=300, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig2, use_container_width=True)
 
 # SANCHARA
 elif st.session_state.page == "Sanchara":
-    st.markdown("<div class='feature-header'>Sanchara</div><span class='feature-sub'>Live Map. Global tracking, elevated.</span>", unsafe_allow_html=True)
-    t1, t2, t3 = st.tabs(["🌍 The Map", "📦 Live Stats", "🚨 Issues"])
+    st.markdown("<div class='feature-header'>Global Topology</div><span class='feature-sub'>Asset tracking across physical domains.</span>", unsafe_allow_html=True)
+    t1, t2, t3 = st.tabs(["Map", "Throughput", "Anomalies"])
     with t1:
-        map_pts = pd.DataFrame({'lat':[12.9716, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Location':['Main Hub','Factory','HQ','Delayed Zone'], 'Details':['MG Road, Bangalore','Lantau, HK','Market St, SF','Jurong, Singapore']})
-        fig = px.scatter_mapbox(map_pts, lat="lat", lon="lon", hover_name="Location", hover_data={"Details": True}, zoom=1.5, height=600, color="Location", color_discrete_sequence=["#c084fc", "#38bdf8", "#34d399", "#f43f5e"])
-        fig.update_traces(marker=dict(size=15))
+        map_pts = pd.DataFrame({'lat':[12.9716, 22.31, 37.77, 1.35], 'lon':[77.59, 114.16, -122.41, 103.81], 'Node':['Primary','Forge','Nexus','Risk Zone'], 'Location':['Bangalore','HK','SF','Singapore']})
+        fig = px.scatter_mapbox(map_pts, lat="lat", lon="lon", hover_name="Node", hover_data={"Location": True}, zoom=1.5, height=500, color="Node", color_discrete_sequence=["#ffffff", "#a1a1aa", "#38bdf8", "#ef4444"])
         fig.update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True)
     with t2:
         c1, c2, c3 = st.columns(3)
-        c1.metric("Ships today", "1,240 items", "+5%")
-        c2.metric("Items in house", f"{get_user_data()['current_stock'].sum() if not get_user_data().empty else 0} items")
-        c3.metric("Returned products", "142 items", "-12% vs last week", delta_color="inverse")
+        c1.metric("Outbound Velocity", "1,240 pkts", "+5.2%")
+        c2.metric("Intact Inventory", f"{get_user_data()['current_stock'].sum() if not get_user_data().empty else 0} units")
+        c3.metric("Returned Assets", "142 units", "-12%", delta_color="inverse")
     with t3:
-        st.table(pd.DataFrame({'Item':['Quantum X1','4K Screen'], 'Shortage':[4,2], 'Note':['Failed quality check','Broken in transit']}))
+        st.table(pd.DataFrame({'SKU':['Quantum X1','4K Array'], 'Deficit':[4,2], 'Error Source':['QA Failure','Transit Fracture']}))
 
 # PREKSHA
 elif st.session_state.page == "Preksha":
-    st.markdown("<div class='feature-header'>Preksha</div><span class='feature-sub'>Forecast. See tomorrow, today.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Demand Vision</div><span class='feature-sub'>Predictive depletion models.</span>", unsafe_allow_html=True)
     df = get_user_data()
     if not df.empty:
-        target = st.selectbox("Which item do you want to analyze?", df['name'])
+        target = st.selectbox("Isolate Specific Asset", df['name'])
         p = df[df['name'] == target].iloc[0]
         col_a, col_b = st.columns([1, 2])
         with col_a:
@@ -471,100 +474,100 @@ elif st.session_state.page == "Preksha":
                 st.image(p['image_url'], use_container_width=True)
             if p['reviews']:
                 for r in p['reviews'].split('|'): 
-                    st.markdown(f"<div class='review-box'>{r}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='saas-card' style='padding:15px; font-size:0.9rem;'>{r}</div>", unsafe_allow_html=True)
         with col_b:
             preds = np.random.randint(20, 50, 7)
-            fig = px.area(y=preds, title="Expected drop in stock (Next 7 Days)", template="plotly_dark")
-            fig.update_traces(line_color='#c084fc', fillcolor='rgba(192, 132, 252, 0.25)')
-            fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(size=16))
+            fig = px.area(y=preds, title="Projected Drawdown (Next 7 Days)", template="plotly_dark")
+            fig.update_traces(line_color='#ffffff', fillcolor='rgba(255,255,255,0.1)')
+            fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig, use_container_width=True)
             required = max(0, preds.sum() - p['current_stock'])
             if required > 0:
-                st.markdown(f"<div class='ai-decision-box'><h3>🤖 AI STRONGLY ADVISES</h3>You should order exactly <strong style='font-size:2rem; color:#FFFFFF;'>{required}</strong> more of these to be safe.<br><br><span style='color:#38bdf8;'>Confidence Factor: 94%</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='ai-decision-box' style='padding:20px;'><h3>SYSTEM DIRECTIVE</h3>Execute reorder of <b>{required}</b> units to bypass predicted stockout. Confidence: 94%</div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div class='ai-decision-box' style='border-color:#34D399; box-shadow: 0 10px 40px rgba(52,211,153,0.3);'><h3 style='color:#34D399;'>NO ACTION NEEDED</h3>You have safely enough stock for the next week. Do not re-order.</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='ai-decision-box' style='padding:20px; border-color:#34d399;'><h3 style='color:#34d399;'>EQUILIBRIUM MAINTAINED</h3>Reserves cover projected demand horizons.</div>", unsafe_allow_html=True)
 
 # STAMBHA
 elif st.session_state.page == "Stambha":
-    st.markdown("<div class='feature-header'>Stambha</div><span class='feature-sub'>Risk Check. Expose the bottlenecks.</span>", unsafe_allow_html=True)
-    s = st.selectbox("Run a stress test", ["Normal day", "What if a port closes? (3x delay)"])
+    st.markdown("<div class='feature-header'>Vulnerability Forecasting</div><span class='feature-sub'>Stress testing supply chain constraints.</span>", unsafe_allow_html=True)
+    s = st.selectbox("Apply Constraint Model", ["Standard Clear Skies", "Category 5 Transit Blackout (3x Lag)"])
     df = get_user_data()
     if not df.empty:
         for _, p in df.iterrows():
-            ttr = p['lead_time'] * (3 if "port" in s.lower() else 1)
+            ttr = p['lead_time'] * (3 if "Blackout" in s else 1)
             tts = round(p['current_stock'] / 12, 1) 
             if tts < ttr: 
-                st.markdown(f"<div class='saas-card' style='border-left: 10px solid #f43f5e; border-color:#f43f5e; box-shadow: 0 15px 50px rgba(244,63,94,0.3);'><div style='color:#f43f5e; font-weight:900; font-size:2.5rem; margin-bottom:12px; text-shadow:0 0 20px rgba(244,63,94,0.5);'>⚠️ SEVERE RISK DETECTED</div><div style='color:#FFFFFF; font-size:1.6rem;'>You completely run out of <b style='color:#f43f5e;'>{p['name']}</b> in {tts} days.<br>Restock won't arrive for {ttr} days. <b>ACTION REQUIRED IMMMEDIATELY.</b></div></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='saas-card' style='border-left: 4px solid #ef4444;'><div style='color:#ef4444; font-weight:700; font-size:1.1rem; margin-bottom:8px;'>CRITICAL DISRUPTION DETECTED</div><div style='color:#d4d4d8;'>Reserves of <b>{p['name']}</b> deplete in {tts} days. Supply node blocked for {ttr} days.</div></div>", unsafe_allow_html=True)
         st.dataframe(df[['name', 'current_stock', 'lead_time']], use_container_width=True)
 
 # NYASA
 elif st.session_state.page == "Nyasa":
-    st.markdown("<div class='feature-header'>Nyasa</div><span class='feature-sub'>Inventory. Complete control.</span>", unsafe_allow_html=True)
-    t1, t2 = st.tabs(["Add manually", "Upload batch (CSV)"])
+    st.markdown("<div class='feature-header'>Catalog Ledger</div><span class='feature-sub'>Asset ingestion and database sync.</span>", unsafe_allow_html=True)
+    t1, t2 = st.tabs(["Manual Ingestion", "Batch Manifest (CSV)"])
     with t2:
-        f = st.file_uploader("Drop your CSV file here", type="csv")
-        if f and st.button("Sync data"):
+        f = st.file_uploader("Upload Core DB Package", type="csv")
+        if f and st.button("Initialize Data Sync"):
             u_df = pd.read_csv(f); u_df['username'] = st.session_state.user
             for col in ['category','supplier','image_url','reviews']: u_df[col] = u_df.get(col, "")
             with get_db() as conn: u_df.to_sql('products', conn, if_exists='append', index=False)
-            st.success("Boom. Data completely synced.")
+            st.success("Data successfully merged into core framework.")
     with t1:
         with st.form("add"):
             c1, c2 = st.columns(2)
             with c1:
-                n = st.text_input("Item name", placeholder="What's the exact name?")
-                s = st.number_input("Current stock count", 0)
-                p = st.number_input("Price per individual unit (₹)", 0.0)
+                n = st.text_input("Asset Designation")
+                s = st.number_input("Vault Count", 0)
+                p = st.number_input("Value Weight (₹)", 0.0)
             with c2:
-                lt = st.number_input("Restock delay (days)", 1)
-                img = st.text_input("Visual Image Link (Optional)", placeholder="https://...")
-                rev = st.text_input("Quick notes", placeholder="Any critical details?")
-            if st.form_submit_button("Add forcefully to inventory"):
+                lt = st.number_input("Transit Lag (days)", 1)
+                img = st.text_input("Visual URL (Optional)")
+                rev = st.text_input("Operator Metatags")
+            if st.form_submit_button("Write to Ledger"):
                 with get_db() as conn: 
                     conn.execute("INSERT INTO products (username, name, current_stock, unit_price, lead_time, image_url, reviews) VALUES (?,?,?,?,?,?,?,?)", (st.session_state.user, n, s, p, lt, img, rev))
-                st.success("Item saved permanently into the ledger.")
+                st.success("Asset verified and recorded.")
 
 # SAMVADA
 elif st.session_state.page == "Samvada":
-    st.markdown("<div class='feature-header'>Samvada</div><span class='feature-sub'>Voice AI. Talk naturally. It handles the rest.</span>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-header'>Deep Voice Comms</div><span class='feature-sub'>Conversational telemetry.</span>", unsafe_allow_html=True)
     key = st.secrets.get("GROQ_API_KEY", None)
     
     if key:
         client = OpenAI(base_url="https://api.groq.com/openai/v1", api_key=key)
         
-        st.markdown("<div class='saas-card' style='height: 550px; overflow-y: auto; background: rgba(15, 23, 42, 0.7);'>", unsafe_allow_html=True)
+        st.markdown("<div class='saas-card' style='height: 500px; overflow-y: auto; background: #050505;'>", unsafe_allow_html=True)
         for m in st.session_state.chat_history:
             if m["role"] == "user":
-                st.markdown(f"<div style='text-align: right; margin-bottom: 25px;'><span style='background: linear-gradient(135deg, #c084fc, #38bdf8); color: #000000; padding: 22px 30px; border-radius: 30px 30px 0 30px; display: inline-block; font-weight:800; font-size:1.5rem; box-shadow: 0 10px 25px rgba(192,132,252,0.5);'>{m['content']}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: right; margin-bottom: 20px;'><span style='background: #ffffff; color: #000000; padding: 12px 18px; border-radius: 8px 8px 0 8px; display: inline-block; font-weight:500;'>{m['content']}</span></div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div style='text-align: left; margin-bottom: 25px;'><span style='background: rgba(30, 41, 59, 0.9); color: #FFFFFF; padding: 22px 30px; border-radius: 30px 30px 30px 0; display: inline-block; font-weight:700; font-size:1.5rem; border: 2px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 25px rgba(56,189,248,0.2); backdrop-filter: blur(20px);'>{m['content']}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: left; margin-bottom: 20px;'><span style='background: #18181b; color: #ffffff; padding: 12px 18px; border-radius: 8px 8px 8px 0; display: inline-block; font-weight:400; border: 1px solid #27272a;'>{m['content']}</span></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
         
         col_text, col_voice = st.columns([4, 1])
         with col_voice:
-            audio_in = st.audio_input("Use voice command")
+            audio_in = st.audio_input("Voice Link")
             
-        u_in = st.chat_input("Type something...")
+        u_in = st.chat_input("Transmit packet...")
         
         if audio_in:
-            with st.spinner("Processing voice data..."):
+            with st.spinner("Decoding audio..."):
                 try:
                     transcription = client.audio.transcriptions.create(
                         file=("audio.wav", audio_in.getvalue()),
                         model="whisper-large-v3"
                     )
                     u_in = transcription.text
-                    st.success(f"Heard clearly: *{u_in}*")
+                    st.success(f"Transmission decoded: *{u_in}*")
                 except Exception as e:
-                    st.error(f"Couldn't hear that properly. Error: {e}")
+                    st.error(f"Signal interference: {e}")
                     
         if u_in:
             st.session_state.chat_history.append({"role":"user", "content":u_in})
             ctx = get_user_data().to_string(index=False)
-            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are a highly intelligent, powerful assistant answering questions about inventory. Keep it extremely brief and friendly. Data: {ctx}"}, *st.session_state.chat_history[-4:]])
+            res = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role":"system","content":f"You are a professional system assistant analyzing inventory. Be concise and precise. Data: {ctx}"}, *st.session_state.chat_history[-4:]])
             ans = res.choices[0].message.content
             st.session_state.chat_history.append({"role":"assistant", "content":ans})
             st.rerun()
     else:
-        st.warning("⚠️ Waiting on an API key to go full online.")
-
+        st.warning("⚠️ Comms severed. Insert API Key to restore link.")
+            
