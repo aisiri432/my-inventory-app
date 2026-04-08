@@ -193,20 +193,27 @@ elif st.session_state.page == "Vitta":
             st.markdown("<div class='saas-card'><b>Capital Allocation Matrix</b>", unsafe_allow_html=True)
             st.plotly_chart(px.pie(df, values='current_stock', names='name', hole=0.5, template="plotly_dark"), use_container_width=True)
 
-# 🤝 MITHRA+
+   # 🤝 MITHRA+
 elif st.session_state.page == "Mithra":
     st.markdown("<div class='feature-header'>🤝 MITHRA+</div>", unsafe_allow_html=True)
     df = get_user_data()
+
     if not df.empty:
         col1, col2 = st.columns([1, 1.5])
+
         with col1:
             vendor = st.selectbox("Select Vendor", df['supplier'].unique())
             style = st.radio("Strategy", ["Polite", "Balanced", "Aggressive"])
+
         with col2:
             if st.button("🚀 EXECUTE AI NEGOTIATION"):
                 st.metric("Potential Savings", "₹12,400", "↑ 8%")
-                st.text_area("Drafted Strategy", f"Dear {vendor},\n\nWe sensed a 35% increase in volume. We request a pricing re-alignment...")
-               # --- CLIENT SCOREBOARD ---
+                st.text_area(
+                    "Drafted Strategy",
+                    f"Dear {vendor},\n\nWe sensed a 35% increase in volume. We request a pricing re-alignment..."
+                )
+
+        # --- CLIENT SCOREBOARD ---
         st.markdown("### 🏆 Client Scoreboard")
 
         client_data = pd.DataFrame({
@@ -214,28 +221,27 @@ elif st.session_state.page == "Mithra":
             "Deal Value (₹)": [120000, 95000, 78000, 150000],
             "Negotiation Success (%)": [92, 85, 78, 96],
             "Trust Score": ["High", "Medium", "Medium", "High"]
-})
+        })
 
-st.dataframe(client_data, use_container_width=True)
+        st.dataframe(client_data, use_container_width=True)
 
-st.markdown("### 📊 Performance Insights")
+        st.markdown("### 📊 Performance Insights")
 
-col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-with col1:
-    st.plotly_chart(
-        px.bar(client_data, x="Client", y="Deal Value (₹)", template="plotly_dark"),
-        use_container_width=True
-    )
+        with col1:
+            st.plotly_chart(
+                px.bar(client_data, x="Client", y="Deal Value (₹)", template="plotly_dark"),
+                use_container_width=True
+            )
 
-with col2:
-    st.plotly_chart(
-        px.line(client_data, x="Client", y="Negotiation Success (%)", markers=True, template="plotly_dark"),
-        use_container_width=True
-    )
+        with col2:
+            st.plotly_chart(
+                px.line(client_data, x="Client", y="Negotiation Success (%)", markers=True, template="plotly_dark"),
+                use_container_width=True
+            )
 
-st.success("💡 Insight: Orion Traders delivers highest value + success rate.") 
-
+        st.success("💡 Insight: Orion Traders delivers highest value + success rate.")
 # 📦 SANCHARA
 elif st.session_state.page == "Sanchara":
     st.markdown("<div class='feature-header'>📦 SANCHARA</div>", unsafe_allow_html=True)
